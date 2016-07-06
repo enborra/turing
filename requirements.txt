@@ -1,0 +1,6 @@
+requests
+simplejson
+numpy
+astral
+click
+flask
