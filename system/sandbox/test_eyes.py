@@ -23,29 +23,33 @@ while 1:
     curr_frame = gray
 
     try:
-        faces = face_cascade.detectMultiScale(gray, 1.3, 5)
+        faces = face_cascade.detectMultiScale(
+            gray,
+            scaleFactor=1.3,
+            minNeighbors=5
+        )
 
         for (x,y,w,h) in faces:
-            cv2.rectangle(curr_frame,(x,y),(x+w,y+h),(255,0,0),2)
+            cv2.rectangle(img,(x,y),(x+w,y+h),(255,0,0),2)
 
-            cv2.circle(
-                curr_frame,
-                (x+(w/2), y+(h/2)),
-                40,
-                (255, 255, 255),
-                2
-            )
+            # cv2.circle(
+            #     curr_frame,
+            #     (x+(w/2), y+(h/2)),
+            #     40,
+            #     (255, 255, 255),
+            #     2
+            # )
 
             # roi_gray = gray[y:y+h, x:x+w]
             # roi_color = img[y:y+h, x:x+w]
-            #
-            # try:
-            #     eyes = eye_cascade.detectMultiScale(curr_frame)
-            #
-            #     for (ex,ey,ew,eh) in eyes:
-            #         cv2.rectangle(curr_frame,(ex,ey),(ex+ew,ey+eh),(0,255,0),2)
-            # except Exception, e:
-            #     pass
+
+            try:
+                eyes = eye_cascade.detectMultiScale(curr_frame)
+
+                for (ex,ey,ew,eh) in eyes:
+                    cv2.rectangle(img,(ex,ey),(ex+ew,ey+eh),(0,255,0),2)
+            except Exception, e:
+                pass
 
 
 
@@ -61,7 +65,7 @@ while 1:
     except Exception, e:
         pass
 
-    cv2.imshow('img',curr_frame)
+    cv2.imshow('img',img)
     k = cv2.waitKey(30) & 0xff
     if k == 27:
         break
