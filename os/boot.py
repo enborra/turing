@@ -36,6 +36,8 @@ try:
 except KeyboardInterrupt:
     output_msg('Shutting down.')
 
+    c.stop()
+
     try:
         sys.stdout.close()
     except:

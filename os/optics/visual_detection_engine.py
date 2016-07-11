@@ -1,15 +1,11 @@
+import os
 import numpy as np
 import cv2
 
 
 class VisualDetectionEngine(object):
     _camera_source = None
-    _cascades = {
-        'face': cv2.CascadeClassifier('algorithms/haarcascade_frontalface_default.xml'),
-        'eye': cv2.CascadeClassifier('algorithms/haarcascade_mcs_eyepair_small.xml'),
-        'nose': cv2.CascadeClassifier('algorithms/nose.xml'),
-        'mouth': cv2.CascadeClassifier('algorithms/haarcascade_smile.xml'),
-    }
+    _cascades = None
 
     _is_capturing_active = False
     _current_source_frame = None
@@ -17,8 +13,27 @@ class VisualDetectionEngine(object):
     _current_detected_faces = None
 
 
+    # ----------------------------------------------
+    # PUBLIC METHODS
+    # ----------------------------------------------
+
+
     def __init__(self):
+        algorithm_dir = os.path.realpath(__file__ + '/../algorithms')
+
+        self._cascades = {
+            'face': cv2.CascadeClassifier(algorithm_dir+'/haarcascade_frontalface_default.xml'),
+            'eye': cv2.CascadeClassifier(algorithm_dir+'/haarcascade_mcs_eyepair_small.xml'),
+            'nose': cv2.CascadeClassifier(algorithm_dir+'/nose.xml'),
+            'mouth': cv2.CascadeClassifier(algorithm_dir+'/haarcascade_smile.xml'),
+        }
+
+        print os.path.realpath(__file__ + '/../')
+
+        print '[TURING.OS.OPTICS] Starting video capture..'
         self._camera_source = cv2.VideoCapture(0)
+        print '[TURING.OS.OPTICS] Video capture enabled.'
+
 
     def get_capture(self):
         is_frame_available, self._current_source_frame = self._camera_source.read()
@@ -40,11 +55,19 @@ class VisualDetectionEngine(object):
 
             cv2.imshow('img', self._current_working_frame)
 
+            # if self._current_detected_faces:
+            #     print 'FACES: ' + str(len(self._current_detected_faces))
+
             if (cv2.waitKey(30) & 0xff) == 27:
                 self._is_capturing_active = False
 
         self._camera_source.release()
         cv2.destroyAllWindows()
+
+
+    # ----------------------------------------------
+    # INTERNAL METHODS
+    # ----------------------------------------------
 
 
     def _detect_faces(self):
@@ -163,34 +186,35 @@ class VisualDetectionEngine(object):
         return mouth_candidate
 
     def _composite_output_frame(self):
-        ### Draw face marker box
+        if self._current_detected_faces:
+            for f in self._current_detected_faces:
+                ### Draw face marker box
 
-        for f in self._current_detected_faces:
-            cv2.rectangle(
-                f['frame'],             # canvas
-                (0, 0),                 # start corner x,y
-                (f['w']-1, f['h']-1),   # end corner x,y
-                (255, 255, 255),        # color
-                1                       # line thickness
-            )
+                cv2.rectangle(
+                    f['frame'],             # canvas
+                    (0, 0),                 # start corner x,y
+                    (f['w']-1, f['h']-1),   # end corner x,y
+                    (255, 255, 255),        # color
+                    1                       # line thickness
+                )
 
-            ### Draw mouth frame marker box
+                ### Draw mouth frame marker box
 
-            cv2.rectangle(
-                f['frame'],
-                (f['mouth']['x'], f['mouth']['y']),
-                (f['mouth']['x'] + f['mouth']['w'], f['mouth']['y'] + f['mouth']['h']),
-                (255,255,0),
-                1
-            )
-
-            ### Draw eyes green marker box
-
-            for (ex,ey,ew,eh) in f['eyes']:
                 cv2.rectangle(
                     f['frame'],
-                    (ex,ey),
-                    (ex+ew,ey+eh),
-                    (0,255,0),
-                    2
+                    (f['mouth']['x'], f['mouth']['y']),
+                    (f['mouth']['x'] + f['mouth']['w'], f['mouth']['y'] + f['mouth']['h']),
+                    (255,255,0),
+                    1
                 )
+
+                ### Draw eyes green marker box
+
+                for (ex,ey,ew,eh) in f['eyes']:
+                    cv2.rectangle(
+                        f['frame'],
+                        (ex,ey),
+                        (ex+ew,ey+eh),
+                        (0,255,0),
+                        2
+                    )

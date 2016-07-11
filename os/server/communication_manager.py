@@ -8,6 +8,7 @@ from core.event_hook import EventHook
 
 class CommunicationManager(object):
     _queue = None
+    _server_thread = None
     _app = Flask(__name__)
 
 
@@ -21,10 +22,13 @@ class CommunicationManager(object):
     def start(self):
         self._queue = Queue.Queue(maxsize=1)
 
-        self.server_thread = threading.Thread(target=self.serve_forever, args=(self._queue,))
-        self.server_thread.setDaemon(True)
-        self.server_thread.start()
+        self._server_thread = threading.Thread(target=self.serve_forever, args=(self._queue,))
+        self._server_thread.setDaemon(True)
+        self._server_thread.start()
         print "[TURING.OS.SERVER] Server running on %s and listening on %d" % (self.host, self.port)
+
+    def stop(self):
+        pass
 
 
     def check(self):

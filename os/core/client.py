@@ -1,6 +1,7 @@
 import time
 
 from server.communication_manager import CommunicationManager
+from optics.optics_manager import OpticsManager
 
 
 _environment = None
@@ -17,6 +18,8 @@ class Client(object):
         self._communicator = CommunicationManager('', 80)
         self._communicator.on_request += self.process_client_request
 
+        self._optics = OpticsManager()
+
 
     def process_client_request(self, args):
         print 'catching web request.'
@@ -28,17 +31,24 @@ class Client(object):
 
         is_running = True
 
-        if self._communicator:
-            self._communicator.start()
+        # if self._communicator:
+        #     self._communicator.start()
+
+        if self._optics:
+            self._optics.start()
 
         while is_running:
             time.sleep(0.00001)
 
-            self._communicator.check()
+            # self._communicator.check()
+            self._optics.check()
 
     def stop(self):
         if self._communicator:
             self._communicator.stop()
+
+        if self._optics:
+            self._optics.stop()
 
     def destroy(self):
         self._is_running = False
