@@ -125,6 +125,28 @@ while 1:
             if len(eyes) > 0:
                 found_eyes = True
 
+
+            # try:
+            #     eyes = eye_cascade.detectMultiScale(
+            #         face_area_color,
+            #         # scaleFactor=1.3,
+            #         # minNeighbors=5
+            #     )
+            #
+            #     for (ex,ey,ew,eh) in eyes:
+            #         cv2.rectangle(source_frame, (ex,ey),(ex+ew,ey+eh),(255,255,255),2)
+            #
+            #         # cv2.circle(
+            #         #     source_frame,
+            #         #     (ex, ey),
+            #         #     20,
+            #         #     (255, 255, 255),
+            #         #     2
+            #         # )
+            #
+            # except Exception, e:
+            #     print 'ERROR' + str(e)
+
             smiles = smile_cascade.detectMultiScale(
                 face_frame,
                 scaleFactor=1.03,
