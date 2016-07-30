@@ -22,6 +22,7 @@ class OpticsManager(object):
 
         engine = VisualDetectionEngine()
         engine.get_continuous_capture()
+        # engine.track_continuous_object()
 
 
     def stop(self):

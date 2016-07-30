@@ -53,6 +53,11 @@ class VisualDetectionEngine(object):
             self.get_capture()
             img = self._composite_output_frame()
 
+            if len(self._current_detected_faces) > 0:
+                # Determining rough face distance
+
+                cv2.putText(self._current_working_frame, str(self._current_detected_faces[0]['w']) + ':' + str(self._current_detected_faces[0]['h']), (50,50), cv2.FONT_HERSHEY_SIMPLEX, 0.6, 2)
+
             cv2.imshow('img', self._current_working_frame)
 
             # if self._current_detected_faces:
@@ -60,6 +65,145 @@ class VisualDetectionEngine(object):
 
             if (cv2.waitKey(30) & 0xff) == 27:
                 self._is_capturing_active = False
+
+        self._camera_source.release()
+        cv2.destroyAllWindows()
+
+    def track_continuous_object(self):
+        self._is_capture_active = True
+        is_face_found = False
+
+        while self._is_capture_active and not is_face_found:
+            self.get_capture()
+            img = self._composite_output_frame()
+
+            cv2.imshow('img', self._current_working_frame)
+
+            if len(self._current_detected_faces) > 0:
+                is_face_found = True
+
+        if is_face_found:
+            print "FOUND A FACE. TIME TO TRACK IT."
+
+        r = self._current_detected_faces[0]['y']
+        h = self._current_detected_faces[0]['h']
+        c = self._current_detected_faces[0]['x']
+        w = self._current_detected_faces[0]['w']
+
+        # r = 300
+        # h = 200
+        # c = 300
+        # w = 200
+
+        track_window = (c, r, w, h)
+
+        # set up the ROI for tracking
+        roi = self._current_working_frame[r:r+h, c:c+w]
+        hsv_roi =  cv2.cvtColor(self._current_working_frame, cv2.COLOR_BGR2HSV)
+
+
+
+
+
+        # mask_color_sensitivity = 15
+        # lower_white = np.array([0, 0, 255-mask_color_sensitivity])
+        # upper_white = np.array([180, mask_color_sensitivity, 255])
+        #
+        # mask = cv2.inRange(
+        #     hsv_roi,
+        #     lower_white,
+        #     upper_white,
+        # )
+
+
+
+
+
+
+        # mask_color_sensitivity = 15
+        # lower_mask_color_a = (0, 100, 100)
+        # upper_mask_color_a = (mask_color_sensitivity, 255, 255)
+        #
+        # lower_mask_color_b = (180-mask_color_sensitivity, 100, 100)
+        # upper_mask_color_b = (180, 255, 255)
+
+        # mask_a = cv2.inRange(
+        #     hsv_roi,
+        #     np.array(lower_mask_color_a),
+        #     np.array(upper_mask_color_a)
+        # )
+        #
+        # mask_b = cv2.inRange(
+        #     hsv_roi,
+        #     np.array(lower_mask_color_b),
+        #     np.array(upper_mask_color_b)
+        # )
+        #
+        # mask = cv2.bitwise_or(mask_a, mask_b)
+
+
+
+        avg_color_row = np.average(roi, axis=0)
+        avg_color = np.average(avg_color_row, axis=0)
+
+        print avg_color
+
+
+        mask = cv2.inRange(
+            roi,
+            np.array(avg_color*0.5),
+            np.array(avg_color*1.15)
+        )
+
+
+
+        avg_color = np.uint8(avg_color)
+        average_color_img = np.array([[avg_color]*100]*100, np.uint8)
+        cv2.imshow('hsv_color_mask', average_color_img)
+
+
+
+
+        roi_hist = cv2.calcHist([roi],[0], mask, [180], [0,180])
+        cv2.normalize(roi_hist,roi_hist,0,255,cv2.NORM_MINMAX)
+
+        # Setup the termination criteria, either 10 iteration or move by at least 1 pt
+        term_crit = ( cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 1 )
+
+        while True:
+            old_img = self._current_working_frame
+
+            self.get_capture()
+
+            new_img = cv2.GaussianBlur(self._current_working_frame, (13, 13), 0)
+            # new_img = self._current_working_frame
+
+            hsv = cv2.cvtColor(new_img, cv2.COLOR_BGR2HSV)
+            dst = cv2.calcBackProject([hsv], [0], roi_hist, [0, 180], 1)
+
+            ret, track_window = cv2.meanShift(dst, track_window, term_crit)
+
+            x, y, w, h = track_window
+
+            img2 = cv2.rectangle(new_img, (x, y), (x+w, y+h), (255,255,0), 2)
+            cv2.imshow('img', new_img)
+
+            hrm = cv2.bitwise_and(hsv, hsv, mask=mask)
+            cv2.imshow('mask', hrm)
+
+
+            k = cv2.waitKey(60) & 0xff
+
+            if k == 27:
+                break
+
+
+
+
+
+
+
+
 
         self._camera_source.release()
         cv2.destroyAllWindows()
