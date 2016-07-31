@@ -21,8 +21,9 @@ class OpticsManager(object):
         print "[TURING.OS.OPTICS] Booted."
 
         engine = VisualDetectionEngine()
-        engine.get_continuous_capture()
+        # engine.get_continuous_capture()
         # engine.track_continuous_object()
+        engine.track_face()
 
 
     def stop(self):

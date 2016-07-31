@@ -55,6 +55,7 @@ class App(object):
         import time
 
         time_last_face_find = None
+        tracking_status = ''
 
         while True:
             self.face = None
@@ -68,9 +69,7 @@ class App(object):
                 is_face_found = False
                 self.face = None
 
-                print 'Trying to find new face...'
-
-                # self.frame = cv2.GaussianBlur(self.frame, (13, 13), 0)
+                tracking_status = 'searching'
 
                 while not is_face_found:
                     ret, self.frame = self.cam.read()
@@ -95,7 +94,7 @@ class App(object):
 
                 time_last_face_find = datetime.now()
 
-                print 'found face. lets track it.'
+                tracking_status = 'face_found'
 
                 x, y, w, h = self.face
                 hrm = 4
@@ -108,9 +107,7 @@ class App(object):
                 face_capture = self.frame[ y : y+h, x : x+w]
                 face_capture_color = self.frame[ start_y : end_y, start_x : end_x ]
 
-                i = 0
                 face_capture_color_blur = face_capture_color
-
 
                 lowest_h = 65
                 highest_h = 256
@@ -121,43 +118,12 @@ class App(object):
                 lowest_intensity = 0
                 highest_intensity = 256
 
-                # for col in face_capture_color_blur:
-                #     for row in col:
-                #         hue = row[0]
-                #         saturation = row[1]
-                #         intensity = row[2]
-                #
-                #         if (lowest_h == -1) or (hue < lowest_h):
-                #             lowest_h = hue
-                #
-                #         elif (highest_h == -1) or (hue > highest_h):
-                #             highest_h = hue
-                #
-                #
-                #         if (lowest_saturation == -1) or (saturation < lowest_saturation):
-                #             lowest_saturation = saturation
-                #
-                #         elif (highest_saturation == -1) or (saturation > highest_saturation):
-                #             highest_saturation = saturation
-                #
-                #         if (lowest_intensity == -1) or (intensity < lowest_intensity):
-                #             lowest_intensity = intensity
-                #
-                #         if (highest_intensity == -1) or (intensity > highest_intensity):
-                #             highest_intensity = intensity
-                #
-                #
-                # print 'Lowest hsv is: ' + str(lowest_h) + ', ' + str(lowest_saturation) + ', ' + str(lowest_intensity)
-                # print 'Highest hsv is: ' + str(highest_h) + ', ' + str(highest_saturation) + ', ' + str(highest_intensity)
-                # print '...'
-
-
                 x, y, w, h = self.face
                 self.track_window = (x, y, x+w, y+h)
-
+                iteration_count_colortrack = 0
                 is_still_tracking = True
 
-                while (i < 500) and is_still_tracking:
+                while (iteration_count_colortrack < 500) and is_still_tracking:
                     # time.sleep(0.5)
 
                     ret, self.frame = self.cam.read()
@@ -166,34 +132,14 @@ class App(object):
                     vis = self.frame.copy()
                     hsv = cv2.cvtColor(self.frame, cv2.COLOR_BGR2HSV)
 
-
-
-
-
-                    # lowest_h = 65
-                    # highest_h = 256
-                    #
-                    # lowest_saturation = 55
-                    # highest_saturation = 256
-                    #
-                    # lowest_intensity = 0
-                    # highest_intensity = 256
-
                     lower_bound = np.array((lowest_h, lowest_saturation, lowest_intensity))
                     upper_bound = np.array((highest_h, highest_saturation, highest_intensity))
-
 
                     # Bitmask out anything not in the min/max HSV range of the
                     # captured face frame region
 
                     mask = cv2.inRange(hsv, np.array((5.0, 60.0, 100.0)), np.array((100.0, 200.0, 255.0)))
                     # mask = cv2.inRange(hsv, lower_bound, upper_bound)
-
-
-
-
-
-
 
                     hsv_roi = hsv[y:y+h, x:x+w]
                     mask_roi = mask[y:y+h, x:x+w]
@@ -224,11 +170,7 @@ class App(object):
                     self.show_hist()
 
                     vis_roi = vis[y:y+h, x:x+w]
-                    # cv2.bitwise_not(vis_roi, vis_roi)
                     vis[mask == 0] = 0
-
-
-
 
                     self.selection = None
 
@@ -263,7 +205,7 @@ class App(object):
                         vis[:] = prob[...,np.newaxis]
 
                     try:
-                        cv2.ellipse(self.frame, track_box, (0, 0, 255), 2)
+                        cv2.ellipse(self.frame, track_box, (150, 150, 150), 1)
 
                         start_pos, end_pos, rotation = track_box
                         center_x, center_y = start_pos
@@ -273,12 +215,8 @@ class App(object):
                         start_y = int(center_y - (height_detect/2))
                         end_x = int(center_x + (width_detect/2))
                         end_y = int(center_y + (height_detect/2))
-                        # end_x = start_x + 100
-                        # end_y = start_y + 100
 
                         seconds_tracking = (datetime.now() - time_last_face_find).total_seconds()
-
-                        msg_time = 'Tracking for ' + str(int(seconds_tracking)) + ' seconds'
 
                         frame_height, frame_width = self.frame.shape[:2]
 
@@ -297,30 +235,26 @@ class App(object):
 
                         cv2.rectangle(
                             self.frame,             # canvas
-                            (start_x, start_y),                 # start corner x,y
-                            (end_x, end_y),   # end corner x,y
+                            (start_x, start_y),     # start corner x,y
+                            (end_x, end_y),         # end corner x,y
                             (255, 255, 255),        # color
                             2                       # line thickness
                         )
 
-                        cv2.putText(self.frame, msg_time, (50, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255,255,255))
-
                         cv2.circle(self.frame, (30, 35), 10, (255, 255, 255), -1)
+                        cv2.putText(self.frame, ('Tracking for ' + str(int(seconds_tracking)) + ' seconds'), (50, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255,255,255))
 
                     except Exception, e:
                         print 'Had a problem: ' + str(e)
 
                     cv2.imshow('camshift', self.frame)
 
-                    ch = 0xFF & cv2.waitKey(5)
-
-                    if ch == 27:
+                    if (0xFF & cv2.waitKey(5)) == 27:
                         break
 
-                    if ch == ord('b'):
-                        self.show_backproj = not self.show_backproj
+                    iteration_count_colortrack += 1
 
-                    i += 1
+
             except Exception, e:
                 print 'ERROR: ' + str(e)
 
