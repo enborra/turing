@@ -1,8 +1,9 @@
 import numpy as np
 import cv2
+from datetime import datetime
 
 
-face_cascade = cv2.CascadeClassifier('algorithms/haarcascade_frontalface_default.xml')
+face_cascade = cv2.CascadeClassifier('os/optics/algorithms/haarcascade_frontalface_default.xml')
 
 
 class App(object):
@@ -21,7 +22,6 @@ class App(object):
 
         ret, self.frame = self.cam.read()
         cv2.namedWindow('camshift')
-        # cv2.setMouseCallback('camshift', self.onmouse)
 
         self.selection = None
         self.drag_start = None
@@ -54,6 +54,8 @@ class App(object):
 
         import time
 
+        time_last_face_find = None
+
         while True:
             self.face = None
             self.frame = None
@@ -79,12 +81,10 @@ class App(object):
                         self.frame,
                         scaleFactor=1.05,
                         minNeighbors=5,
-                        minSize=(140, 140),
+                        minSize=(100, 100),
                         flags = cv2.CASCADE_SCALE_IMAGE,
                         # outputRejectLevels = True
                     )
-
-                    print 'Searched, parsing...'
 
                     if len(faces)  > 0:
                         is_face_found = True
@@ -92,6 +92,8 @@ class App(object):
                         self.face = faces[0]
 
 
+
+                time_last_face_find = datetime.now()
 
                 print 'found face. lets track it.'
 
@@ -107,70 +109,91 @@ class App(object):
                 face_capture_color = self.frame[ start_y : end_y, start_x : end_x ]
 
                 i = 0
-                blur_amount = 5
-
-                # face_capture_color_blur = cv2.GaussianBlur(face_capture_color, (blur_amount,blur_amount), 0)
-                face_capture_color_blur = 
+                face_capture_color_blur = face_capture_color
 
 
-                lowest_h = -1
-                highest_h = -1
-                lowest_saturation = -1
-                highest_saturation = -1
-                lowest_intensity = -1
-                highest_intensity = -1
+                lowest_h = 65
+                highest_h = 256
 
-                for col in face_capture_color_blur:
-                    for row in col:
-                        hue = row[0]
-                        saturation = row[1]
-                        intensity = row[2]
+                lowest_saturation = 55
+                highest_saturation = 256
 
-                        if (lowest_h == -1) or (hue < lowest_h):
-                            lowest_h = hue
+                lowest_intensity = 0
+                highest_intensity = 256
 
-                        elif (highest_h == -1) or (hue > highest_h):
-                            highest_h = hue
-
-
-                        if (lowest_saturation == -1) or (saturation < lowest_saturation):
-                            lowest_saturation = saturation
-
-                        elif (highest_saturation == -1) or (saturation > highest_saturation):
-                            highest_saturation = saturation
-
-                        if (lowest_intensity == -1) or (intensity < lowest_intensity):
-                            lowest_intensity = intensity
-
-                        if (highest_intensity == -1) or (intensity > highest_intensity):
-                            highest_intensity = intensity
-
-
-                print 'Lowest hsv is: ' + str(lowest_h) + ', ' + str(lowest_saturation) + ', ' + str(lowest_intensity)
-                print 'Highest hsv is: ' + str(highest_h) + ', ' + str(highest_saturation) + ', ' + str(highest_intensity)
-                print '...'
+                # for col in face_capture_color_blur:
+                #     for row in col:
+                #         hue = row[0]
+                #         saturation = row[1]
+                #         intensity = row[2]
+                #
+                #         if (lowest_h == -1) or (hue < lowest_h):
+                #             lowest_h = hue
+                #
+                #         elif (highest_h == -1) or (hue > highest_h):
+                #             highest_h = hue
+                #
+                #
+                #         if (lowest_saturation == -1) or (saturation < lowest_saturation):
+                #             lowest_saturation = saturation
+                #
+                #         elif (highest_saturation == -1) or (saturation > highest_saturation):
+                #             highest_saturation = saturation
+                #
+                #         if (lowest_intensity == -1) or (intensity < lowest_intensity):
+                #             lowest_intensity = intensity
+                #
+                #         if (highest_intensity == -1) or (intensity > highest_intensity):
+                #             highest_intensity = intensity
+                #
+                #
+                # print 'Lowest hsv is: ' + str(lowest_h) + ', ' + str(lowest_saturation) + ', ' + str(lowest_intensity)
+                # print 'Highest hsv is: ' + str(highest_h) + ', ' + str(highest_saturation) + ', ' + str(highest_intensity)
+                # print '...'
 
 
                 x, y, w, h = self.face
                 self.track_window = (x, y, x+w, y+h)
 
-                while i < 20:
+                is_still_tracking = True
+
+                while (i < 500) and is_still_tracking:
+                    # time.sleep(0.5)
+
                     ret, self.frame = self.cam.read()
-                    # self.frame = cv2.GaussianBlur(self.frame, (13, 13), 0)
+                    self.frame = cv2.GaussianBlur(self.frame, (31, 31), 0)
 
                     vis = self.frame.copy()
                     hsv = cv2.cvtColor(self.frame, cv2.COLOR_BGR2HSV)
 
+
+
+
+
+                    # lowest_h = 65
+                    # highest_h = 256
+                    #
+                    # lowest_saturation = 55
+                    # highest_saturation = 256
+                    #
+                    # lowest_intensity = 0
+                    # highest_intensity = 256
+
+                    lower_bound = np.array((lowest_h, lowest_saturation, lowest_intensity))
+                    upper_bound = np.array((highest_h, highest_saturation, highest_intensity))
+
+
                     # Bitmask out anything not in the min/max HSV range of the
                     # captured face frame region
 
-                    mask = cv2.inRange(
-                        hsv,
-                        np.array((lowest_h, lowest_saturation, lowest_intensity)),
-                        np.array((highest_h, highest_saturation, highest_intensity))
-                    )
+                    mask = cv2.inRange(hsv, np.array((5.0, 60.0, 100.0)), np.array((100.0, 200.0, 255.0)))
+                    # mask = cv2.inRange(hsv, lower_bound, upper_bound)
 
-                    cv2.imshow('face', face_capture_color_blur)
+
+
+
+
+
 
                     hsv_roi = hsv[y:y+h, x:x+w]
                     mask_roi = mask[y:y+h, x:x+w]
@@ -178,8 +201,19 @@ class App(object):
                     # hsv_roi = hsv
                     # mask_roi = mask
 
-                    hist = cv2.calcHist( [hsv_roi], [0], mask_roi, [256], [0, 256] )
-                    # cv2.normalize(hist, hist, 100, 190, cv2.NORM_MINMAX);
+                    hist_bins = 120
+                    hist_range = [0, 180]
+
+                    # If grayscale img input, channel is 0.
+                    # If color img input, channels 0, 1, 2 map to blue, green, and red
+
+                    hist_channel = 0
+                    hist = None
+
+                    hist = cv2.calcHist( [hsv_roi], [hist_channel], mask_roi, [hist_bins], hist_range )
+                    hist = cv2.normalize(hist, hist, 0, 200, cv2.NORM_MINMAX);
+
+
 
                     cv2.imshow('mask', mask_roi)
                     cv2.imshow('hsv', hsv_roi)
@@ -198,19 +232,31 @@ class App(object):
 
                     self.selection = None
 
-                    prob = cv2.calcBackProject([hsv], [0], self.hist, [0, 180], 1)
-                    prob &= mask
+                    back_projection_channel = 0
+                    back_projection_range = [0, 180]
+                    back_projection_scale = 1
 
+                    prob = cv2.calcBackProject(
+                        [hsv],
+                        [back_projection_channel],
+                        self.hist,
+                        back_projection_range,
+                        back_projection_scale
+                    )
+
+                    prob &= mask
                     term_crit = ( cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 1 )
 
                     track_box, self.track_window = cv2.CamShift(prob, self.track_window, term_crit)
 
+                    # Draw original face discovery bounds
+
                     cv2.rectangle(
-                        self.frame,             # canvas
-                        (x, y),                 # start corner x,y
+                        self.frame,       # canvas
+                        (x, y),           # start corner x,y
                         (x+w-1, y+h-1),   # end corner x,y
                         (1, 1, 1),        # color
-                        1                       # line thickness
+                        1                 # line thickness
                     )
 
                     if self.show_backproj:
@@ -220,19 +266,49 @@ class App(object):
                         cv2.ellipse(self.frame, track_box, (0, 0, 255), 2)
 
                         start_pos, end_pos, rotation = track_box
-                        start_x, start_y = start_pos
-                        end_x, end_y = end_pos
+                        center_x, center_y = start_pos
+                        width_detect, height_detect = end_pos
+
+                        start_x = int(center_x - (width_detect/2))
+                        start_y = int(center_y - (height_detect/2))
+                        end_x = int(center_x + (width_detect/2))
+                        end_y = int(center_y + (height_detect/2))
+                        # end_x = start_x + 100
+                        # end_y = start_y + 100
+
+                        seconds_tracking = (datetime.now() - time_last_face_find).total_seconds()
+
+                        msg_time = 'Tracking for ' + str(int(seconds_tracking)) + ' seconds'
+
+                        frame_height, frame_width = self.frame.shape[:2]
+
+                        if width_detect < 100:
+                            is_still_tracking = False
+
+                        if seconds_tracking < 2:
+                            if (start_x > (x+100)) or (start_x < x-100):
+                                is_still_tracking = False
+
+                            if width_detect > ((x+w)*2):
+                                is_still_tracking = False
+
+                        if height_detect > frame_height:
+                            is_still_tracking = False
 
                         cv2.rectangle(
                             self.frame,             # canvas
-                            (0, 0),                 # start corner x,y
-                            (20, 20),   # end corner x,y
+                            (start_x, start_y),                 # start corner x,y
+                            (end_x, end_y),   # end corner x,y
                             (255, 255, 255),        # color
                             2                       # line thickness
                         )
 
-                    except:
-                        print 'Had a problem: ' + str(track_box)
+                        cv2.putText(self.frame, msg_time, (50, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255,255,255))
+
+                        cv2.circle(self.frame, (30, 35), 10, (255, 255, 255), -1)
+
+                    except Exception, e:
+                        print 'Had a problem: ' + str(e)
 
                     cv2.imshow('camshift', self.frame)
 
@@ -246,7 +322,7 @@ class App(object):
 
                     i += 1
             except Exception, e:
-                print 'digger: ' + str(e)
+                print 'ERROR: ' + str(e)
 
         cv2.destroyAllWindows()
 
