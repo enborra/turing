@@ -9,10 +9,11 @@ from core.event_hook import EventHook
 class OpticsManager(object):
     _server_thread = None
     _queue = None
+    _environment = None
 
 
-    def __init__(self):
-        pass
+    def __init__(self, environment=None):
+        self._environment = environment
 
 
     def start(self):
@@ -20,7 +21,9 @@ class OpticsManager(object):
 
         print "[TURING.OS.OPTICS] Booted."
 
-        engine = VisualDetectionEngine()
+        engine = VisualDetectionEngine(
+            environment=self._environment
+        )
         # engine.get_continuous_capture()
         # engine.track_continuous_object()
         engine.track_face()

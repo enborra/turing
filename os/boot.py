@@ -2,6 +2,7 @@ import sys
 import traceback
 
 from core import Client
+from core import Settings
 
 
 
@@ -22,14 +23,10 @@ def output_msg(msg):
     print "[TURING.OS] %s" % msg
 
 
-
-
-
-c = Client()
+c = Client( environment=Settings().ENVIRONMENT_SIMULATED )
 
 try:
     output_msg('Starting up.')
-
     c.start()
 
 

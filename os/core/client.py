@@ -10,15 +10,24 @@ _environment = None
 class Client(object):
     _communicator = None
     _is_running = None
+    _environment = None
 
 
-    def __init__(self):
+    def __init__(self, environment=None):
         print '[TURING] Initing client...'
+
+        if environment:
+            if environment.lower() == 'simulated':
+                self._environment = 'simulated'
+            elif environment.lower() == 'onboard':
+                self._environment = 'onboard'
 
         self._communicator = CommunicationManager('', 80)
         self._communicator.on_request += self.process_client_request
 
-        self._optics = OpticsManager()
+        self._optics = OpticsManager(
+            environment=self._environment
+        )
 
 
     def process_client_request(self, args):

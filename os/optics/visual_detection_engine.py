@@ -6,6 +6,7 @@ from datetime import datetime
 
 
 class VisualDetectionEngine(object):
+    _environment = None
     _camera_source = None
     _cascades = None
 
@@ -14,9 +15,6 @@ class VisualDetectionEngine(object):
     _current_working_frame = None
     _current_detected_faces = None
 
-
-
-    _show_backproj = None
     _tracking_state = None
     _track_window = None
     _hist = None
@@ -27,7 +25,9 @@ class VisualDetectionEngine(object):
     # ----------------------------------------------
 
 
-    def __init__(self):
+    def __init__(self, environment=None):
+        self._environment = environment
+
         algorithm_dir = os.path.realpath(__file__ + '/../algorithms')
 
         self._cascades = {
@@ -39,6 +39,12 @@ class VisualDetectionEngine(object):
 
         print os.path.realpath(__file__ + '/../')
 
+        if self._environment == 'onboard':
+            print '[TURING.OS.OPTICS] Running (onboard)'
+        else:
+            print '[TURING.OS.OPTICS] Running (simulated)'
+
+
         print '[TURING.OS.OPTICS] Starting video capture..'
         self._camera_source = cv2.VideoCapture(0)
         print '[TURING.OS.OPTICS] Video capture enabled.'
@@ -46,7 +52,6 @@ class VisualDetectionEngine(object):
         cv2.namedWindow('camshift')
 
         self._tracking_state = 0
-        self._show_backproj = False
 
 
     def get_capture(self):
@@ -223,42 +228,38 @@ class VisualDetectionEngine(object):
         cv2.destroyAllWindows()
 
     def track_face(self):
-        cv2.namedWindow('hist')
-        cv2.namedWindow('face')
-        cv2.namedWindow('camshift')
-        cv2.namedWindow('hsv')
+        if self._environment == 'simulated':
+            cv2.namedWindow('hist')
+            cv2.namedWindow('face')
+            cv2.namedWindow('camshift')
+            cv2.namedWindow('hsv')
 
-        cv2.moveWindow('face', 40, 500)
-        cv2.moveWindow('mask', 40, 700)
-        cv2.moveWindow('hsv', 40, 800)
-        cv2.moveWindow('camshift', 450, 100)
-        cv2.moveWindow('hist', 450, 850)
+            cv2.moveWindow('face', 40, 500)
+            cv2.moveWindow('mask', 40, 700)
+            cv2.moveWindow('hsv', 40, 800)
+            cv2.moveWindow('camshift', 450, 100)
+            cv2.moveWindow('hist', 450, 850)
 
         time_last_face_find = None
         tracking_status = ''
 
         while True:
-            self.face = None
-            self.frame = None
-            _show_backproj = None
             _tracking_state = None
             _track_window = None
             _hist = None
 
             try:
                 is_face_found = False
-                self.face = None
 
                 tracking_status = 'searching'
 
                 while not is_face_found:
-                    # ret, self.frame = self.cam.read()
-
                     self.get_capture()
 
-                    cv2.imshow('camshift', self._current_source_frame)
+                    if self._environment == 'simulated':
+                        cv2.imshow('camshift', self._current_source_frame)
 
-                    faces = self._cascades['face'].detectMultiScale(
+                    self._current_detected_faces = self._cascades['face'].detectMultiScale(
                         self._current_source_frame,
                         scaleFactor=1.05,
                         minNeighbors=5,
@@ -266,18 +267,16 @@ class VisualDetectionEngine(object):
                         flags = cv2.CASCADE_SCALE_IMAGE,
                     )
 
-                    if len(faces)  > 0:
+                    if len(self._current_detected_faces)  > 0:
                         is_face_found = True
 
-                        self.face = faces[0]
-
-
+                        print 'Found a face.'
 
                 time_last_face_find = datetime.now()
 
                 tracking_status = 'face_found'
 
-                x, y, w, h = self.face
+                x, y, w, h = self._current_detected_faces[0]
                 hrm = 4
 
                 start_y = y + (h/10)
@@ -299,7 +298,7 @@ class VisualDetectionEngine(object):
                 lowest_intensity = 0
                 highest_intensity = 256
 
-                x, y, w, h = self.face
+                x, y, w, h = self._current_detected_faces[0]
                 self._track_window = (x, y, x+w, y+h)
                 iteration_count_colortrack = 0
                 is_still_tracking = True
@@ -341,9 +340,9 @@ class VisualDetectionEngine(object):
                     hist = cv2.normalize(hist, hist, 0, 200, cv2.NORM_MINMAX);
 
 
-
-                    cv2.imshow('mask', mask_roi)
-                    cv2.imshow('hsv', hsv_roi)
+                    if self._environment == 'simulated':
+                        cv2.imshow('mask', mask_roi)
+                        cv2.imshow('hsv', hsv_roi)
 
                     # if self.hist is None:
                     self._hist = hist.reshape(-1)
@@ -379,9 +378,6 @@ class VisualDetectionEngine(object):
                         (1, 1, 1),        # color
                         1                 # line thickness
                     )
-
-                    if self._show_backproj:
-                        vis[:] = prob[...,np.newaxis]
 
                     try:
                         cv2.ellipse(self._current_source_frame, track_box, (150, 150, 150), 1)
@@ -426,7 +422,8 @@ class VisualDetectionEngine(object):
                     except Exception, e:
                         print 'Had a problem: ' + str(e)
 
-                    cv2.imshow('camshift', self._current_source_frame)
+                    if self._environment == 'simulated':
+                        cv2.imshow('camshift', self._current_source_frame)
 
                     if (0xFF & cv2.waitKey(5)) == 27:
                         break
