@@ -1,4 +1,12 @@
 {
-  'mode': 'test_environment'
-  /*'mode': 'onboard'*/
+  "environment": "simulated",
+
+  "servers": {
+
+    "web": {
+      "host": "0.0.0.0",
+      "port": "5000"
+    }
+
+  }
 }

@@ -23,7 +23,7 @@ def output_msg(msg):
     print "[TURING.OS] %s" % msg
 
 
-c = Client( environment=Settings().ENVIRONMENT_SIMULATED )
+c = Client()
 
 try:
     output_msg('Starting up.')

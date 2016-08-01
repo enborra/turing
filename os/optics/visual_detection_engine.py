@@ -248,15 +248,9 @@ class VisualDetectionEngine(object):
 
     def loop(self):
         if self._is_face_isolated:
-            print 'Looping isolated color tracking..'
-
             self._loop_isolated_face_track()
         else:
-            print 'Looping face detection search..'
-
             self._loop_detect_face()
-
-
 
     def _loop_detect_face(self):
         self.get_capture()
@@ -275,8 +269,6 @@ class VisualDetectionEngine(object):
         )
 
         if len(self._current_detected_faces) > 0:
-            print 'Found some faces.'
-
             self._is_face_isolated = True
 
             self._time_last_face_find = datetime.now()
@@ -306,9 +298,6 @@ class VisualDetectionEngine(object):
             self._track_window = (x, y, x+w, y+h)
             iteration_count_colortrack = 0
             is_still_tracking = True
-
-
-
 
 
     def _loop_isolated_face_track(self):
@@ -441,16 +430,13 @@ class VisualDetectionEngine(object):
             cv2.circle(self._current_source_frame, (30, 35), 10, (255, 255, 255), -1)
             cv2.putText(self._current_source_frame, ('Tracking for ' + str(int(seconds_tracking)) + ' seconds'), (50, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255,255,255))
 
-            print 'Tracking for ' + str(int(seconds_tracking)) + ' seconds'
+            # print 'Tracking for ' + str(int(seconds_tracking)) + ' seconds'
 
         except Exception, e:
             print 'Had a problem: ' + str(e)
 
         if self._environment == 'simulated':
-            print 'displaying current render...' + str(self._iteration_count_colortrack)
-
             cv2.imshow('camshift', self._current_source_frame)
-
 
         if self._iteration_count_colortrack > 100:
             self._iteration_count_colortrack = 0
