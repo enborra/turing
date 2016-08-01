@@ -22,7 +22,7 @@ class Client(object):
             elif environment.lower() == 'onboard':
                 self._environment = 'onboard'
 
-        self._communicator = CommunicationManager('', 80)
+        self._communicator = CommunicationManager('0.0.0.0', 5000)
         self._communicator.on_request += self.process_client_request
 
         self._optics = OpticsManager(
@@ -40,8 +40,8 @@ class Client(object):
 
         is_running = True
 
-        # if self._communicator:
-        #     self._communicator.start()
+        if self._communicator:
+            self._communicator.start()
 
         if self._optics:
             self._optics.start()
@@ -49,7 +49,7 @@ class Client(object):
         while is_running:
             time.sleep(0.00001)
 
-            # self._communicator.check()
+            self._communicator.check()
             self._optics.check()
 
     def stop(self):

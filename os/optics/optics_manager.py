@@ -10,6 +10,7 @@ class OpticsManager(object):
     _server_thread = None
     _queue = None
     _environment = None
+    _engine = None
 
 
     def __init__(self, environment=None):
@@ -21,17 +22,16 @@ class OpticsManager(object):
 
         print "[TURING.OS.OPTICS] Booted."
 
-        engine = VisualDetectionEngine(
+        self._engine = VisualDetectionEngine(
             environment=self._environment
         )
-        # engine.get_continuous_capture()
-        # engine.track_continuous_object()
-        engine.track_face()
-
 
     def stop(self):
         pass
 
 
     def check(self):
-        pass
+        # engine.get_continuous_capture()
+        # engine.track_continuous_object()
+        # self._engine.track_face()
+        self._engine.loop()

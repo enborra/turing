@@ -18,6 +18,10 @@ class VisualDetectionEngine(object):
     _tracking_state = None
     _track_window = None
     _hist = None
+    _is_face_isolated = False
+
+    _iteration_count_colortrack = 0
+    _time_last_face_find = None
 
 
     # ----------------------------------------------
@@ -49,7 +53,21 @@ class VisualDetectionEngine(object):
         self._camera_source = cv2.VideoCapture(0)
         print '[TURING.OS.OPTICS] Video capture enabled.'
 
-        cv2.namedWindow('camshift')
+        self._tracking_state = None
+        self._track_window = None
+        self._hist = None
+
+        if self._environment == 'simulated':
+            cv2.namedWindow('hist')
+            cv2.namedWindow('face')
+            cv2.namedWindow('camshift')
+            cv2.namedWindow('hsv')
+
+            cv2.moveWindow('face', 40, 500)
+            cv2.moveWindow('mask', 40, 700)
+            cv2.moveWindow('hsv', 40, 800)
+            cv2.moveWindow('camshift', 450, 100)
+            cv2.moveWindow('hist', 450, 850)
 
         self._tracking_state = 0
 
@@ -227,6 +245,226 @@ class VisualDetectionEngine(object):
         self._camera_source.release()
         cv2.destroyAllWindows()
 
+
+    def loop(self):
+        if self._is_face_isolated:
+            print 'Looping isolated color tracking..'
+
+            self._loop_isolated_face_track()
+        else:
+            print 'Looping face detection search..'
+
+            self._loop_detect_face()
+
+
+
+    def _loop_detect_face(self):
+        self.get_capture()
+
+        tracking_status = 'searching'
+
+        if self._environment == 'simulated':
+            cv2.imshow('camshift', self._current_source_frame)
+
+        self._current_detected_faces = self._cascades['face'].detectMultiScale(
+            self._current_source_frame,
+            scaleFactor=1.05,
+            minNeighbors=5,
+            minSize=(100, 100),
+            flags = cv2.CASCADE_SCALE_IMAGE,
+        )
+
+        if len(self._current_detected_faces) > 0:
+            print 'Found some faces.'
+
+            self._is_face_isolated = True
+
+            self._time_last_face_find = datetime.now()
+            tracking_status = 'face_found'
+            x, y, w, h = self._current_detected_faces[0]
+
+            start_y = y + (h/10)
+            end_y = y + h - (h/1.4)
+            start_x = x + (w/4)
+            end_x = x + w - (w/4)
+
+            face_capture = self._current_source_frame[ y : y+h, x : x+w]
+            face_capture_color = self._current_source_frame[ start_y : end_y, start_x : end_x ]
+
+            face_capture_color_blur = face_capture_color
+
+            lowest_h = 65
+            highest_h = 256
+
+            lowest_saturation = 55
+            highest_saturation = 256
+
+            lowest_intensity = 0
+            highest_intensity = 256
+
+            x, y, w, h = self._current_detected_faces[0]
+            self._track_window = (x, y, x+w, y+h)
+            iteration_count_colortrack = 0
+            is_still_tracking = True
+
+
+
+
+
+    def _loop_isolated_face_track(self):
+        lowest_h = 65
+        highest_h = 256
+
+        lowest_saturation = 55
+        highest_saturation = 256
+
+        lowest_intensity = 0
+        highest_intensity = 256
+
+        time_last_face_find = datetime.now()
+        tracking_status = 'face_found'
+        x, y, w, h = self._current_detected_faces[0]
+
+        start_y = y + (h/10)
+        end_y = y + h - (h/1.4)
+        start_x = x + (w/4)
+        end_x = x + w - (w/4)
+
+        self.get_capture()
+        self._current_source_frame = cv2.GaussianBlur(self._current_source_frame, (31, 31), 0)
+
+        vis = self._current_source_frame.copy()
+        hsv = cv2.cvtColor(self._current_source_frame, cv2.COLOR_BGR2HSV)
+
+        lower_bound = np.array((lowest_h, lowest_saturation, lowest_intensity))
+        upper_bound = np.array((highest_h, highest_saturation, highest_intensity))
+
+        # Bitmask out anything not in the min/max HSV range of the
+        # captured face frame region
+
+        mask = cv2.inRange(hsv, np.array((5.0, 60.0, 100.0)), np.array((100.0, 200.0, 255.0)))
+        # mask = cv2.inRange(hsv, lower_bound, upper_bound)
+
+        hsv_roi = hsv[y:y+h, x:x+w]
+        mask_roi = mask[y:y+h, x:x+w]
+
+        # hsv_roi = hsv
+        # mask_roi = mask
+
+        hist_bins = 120
+        hist_range = [0, 180]
+
+        # If grayscale img input, channel is 0.
+        # If color img input, channels 0, 1, 2 map to blue, green, and red
+
+        hist_channel = 0
+        self._hist = None
+
+        self._hist = cv2.calcHist( [hsv_roi], [hist_channel], mask_roi, [hist_bins], hist_range )
+        self._hist = cv2.normalize(self._hist, self._hist, 0, 200, cv2.NORM_MINMAX);
+
+        self._hist = self._hist.reshape(-1)
+
+        if self._environment == 'simulated':
+            cv2.imshow('mask', mask_roi)
+            cv2.imshow('hsv', hsv_roi)
+
+            self._show_hist()
+
+        vis_roi = vis[y:y+h, x:x+w]
+        # vis[mask == 0] = 0
+
+        back_projection_channel = 0
+        back_projection_range = [0, 180]
+        back_projection_scale = 1
+
+        prob = cv2.calcBackProject(
+            [hsv],
+            [back_projection_channel],
+            self._hist,
+            back_projection_range,
+            back_projection_scale
+        )
+
+        prob &= mask
+        term_crit = ( cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 1 )
+
+        track_box, self._track_window = cv2.CamShift(prob, self._track_window, term_crit)
+
+        # Draw original face discovery bounds
+
+        cv2.rectangle(
+            self._current_source_frame,         # canvas
+            (x, y),                             # start corner x,y
+            (x+w-1, y+h-1),                     # end corner x,y
+            (1, 1, 1),                          # color
+            1                                   # line thickness
+        )
+
+        try:
+            cv2.ellipse(self._current_source_frame, track_box, (150, 150, 150), 1)
+
+            start_pos, end_pos, rotation = track_box
+            center_x, center_y = start_pos
+            width_detect, height_detect = end_pos
+
+            start_x = int(center_x - (width_detect/2))
+            start_y = int(center_y - (height_detect/2))
+            end_x = int(center_x + (width_detect/2))
+            end_y = int(center_y + (height_detect/2))
+
+            seconds_tracking = (datetime.now() - self._time_last_face_find).total_seconds()
+
+            frame_height, frame_width = self._current_source_frame.shape[:2]
+
+            if width_detect < 100:
+                self._is_face_isolated = False
+
+            if seconds_tracking < 2:
+                if (start_x > (x+100)) or (start_x < x-100):
+                    self._is_face_isolated = False
+
+                if width_detect > ((x+w)*2):
+                    self._is_face_isolated = False
+
+            if height_detect > frame_height:
+                self._is_face_isolated = False
+
+            cv2.rectangle(
+                self._current_source_frame,     # canvas
+                (start_x, start_y),             # start corner x,y
+                (end_x, end_y),                 # end corner x,y
+                (255, 255, 255),                # color
+                2                               # line thickness
+            )
+
+            cv2.circle(self._current_source_frame, (30, 35), 10, (255, 255, 255), -1)
+            cv2.putText(self._current_source_frame, ('Tracking for ' + str(int(seconds_tracking)) + ' seconds'), (50, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255,255,255))
+
+            print 'Tracking for ' + str(int(seconds_tracking)) + ' seconds'
+
+        except Exception, e:
+            print 'Had a problem: ' + str(e)
+
+        if self._environment == 'simulated':
+            print 'displaying current render...' + str(self._iteration_count_colortrack)
+
+            cv2.imshow('camshift', self._current_source_frame)
+
+
+        if self._iteration_count_colortrack > 100:
+            self._iteration_count_colortrack = 0
+            self._is_face_isolated = False
+
+        else:
+            self._iteration_count_colortrack += 1
+
+
+
+
+
+
+
     def track_face(self):
         if self._environment == 'simulated':
             cv2.namedWindow('hist')
@@ -270,8 +508,6 @@ class VisualDetectionEngine(object):
                     if len(self._current_detected_faces)  > 0:
                         is_face_found = True
 
-                        print 'Found a face.'
-
                 time_last_face_find = datetime.now()
 
                 tracking_status = 'face_found'
@@ -304,7 +540,7 @@ class VisualDetectionEngine(object):
                 is_still_tracking = True
 
                 while (iteration_count_colortrack < 500) and is_still_tracking:
-                    # time.sleep(0.5)
+                    time.sleep(0.01)
 
                     _, self._current_source_frame = self._camera_source.read()
                     self._current_source_frame = cv2.GaussianBlur(self._current_source_frame, (31, 31), 0)
