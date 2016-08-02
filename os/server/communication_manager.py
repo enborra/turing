@@ -2,13 +2,14 @@ import sys
 import simplejson as json
 import Queue
 import threading
-from flask import Flask, Response, render_template
+from flask import Flask, Response, render_template, g
 
 from core.event_hook import EventHook
 
 
 class CommunicationManager(object):
     _queue = None
+    _queue_in = None
     _server_thread = None
     _app = None
     _config = {
@@ -41,8 +42,9 @@ class CommunicationManager(object):
 
     def start(self):
         self._queue = Queue.Queue(maxsize=1)
+        self._queue_in = Queue.Queue(maxsize=1)
 
-        self._server_thread = threading.Thread(target=self.serve_forever, args=(self._queue,))
+        self._server_thread = threading.Thread(target=self.serve_forever, args=(self._queue, self._queue_in))
         self._server_thread.setDaemon(True)
         self._server_thread.start()
         print "[TURING.OS.SERVER] Server running on %s and listening on %s" % (self._config['server_host'], self._config['server_port'])
@@ -50,6 +52,16 @@ class CommunicationManager(object):
     def stop(self):
         pass
 
+
+    def update_state(self, state_obj):
+        print 'QUEUE SIZE: ' + str(Queue.Queue.qsize(self._queue_in))
+
+        if self._queue_in.full():
+            self._queue_in.get()
+
+        self._queue_in.put(state_obj)
+
+        print '[TURING.OS.COMMS] Putting a request in queue for the web server thread.'
 
     def check(self):
         if self._queue.full():
@@ -61,15 +73,31 @@ class CommunicationManager(object):
                 print '[TURING.OS.SERVER] Had trouble in queue processing: ' + str(e)
 
 
-    def serve_forever(self, q):
+    def serve_forever(self, queue_out, queue_in):
+        # _current_state = None
+
 
         @self._app.route('/', defaults={'path':''})
         @self._app.route('/<path:path>')
         def http_response(path):
-            q.put(str(path))
+            queue_out.put(str(path))
+
+            if self._queue_in.full():
+                g._current_state = queue_in.get()
+
+                if not self._queue_in.full():
+                    self._queue_in.put(g._current_state)
+
+                print 'FOUND QUEUE REQUEST IN WEBSERVER: ' + str(g._current_state)
+
+            resp = ''
+
+            if '_current_state' in g:
+                resp = str(g._current_state)
+
 
             try:
-                resp_content = render_template('index.htm', currently_tracking_face=True)
+                resp_content = render_template('index.htm', currently_tracking_face=str(resp))
             except Exception, e:
                 resp_content = str(e)
 

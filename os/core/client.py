@@ -69,13 +69,20 @@ class Client(object):
         if self._optics:
             self._optics.start()
 
+        i = 0
+
         while is_running:
             time.sleep(0.00001)
 
             self._communicator.check()
             self._optics.check()
 
-            # self._communicator.update_state('asdf')
+            if i > 50:
+                self._communicator.update_state(str(i))
+                i = 0
+
+            else:
+                i += 1
 
     def stop(self):
         if self._communicator:
