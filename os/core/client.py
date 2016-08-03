@@ -4,6 +4,8 @@ import simplejson as json
 from server.communication_manager import CommunicationManager
 from optics.optics_manager import OpticsManager
 from core import Settings
+import rethinkdb as r
+from storage import Storable
 
 
 _environment = None
@@ -71,18 +73,15 @@ class Client(object):
 
         i = 0
 
+        s = Storable('turing')
+        s.upsert('active_state', {'key': 'system_state', 'val': 'booting'})
+        s.upsert('active_state', {'key': 'system_state', 'val': 'running'})
+
         while is_running:
             time.sleep(0.00001)
 
             self._communicator.check()
             self._optics.check()
-
-            if i > 50:
-                self._communicator.update_state(str(i))
-                i = 0
-
-            else:
-                i += 1
 
     def stop(self):
         if self._communicator:

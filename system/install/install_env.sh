@@ -7,7 +7,7 @@ if [ $EUID != 0 ]; then
     exit $?
 fi
 
-
+brew install rethinkdb
 
 # ------------------------------------------------------------------------------
 # DETECT CURRENT SYSTEM ENVIRONMENT

@@ -5,6 +5,9 @@ import threading
 from flask import Flask, Response, render_template, g
 
 from core.event_hook import EventHook
+import rethinkdb as r
+
+from storage import Storable
 
 
 class CommunicationManager(object):
@@ -53,15 +56,14 @@ class CommunicationManager(object):
         pass
 
 
-    def update_state(self, state_obj):
-        print 'QUEUE SIZE: ' + str(Queue.Queue.qsize(self._queue_in))
+    # def update_state(self, state_obj):
 
-        if self._queue_in.full():
-            self._queue_in.get()
+        # print 'QUEUE SIZE: ' + str(Queue.Queue.qsize(self._queue_in))
 
-        self._queue_in.put(state_obj)
-
-        print '[TURING.OS.COMMS] Putting a request in queue for the web server thread.'
+        # if self._queue_in.full():
+        #     self._queue_in.get()
+        #
+        # self._queue_in.put(state_obj)
 
     def check(self):
         if self._queue.full():
@@ -77,31 +79,63 @@ class CommunicationManager(object):
         # _current_state = None
 
 
-        @self._app.route('/', defaults={'path':''})
-        @self._app.route('/<path:path>')
-        def http_response(path):
-            queue_out.put(str(path))
+        @self._app.route('/')
+        def http_response():
+            queue_out.put('asdf')
 
-            if self._queue_in.full():
-                g._current_state = queue_in.get()
-
-                if not self._queue_in.full():
-                    self._queue_in.put(g._current_state)
-
-                print 'FOUND QUEUE REQUEST IN WEBSERVER: ' + str(g._current_state)
-
-            resp = ''
-
-            if '_current_state' in g:
-                resp = str(g._current_state)
-
+            system_state = None
 
             try:
-                resp_content = render_template('index.htm', currently_tracking_face=str(resp))
+                s = Storable('turing')
+                res = s.get('active_state', {'key': 'system_state'})
+
+                for doc in res:
+                    print str(doc['key']) + ': ' + str(doc['val'])
+
+                conn = r.connect('localhost', 28015)
+                system_state_obj = r.db('turing').table('active_state').filter({'key': 'system_state'}).run(conn)
+
+                for doc in system_state_obj:
+                    system_state = doc['val']
+
+            except Exception, e:
+                print 'errortown: ' + str(e)
+
+            try:
+                resp_content = render_template('index.htm', currently_tracking_face=str(system_state))
+
             except Exception, e:
                 resp_content = str(e)
 
             return resp_content
+
+        @self._app.route('/sleep')
+        def http_response_sleep():
+            resp = 'goodnight.'
+
+            try:
+                s = Storable('turing')
+                s.upsert('active_state', {'key': 'system_state', 'val': 'sleeping'})
+
+            except Exception, e:
+                print 'errortown: ' + str(e)
+                resp = 'Error: ' + str(e)
+
+            return Response(resp)
+
+        @self._app.route('/wake')
+        def http_response_wake():
+            resp = 'good morning!'
+
+            try:
+                s = Storable('turing')
+                s.upsert('active_state', {'key': 'system_state', 'val': 'running'})
+
+            except Exception, e:
+                print 'errortown: ' + str(e)
+                resp = 'Error: ' + str(e)
+
+            return Response(resp)
 
         self._app.run(
             host=self._config['server_host'],

@@ -4,3 +4,4 @@ numpy
 astral
 click
 flask
+rethinkdb

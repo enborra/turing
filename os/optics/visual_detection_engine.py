@@ -3,6 +3,7 @@ import numpy as np
 import cv2
 import time
 from datetime import datetime
+from storage import Storable
 
 
 class VisualDetectionEngine(object):
@@ -257,6 +258,9 @@ class VisualDetectionEngine(object):
 
         tracking_status = 'searching'
 
+        s = Storable('turing')
+        s.upsert('active_state', {'key': 'system_state', 'val': 'searching_for_person'})
+
         if self._environment == 'simulated':
             cv2.imshow('camshift', self._current_source_frame)
 
@@ -270,6 +274,9 @@ class VisualDetectionEngine(object):
 
         if len(self._current_detected_faces) > 0:
             self._is_face_isolated = True
+
+            s = Storable('turing')
+            s.upsert('active_state', {'key': 'system_state', 'val': 'tracking_person'})
 
             self._time_last_face_find = datetime.now()
             tracking_status = 'face_found'
