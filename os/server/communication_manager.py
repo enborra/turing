@@ -137,6 +137,28 @@ class CommunicationManager(object):
 
             return Response(resp)
 
+        @self._app.route('/api/camera')
+        def http_response_api_camera():
+            resp = ''
+
+            try:
+                s = Storable('turing')
+                resp = s.get('active_state', {'key': 'system_state'})
+
+                for doc in resp:
+                    resp = str(doc['val'])
+
+                conn = r.connect('localhost', 28015)
+                system_state_obj = r.db('turing').table('active_state').filter({'key': 'system_state'}).run(conn)
+
+                for doc in system_state_obj:
+                    system_state = doc['val']
+
+            except Exception, e:
+                print 'errortown: ' + str(e)
+
+            return Response(resp)
+
         self._app.run(
             host=self._config['server_host'],
             port=self._config['server_port']
