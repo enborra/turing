@@ -1,8 +1,10 @@
 import time
 import simplejson as json
 
+from core import BaseController
 from server.communication_manager import CommunicationManager
 from optics.optics_manager import OpticsManager
+from chasis import ChasisController
 from core import Settings
 import rethinkdb as r
 from storage import Storable
@@ -11,14 +13,20 @@ from storage import Storable
 _environment = None
 
 
-class Client(object):
+class Client(BaseController):
     _communicator = None
+    _chasis = None
+
     _is_running = None
     _environment = None
 
 
     def __init__(self):
-        print '[TURING] Initing client...'
+        self._class_output_id = 'turing.os'
+
+        self.output('Booting')
+
+        self._chasis = ChasisController()
 
         try:
             with open('os/config/core.json') as data_file:
@@ -61,7 +69,7 @@ class Client(object):
         print 'catching web request.'
 
     def start(self):
-        print '[TURING.OS] Starting..'
+        self.output('Starting up...')
 
         is_running = True
 

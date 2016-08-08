@@ -57,7 +57,6 @@ var DashboardApp = React.createClass({
 });
 
 var DashboardAppFactory = React.createFactory(DashboardApp);
-var start = new Date().getTime();
 
 
 $(document).ready(function(){

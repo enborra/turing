@@ -20,13 +20,14 @@ sys.excepthook = global_excepthook
 #
 
 def output_msg(msg):
-    print "[TURING.OS] %s" % msg
+    print "[TURING] %s" % msg
 
+
+output_msg('Booting')
 
 c = Client()
 
 try:
-    output_msg('Starting up.')
     c.start()
 
 

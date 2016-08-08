@@ -4,13 +4,14 @@ import Queue
 import threading
 from flask import Flask, Response, render_template, g
 
+from core import BaseController
 from core.event_hook import EventHook
 import rethinkdb as r
 
 from storage import Storable
 
 
-class CommunicationManager(object):
+class CommunicationManager(BaseController):
     _queue = None
     _queue_in = None
     _server_thread = None
@@ -22,6 +23,9 @@ class CommunicationManager(object):
 
 
     def __init__(self):
+        BaseController.__init__(self)
+
+        self._class_output_id = 'turing.os.server'
         self._app = Flask(__name__)
 
         self.on_request = EventHook()
@@ -40,7 +44,7 @@ class CommunicationManager(object):
                                 self._config['server_port'] = config_data['servers']['web']['port']
 
         except Exception, e:
-            print 'ERROR in CommunicationManager: ' + str(e)
+            self.output('ERROR: ' + str(e))
 
 
     def start(self):
@@ -50,20 +54,12 @@ class CommunicationManager(object):
         self._server_thread = threading.Thread(target=self.serve_forever, args=(self._queue, self._queue_in))
         self._server_thread.setDaemon(True)
         self._server_thread.start()
-        print "[TURING.OS.SERVER] Server running on %s and listening on %s" % (self._config['server_host'], self._config['server_port'])
+
+        self.output('Server running on %s and listening on %s' % (self._config['server_host'], self._config['server_port']))
 
     def stop(self):
         pass
 
-
-    # def update_state(self, state_obj):
-
-        # print 'QUEUE SIZE: ' + str(Queue.Queue.qsize(self._queue_in))
-
-        # if self._queue_in.full():
-        #     self._queue_in.get()
-        #
-        # self._queue_in.put(state_obj)
 
     def check(self):
         if self._queue.full():
@@ -72,13 +68,10 @@ class CommunicationManager(object):
 	        	    'path': self._queue.get()
         	    })
             except Exception, e:
-                print '[TURING.OS.SERVER] Had trouble in queue processing: ' + str(e)
+                self.output('Had trouble in queue processing: ' + str(e))
 
 
     def serve_forever(self, queue_out, queue_in):
-        # _current_state = None
-
-
         @self._app.route('/')
         def http_response():
             queue_out.put('asdf')
@@ -89,9 +82,6 @@ class CommunicationManager(object):
                 s = Storable('turing')
                 res = s.get('active_state', {'key': 'system_state'})
 
-                for doc in res:
-                    print str(doc['key']) + ': ' + str(doc['val'])
-
                 conn = r.connect('localhost', 28015)
                 system_state_obj = r.db('turing').table('active_state').filter({'key': 'system_state'}).run(conn)
 
@@ -99,7 +89,7 @@ class CommunicationManager(object):
                     system_state = doc['val']
 
             except Exception, e:
-                print 'errortown: ' + str(e)
+                self.output('errortown: ' + str(e))
 
             try:
                 resp_content = render_template('index.htm', currently_tracking_face=str(system_state))
@@ -118,7 +108,7 @@ class CommunicationManager(object):
                 s.upsert('active_state', {'key': 'system_state', 'val': 'sleeping'})
 
             except Exception, e:
-                print 'errortown: ' + str(e)
+                self.output('ERROR: ' + str(e))
                 resp = 'Error: ' + str(e)
 
             return Response(resp)
@@ -132,7 +122,8 @@ class CommunicationManager(object):
                 s.upsert('active_state', {'key': 'system_state', 'val': 'running'})
 
             except Exception, e:
-                print 'errortown: ' + str(e)
+                self.output('ERROR: ' + str(e))
+
                 resp = 'Error: ' + str(e)
 
             return Response(resp)
@@ -155,7 +146,7 @@ class CommunicationManager(object):
                     system_state = doc['val']
 
             except Exception, e:
-                print 'errortown: ' + str(e)
+                self.output('ERROR: ' + str(e))
 
             return Response(resp)
 

@@ -3,10 +3,12 @@ import numpy as np
 import cv2
 import time
 from datetime import datetime
+
+from core import BaseController
 from storage import Storable
 
 
-class VisualDetectionEngine(object):
+class VisualDetectionEngine(BaseController):
     _environment = None
     _camera_source = None
     _cascades = None
@@ -31,6 +33,10 @@ class VisualDetectionEngine(object):
 
 
     def __init__(self, environment=None):
+        BaseController.__init__(self)
+
+        self._class_output_id = 'turing.os.optics'
+
         self._environment = environment
 
         algorithm_dir = os.path.realpath(__file__ + '/../algorithms')
@@ -42,17 +48,15 @@ class VisualDetectionEngine(object):
             'mouth': cv2.CascadeClassifier(algorithm_dir+'/haarcascade_smile.xml'),
         }
 
-        print os.path.realpath(__file__ + '/../')
-
         if self._environment == 'onboard':
-            print '[TURING.OS.OPTICS] Running (onboard)'
+            self.output('Running (onboard)')
         else:
-            print '[TURING.OS.OPTICS] Running (simulated)'
+            self.output('Running (simulated)')
 
 
-        print '[TURING.OS.OPTICS] Starting video capture..'
+        self.output('Starting video capture')
         self._camera_source = cv2.VideoCapture(0)
-        print '[TURING.OS.OPTICS] Video capture enabled.'
+        self.output('Video capture enabled')
 
         self._tracking_state = None
         self._track_window = None
@@ -121,7 +125,7 @@ class VisualDetectionEngine(object):
                 is_face_found = True
 
         if is_face_found:
-            print "FOUND A FACE. TIME TO TRACK IT."
+            self.output('FOUND A FACE. TIME TO TRACK IT.')
 
         r = self._current_detected_faces[0]['y']
         h = self._current_detected_faces[0]['h']
@@ -183,9 +187,6 @@ class VisualDetectionEngine(object):
 
         avg_color_row = np.average(roi, axis=0)
         avg_color = np.average(avg_color_row, axis=0)
-
-        print avg_color
-
 
         mask = cv2.inRange(
             roi,
@@ -440,7 +441,7 @@ class VisualDetectionEngine(object):
             # print 'Tracking for ' + str(int(seconds_tracking)) + ' seconds'
 
         except Exception, e:
-            print 'Had a problem: ' + str(e)
+            self.output('Had a problem: ' + str(e))
 
         if self._environment == 'simulated':
             cv2.imshow('camshift', self._current_source_frame)
@@ -649,7 +650,7 @@ class VisualDetectionEngine(object):
                         cv2.putText(self._current_source_frame, ('Tracking for ' + str(int(seconds_tracking)) + ' seconds'), (50, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255,255,255))
 
                     except Exception, e:
-                        print 'Had a problem: ' + str(e)
+                        self.output('ERROR: ' + str(e))
 
                     if self._environment == 'simulated':
                         cv2.imshow('camshift', self._current_source_frame)
@@ -661,7 +662,7 @@ class VisualDetectionEngine(object):
 
 
             except Exception, e:
-                print 'ERROR: ' + str(e)
+                self.output('ERROR: ' + str(e))
 
 
 
