@@ -4,6 +4,8 @@
 #include "core/eyes/Eyes.h"
 
 
+#include "config/Pins.h"
+
 /* Lux sensor bits */
 
 #include <Wire.h>
@@ -22,13 +24,7 @@ Foreman _time;
 
 
 
-#define MOTOR_PWM_A A0
-#define MOTOR_PWM_B A1
 
-#define MOTOR_1 6
-#define MOTOR_2 7
-#define MOTOR_3 8  // working
-#define MOTOR_4 9  // working
 
 
 
@@ -52,23 +48,23 @@ void setup(void){
 
 	pinMode(13, OUTPUT);
 
-  pinMode(MOTOR_1, OUTPUT);
-  digitalWrite(MOTOR_1, LOW);
+  pinMode(PIN_CONFIG_MOTOR_1, OUTPUT);
+  digitalWrite(PIN_CONFIG_MOTOR_1, LOW);
 
-  pinMode(MOTOR_2, OUTPUT);
-  digitalWrite(MOTOR_2, LOW);
+  pinMode(PIN_CONFIG_MOTOR_2, OUTPUT);
+  digitalWrite(PIN_CONFIG_MOTOR_2, LOW);
 
-  pinMode(MOTOR_3, OUTPUT);
-  digitalWrite(MOTOR_3, LOW);
+  pinMode(PIN_CONFIG_MOTOR_3, OUTPUT);
+  digitalWrite(PIN_CONFIG_MOTOR_3, LOW);
 
-  pinMode(MOTOR_4, OUTPUT);
-  digitalWrite(MOTOR_4, LOW);
+  pinMode(PIN_CONFIG_MOTOR_4, OUTPUT);
+  digitalWrite(PIN_CONFIG_MOTOR_4, LOW);
 
-  pinMode(MOTOR_PWM_B, OUTPUT);
-  digitalWrite(MOTOR_PWM_B, LOW);
+  pinMode(PIN_CONFIG_MOTOR_PWM_B, OUTPUT);
+  digitalWrite(PIN_CONFIG_MOTOR_PWM_B, LOW);
 
-  pinMode(MOTOR_PWM_A, OUTPUT);
-  digitalWrite(MOTOR_PWM_A, LOW);
+  pinMode(PIN_CONFIG_MOTOR_PWM_A, OUTPUT);
+  digitalWrite(PIN_CONFIG_MOTOR_PWM_A, LOW);
 
 //  Serial.begin(115200);
   Serial.println("[MOTOR] Booting...");
@@ -106,33 +102,37 @@ int drive_counter = 0;
 
 void loop(void){
 
-  if( drive_counter < 30*1000 ){
-		if( drive_counter == 0 ){
-			moveMotor(true);
+	float val = (exp(sin(millis()/4000.0*PI)) - 0.36787944)*108.0;
+  _eyes.update(val);
 
-			/* Get a new sensor event */
-			sensors_event_t event;
-			tsl.getEvent(&event);
-
-			/* Display the results (light is measured in lux) */
-			if (event.light){
-				Serial.print(event.light); Serial.println(" lux");
-			} else {
-				/* If event.light = 0 lux the sensor is probably saturated
-					 and no reliable data could be generated! */
-				Serial.println("Sensor overload");
-			}
-		} else if( drive_counter == 10*1000 ){
-			moveMotor(false);
-		} else if( drive_counter > 20*1000 ){
-			stopMotor();
-		}
-
-
-		drive_counter += 1;
-  } else {
-		drive_counter = 0;
-	}
+  // if( drive_counter < 30*1000 ){
+	// 	if( drive_counter == 0 ){
+	// 		moveMotor(true);
+	//
+	// 		/* Get a new sensor event */
+	// 		sensors_event_t event;
+	// 		tsl.getEvent(&event);
+	//
+	// 		/* Display the results (light is measured in lux) */
+	// 		if (event.light){
+	// 			Serial.print(event.light); Serial.println(" lux");
+	// 		} else {
+	// 			/* If event.light = 0 lux the sensor is probably saturated
+	// 				 and no reliable data could be generated! */
+	// 			Serial.println("Sensor overload");
+	// 		}
+	// 	} else if( drive_counter == 10*1000 ){
+	// 		moveMotor(false);
+	//
+	// 	} else if( drive_counter > 20*1000 ){
+	// 		stopMotor();
+	// 	}
+	//
+	//
+	// 	drive_counter += 1;
+  // } else {
+	// 	drive_counter = 0;
+	// }
 
 	// Serial.println(drive_counter);
 
@@ -202,21 +202,21 @@ void configureSensor(void)
 
 
 void moveMotor(boolean direction){
-  digitalWrite(MOTOR_PWM_B, HIGH);
-  digitalWrite(MOTOR_PWM_A, HIGH);
+  digitalWrite(PIN_CONFIG_MOTOR_PWM_B, HIGH);
+  digitalWrite(PIN_CONFIG_MOTOR_PWM_A, HIGH);
 
   if( direction ){
-    digitalWrite(MOTOR_1, HIGH);
-    digitalWrite(MOTOR_2, LOW);
+    digitalWrite(PIN_CONFIG_MOTOR_1, HIGH);
+    digitalWrite(PIN_CONFIG_MOTOR_2, LOW);
 
-    digitalWrite(MOTOR_3, LOW);
-    digitalWrite(MOTOR_4, HIGH);
+    digitalWrite(PIN_CONFIG_MOTOR_3, LOW);
+    digitalWrite(PIN_CONFIG_MOTOR_4, HIGH);
   } else {
-    digitalWrite(MOTOR_1, LOW);
-    digitalWrite(MOTOR_2, HIGH);
+    digitalWrite(PIN_CONFIG_MOTOR_1, LOW);
+    digitalWrite(PIN_CONFIG_MOTOR_2, HIGH);
 
-    digitalWrite(MOTOR_3, HIGH);
-    digitalWrite(MOTOR_4, LOW);
+    digitalWrite(PIN_CONFIG_MOTOR_3, HIGH);
+    digitalWrite(PIN_CONFIG_MOTOR_4, LOW);
   }
 
   // digitalWrite(MOTOR_1, LOW);
@@ -230,14 +230,14 @@ void moveMotor(boolean direction){
 }
 
 void stopMotor(){
-	digitalWrite(MOTOR_1, LOW);
-	digitalWrite(MOTOR_2, LOW);
+	digitalWrite(PIN_CONFIG_MOTOR_1, LOW);
+	digitalWrite(PIN_CONFIG_MOTOR_2, LOW);
 
-	digitalWrite(MOTOR_3, LOW);
-	digitalWrite(MOTOR_4, LOW);
+	digitalWrite(PIN_CONFIG_MOTOR_3, LOW);
+	digitalWrite(PIN_CONFIG_MOTOR_4, LOW);
 
-	digitalWrite(MOTOR_PWM_B, LOW);
-	digitalWrite(MOTOR_PWM_A, LOW);
+	digitalWrite(PIN_CONFIG_MOTOR_PWM_B, LOW);
+	digitalWrite(PIN_CONFIG_MOTOR_PWM_A, LOW);
 }
 
 
@@ -251,13 +251,23 @@ void update_half_second(){
 
 void update_frame(){
 	long centimeters = _sensor_manager.get_proximity_front();
-	long brightness = 100 - centimeters*3;
+	// long brightness = 100 - centimeters*8;
 
-	if( brightness < 0 ){
-		brightness = 0;
-	} else if( brightness >= 90 ){
-		Serial.println( _sensor_manager.get_temperature() );
+	if( ((centimeters>5) && (centimeters<10)) || (centimeters > 14) ){
+		stopMotor();
+	} else if( centimeters > 10){
+		moveMotor(true);
+	} else if( centimeters < 5 ){
+		moveMotor(false);
 	}
 
-	_eyes.update(brightness);
+	// if( brightness < 0 ){
+	// 	brightness = 0;
+	// } else if( brightness >= 90 ){
+	// 	// Serial.println( _sensor_manager.get_temperature() );
+	// }
+
+	// _eyes.update(brightness);
+
+	// _eyes.update(100);
 }
