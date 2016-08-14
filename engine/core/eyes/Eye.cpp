@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "Eyes.h"
+#include "Eye.h"
 
 
 /*
@@ -9,18 +9,22 @@ PUBLIC FUNCTIONS
 */
 
 
-Eyes::Eyes(){
+int Eye::_pin_pixel;
+Adafruit_NeoPixel Eye::_pixels;
+
+
+Eye::Eye(){
 	/* Do nothing */
 }
 
-void Eyes::init(){
+void Eye::init(){
 	_pin_pixel = 3;
 	_pixels = Adafruit_NeoPixel(7, _pin_pixel, NEO_GRB + NEO_KHZ800);
 	_pixels.begin();
 	_pixels.show();
 }
 
-void Eyes::update(long brightness){
+void Eye::update(long brightness){
 	_pixels.setPixelColor(0, brightness, brightness, brightness);
 	_pixels.setPixelColor(1, brightness, brightness, brightness);
 	_pixels.setPixelColor(2, brightness, brightness, brightness);
