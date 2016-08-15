@@ -1,4 +1,9 @@
+/* Third party includes */
+
 #include <Arduino.h>
+
+/* Class includes */
+
 #include "Eye.h"
 
 
