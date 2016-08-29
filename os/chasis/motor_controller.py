@@ -1,5 +1,4 @@
-from core import BaseController
-from core.event_hook import EventHook
+from framework import BaseController, EventHook
 
 
 class MotorController(BaseController):

@@ -1,7 +1,7 @@
 import time
 import simplejson as json
 
-from core import BaseController
+from framework import BaseController
 from server.communication_manager import CommunicationManager
 from optics.optics_manager import OpticsManager
 from chasis import ChasisController

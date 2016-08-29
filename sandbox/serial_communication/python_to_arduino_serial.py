@@ -1,5 +1,7 @@
 import serial
 import time
+import simplejson as json
+
 
 ser = serial.Serial('/dev/cu.usbmodem1411', 115200)
 
@@ -10,10 +12,21 @@ while 1:
     if not pending_response:
         print 'Writing to serial: ' + str(i)
 
-        ser.write(str(i) + '\n')
-        pending_response = True
+        if str(i).startswith('1'):
+            ser.write('motor_status\n')
+            pending_response = True
 
-        # time.sleep(2)
+        elif str(i).startswith('2'):
+            ser.write('battery_status\n')
+            pending_response = True
+
+        elif str(i).startswith('3'):
+            ser.write('action_drive_forward\n')
+            pending_response = True
+
+        else:
+            ser.write(str(i) + '\n')
+            pending_response = True
 
     else:
         if ser.inWaiting() > 0:
@@ -26,9 +39,20 @@ while 1:
             elif resp == 'r2d2':
                 print 'FOUND AN R2D2 RESPONSE.'
 
+            else:
+                try:
+                    resp_obj = json.loads(resp)
+
+                    print 'Motor status is: ' + resp_obj['motor']['status']
+
+                except Exception, e:
+                    print 'poof.'
+
             pending_response = False
 
             # print 'checking'
 
 
             i = i + 1
+
+            time.sleep(2)
