@@ -12,33 +12,33 @@
 
 	class SensorMonitor {
 		protected:
-			Adafruit_10DOF _dof;
-			Adafruit_LSM303_Accel_Unified _accel;
-			Adafruit_LSM303_Mag_Unified _mag;
-			Adafruit_BMP085_Unified _bmp;
-			Adafruit_TSL2561_Unified _tsl;
+			static Adafruit_10DOF _dof;
+			static Adafruit_LSM303_Accel_Unified _accel;
+			static Adafruit_LSM303_Mag_Unified _mag;
+			static Adafruit_BMP085_Unified _bmp;
+			static Adafruit_TSL2561_Unified _tsl;
 
-			float _sea_level_pressure;
+			static float _sea_level_pressure;
 
-			void _update_acceleration();
-			void _update_compass();
-			void _update_altitude();
-			void _update_lux();
-			void _update_distance();
+			static void _update_acceleration();
+			static void _update_compass();
+			static void _update_altitude();
+			static void _update_lux();
+			static void _update_distance();
 
-			long _microsecondsToInches(long microseconds);
-			long _microsecondsToCentimeters(long microseconds);
-			long _microsecondsToFeet(long microseconds);
+			static long _microsecondsToInches(long microseconds);
+			static long _microsecondsToCentimeters(long microseconds);
+			static long _microsecondsToFeet(long microseconds);
 
 
 		public:
 			SensorMonitor();
 
-			void init();
-			void update();
+			static void init();
+			static void update();
 
-			long get_proximity_front();
-			long get_temperature();
+			static long get_proximity_front();
+			static long get_temperature();
 	};
 
 #endif

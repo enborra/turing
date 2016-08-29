@@ -4,7 +4,7 @@ import Queue
 import threading
 from flask import Flask, Response, render_template, g
 
-from core import BaseController
+from framework import BaseController
 from core.event_hook import EventHook
 import rethinkdb as r
 

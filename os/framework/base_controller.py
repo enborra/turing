@@ -9,4 +9,4 @@ class BaseController(object):
         pass
 
     def output(self, msg):
-        print '[' + self._class_output_id.upper() + '] ' + msg
+        print('[' + self._class_output_id.upper() + '] ' + msg)

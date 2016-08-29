@@ -1,21 +1,24 @@
 #include <Arduino.h>
+#include "../../config/I2C.h"
 #include "SensorMonitor.h"
 
 
 /*
---------------------------------------------------------
+----------------------------------------------------------------------------------------------------
 PUBLIC FUNCTIONS
---------------------------------------------------------
+----------------------------------------------------------------------------------------------------
 */
 
 
-SensorMonitor::SensorMonitor() : 
-	_dof(),
-	_accel(30301),
-	_mag(30302),
-	_bmp(18001),
-	_tsl(TSL2561_ADDR_FLOAT, 12345)
-{
+Adafruit_LSM303_Accel_Unified	SensorMonitor::_accel(CONFIG_I2C_LSM303_ACCEL);
+Adafruit_LSM303_Mag_Unified		SensorMonitor::_mag(CONFIG_I2C_LSM303_COMPASS);
+Adafruit_BMP085_Unified			SensorMonitor::_bmp(CONFIG_I2C_BMP085_BAROMETRIC);
+Adafruit_TSL2561_Unified		SensorMonitor::_tsl(TSL2561_ADDR_FLOAT, CONFIG_I2C_TSL2561_LUX);
+Adafruit_10DOF					SensorMonitor::_dof;
+float							SensorMonitor::_sea_level_pressure;
+
+
+SensorMonitor::SensorMonitor(){
 	/* Do nothing */
 }
 
@@ -23,29 +26,27 @@ void SensorMonitor::init(){
 	_sea_level_pressure = SENSORS_PRESSURE_SEALEVELHPA;
 
 	if( !_accel.begin() ){
-		Serial.println(F("Ooops, no LSM303 detected ... Check your wiring!"));
+		Serial.println(F("[SENSOR] Ooops, no LSM303 detected ... Check your wiring!"));
 	}
 
 	if( !_mag.begin() ){
-		Serial.println("Ooops, no LSM303 detected ... Check your wiring!");
+		Serial.println("[SENSOR] Ooops, no LSM303 detected ... Check your wiring!");
 	}
 
 	if( !_bmp.begin() ){
-		Serial.println("Ooops, no BMP180 detected ... Check your wiring!");
+		Serial.println("[SENSOR] Ooops, no BMP180 detected ... Check your wiring!");
 	}
-
-	/* Set up light detection */
 
 	_tsl.enableAutoRange(true);
 	_tsl.setIntegrationTime(TSL2561_INTEGRATIONTIME_13MS);
 
 	if( !_tsl.begin() ){
-	    Serial.print("Ooops, no TSL2561 detected ... Check your wiring or I2C ADDR!");
+	    Serial.print("[SENSOR] Ooops, no TSL2561 detected ... Check your wiring or I2C ADDR!");
 	}
 }
 
 void SensorMonitor::update(){
-	Serial.println("[CHEWBACCA] Updating..");
+	Serial.println("[SENSOR] Updating..");
 
 	_update_acceleration();
 	_update_compass();
@@ -63,12 +64,10 @@ void SensorMonitor::_update_acceleration(){
 	_accel.getEvent(&accel_event);
 
 	if( _dof.accelGetOrientation(&accel_event, &orientation) ){
-		/* 'orientation' should have valid .roll and .pitch fields */
-
-		Serial.print(F("Roll: "));
+		Serial.print(F("[SENSOR] Roll: "));
 		Serial.print(orientation.roll);
 		Serial.println(F("; "));
-		Serial.print(F("Pitch: "));
+		Serial.print(F("[SENSOR] Pitch: "));
 		Serial.print(orientation.pitch);
 		Serial.println(F("; "));
 	}
@@ -80,8 +79,8 @@ void SensorMonitor::_update_compass(){
 
 	_mag.getEvent(&mag_event);
 
-	if( _dof.magGetOrientation(SENSOR_AXIS_Z, &mag_event, &orientation) ){    
-		Serial.print(F("Heading: "));
+	if( _dof.magGetOrientation(SENSOR_AXIS_Z, &mag_event, &orientation) ){
+		Serial.print(F("[SENSOR] Heading: "));
 		Serial.print(orientation.heading);
 		Serial.println(F("; "));
 	}
@@ -96,11 +95,24 @@ void SensorMonitor::_update_lux(){
 	_tsl.getEvent(&event);
 
 	if( event.light ){
-		Serial.print("Lux: ");
+		Serial.print("[SENSOR] Lux: ");
 		Serial.println(event.light);
 	} else {
-		Serial.println("Sensor overload");
+		Serial.println("[SENSOR] Sensor overload");
 	}
+
+	// sensor_t sensor;
+	//
+	// tsl.getSensor(&sensor);
+	// Serial.println("------------------------------------");
+	// Serial.print  ("Sensor:       "); Serial.println(sensor.name);
+	// Serial.print  ("Driver Ver:   "); Serial.println(sensor.version);
+	// Serial.print  ("Unique ID:    "); Serial.println(sensor.sensor_id);
+	// Serial.print  ("Max Value:    "); Serial.print(sensor.max_value); Serial.println(" lux");
+	// Serial.print  ("Min Value:    "); Serial.print(sensor.min_value); Serial.println(" lux");
+	// Serial.print  ("Resolution:   "); Serial.print(sensor.resolution); Serial.println(" lux");
+	// Serial.println("------------------------------------");
+	// Serial.println("");
 }
 
 void SensorMonitor::_update_distance(){
@@ -112,20 +124,20 @@ void SensorMonitor::_update_distance(){
 
 	duration = get_proximity_front();
 
-	Serial.print("Microseconds away: ");
+	Serial.print("[SENSOR] Microseconds away: ");
 	Serial.println(duration);
 
 	cm = _microsecondsToCentimeters(duration);
 	inches = _microsecondsToInches(duration);
 	feet = _microsecondsToFeet(duration);
 
-	Serial.print("Centimeters: ");
+	Serial.print("[SENSOR] Centimeters: ");
 	Serial.println(cm);
 
-	Serial.print("Inches:  ");
+	Serial.print("[SENSOR] Inches:  ");
 	Serial.println(inches);
 
-	Serial.print("Feet:  ");
+	Serial.print("[SENSOR] Feet:  ");
 	Serial.println(feet);
 }
 
@@ -200,4 +212,3 @@ long SensorMonitor::_microsecondsToCentimeters(long microseconds) {
 long SensorMonitor::_microsecondsToFeet(long microseconds){
 	return microseconds / 74 / 2 / 12;
 }
-
