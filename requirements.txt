@@ -5,3 +5,4 @@ astral
 click
 flask
 rethinkdb
+PIL
