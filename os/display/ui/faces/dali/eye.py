@@ -1,7 +1,7 @@
 from PIL import Image
 from PIL import ImageDraw
 
-from shape import Shape
+from display.ui.shape import Shape
 
 
 
@@ -10,7 +10,7 @@ class Eye(Shape):
     y = 0
 
     _blink_wait_count = 0
-    renderer = None
+    parent_renderer = None
 
 
     def __init__(self, parent_renderer=None, x_pos=0, y_pos=0):
@@ -22,9 +22,6 @@ class Eye(Shape):
         self.height = 50
 
     def render(self):
-        print('Rendering eye.')
-
-
         if self._blink_wait_count > 23 and self._blink_wait_count <= 25:
             self._blink_wait_count += 1
 
@@ -33,6 +30,5 @@ class Eye(Shape):
 
         else:
             self.renderer.ellipse((self.y, self.x, self.y+self.height, self.x+self.width), fill=(255,255,255))
-            self.renderer.ellipse((0, 0, 100, 100), fill=(255,255,0))
 
             self._blink_wait_count += 1
