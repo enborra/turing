@@ -23,10 +23,6 @@ class DisplayDriver(object):
     _REFRESH_SPEED = 64000000
     _image = None
     _disp = None
-
-
-    _eye_left = None
-    _eye_right = None
     _face = None
 
 

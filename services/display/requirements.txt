@@ -1,3 +1,4 @@
 flask
 simplejson
 paho-mqtt
+git+https://github.com/adafruit/Adafruit_Python_GPIO
