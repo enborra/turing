@@ -1,7 +1,14 @@
 {
   "name": "service-central-station",
+  "description": "Central messaging service for Turing bot",
+  "license": "UNLICENSED",
   "version": "1.0.0",
   "main": "boot.js",
+
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/enborra/turing"
+  },
 
   "scripts": {
     "start": "node boot.js"

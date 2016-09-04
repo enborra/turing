@@ -2,7 +2,7 @@
 
 # ------------------------------------------------------------------------------
 #
-# BOOTER: CENTRAL STATION
+# BOOTER: DISPLAY
 #
 # USAGE:
 #     Force dependencies install: sh boot.sh -i true
@@ -17,7 +17,7 @@ install_requirements=true
 # If the install command-line param is null, go ahead with install of all
 # requirements.txt dependencies
 
-echo "[CENTRALSTATION] Booting."
+echo "[DISPLAY] Booting."
 
 # Use getopts to pull the -i param from the commandline, to determine whether
 # requirements install is being requested or explicityly denied
@@ -40,16 +40,16 @@ fi
 # install procedure before running.
 
 if $install_requirements; then
-  echo "[CENTRALSTATION] Installing system requirements."
-  npm install > logs/runtime_output.txt 2> logs/runtime_errors.txt
+  echo "[DISPLAY] Installing system requirements."
+  sudo pip install -r requirements.txt > logs/runtime_output.txt 2> logs/runtime_errors.txt
 
 else
-  echo "[CENTRALSTATION] Skipping system requirements install."
+  echo "[DISPLAY] Skipping system requirements install."
 
 fi
 
 # Run the service
 
-echo "[CENTRALSTATION] Starting service."
+echo "[DISPLAY] Starting service."
 
-npm start
+python boot.py
