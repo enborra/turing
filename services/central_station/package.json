@@ -1,0 +1,13 @@
+{
+  "name": "service-central-station",
+  "version": "1.0.0",
+  "main": "boot.js",
+
+  "scripts": {
+    "start": "node boot.js"
+  },
+
+  "dependencies": {
+    "mosca": "*"
+  }
+}
