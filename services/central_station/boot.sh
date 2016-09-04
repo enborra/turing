@@ -41,7 +41,7 @@ fi
 
 if $install_requirements; then
   echo "[CENTRALSTATION] Installing system requirements."
-  npm install > logs/runtime_output.txt 2> logs/runtime_errors.txt
+  sudo npm install > logs/runtime_output.txt 2> logs/runtime_errors.txt
 
 else
   echo "[CENTRALSTATION] Skipping system requirements install."
