@@ -10,6 +10,8 @@ server.on('ready', setup);
 server.on('published', recieve);
 
 
+console.log( "Started.");
+
 function recieve(packet, client){
   console.log( 'Published', packet.payload.toString() );
 }

@@ -1,0 +1,10 @@
+[Unit]
+Description=Dali Central Station Instance
+
+[Service]
+ExecStart=/usr/local/projects/turing/services/central_station/boot.sh
+StandardOutput=null
+
+[Install]
+WantedBy=multi-user.target
+Alias=centralstation.service

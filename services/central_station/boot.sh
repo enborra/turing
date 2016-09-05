@@ -41,7 +41,7 @@ fi
 
 if $install_requirements; then
   echo "[CENTRALSTATION] Installing system requirements."
-  sudo npm install > logs/runtime_output.txt 2> logs/runtime_errors.txt
+  npm install
 
 else
   echo "[CENTRALSTATION] Skipping system requirements install."
@@ -52,4 +52,7 @@ fi
 
 echo "[CENTRALSTATION] Starting service."
 
-npm start
+PATH_BIN_NODE="/usr/local/bin/node"
+PATH_APP="$HOME/projects/turing"
+
+"$PATH_BIN_NODE" /usr/local/projects/turing/services/central_station/boot.js
