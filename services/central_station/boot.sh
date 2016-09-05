@@ -55,4 +55,8 @@ echo "[CENTRALSTATION] Starting service."
 PATH_BIN_NODE="/usr/local/bin/node"
 PATH_APP="$HOME/projects/turing"
 
-"$PATH_BIN_NODE" /usr/local/projects/turing/services/central_station/boot.js
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+cd "$DIR/app"
+
+sudo npm start
