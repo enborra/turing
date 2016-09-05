@@ -1,0 +1,11 @@
+Downloading/unpacking git+https://github.com/adafruit/Adafruit_Python_GPIO (from -r requirements.txt (line 4))
+  Cloning https://github.com/adafruit/Adafruit_Python_GPIO to /tmp/pip-h2winW-build
+  Running setup.py (path:/tmp/pip-h2winW-build/setup.py) egg_info for package from git+https://github.com/adafruit/Adafruit_Python_GPIO
+    
+  Requirement already satisfied (use --upgrade to upgrade): Adafruit-GPIO==1.0.0 from git+https://github.com/adafruit/Adafruit_Python_GPIO in /usr/local/lib/python2.7/dist-packages/Adafruit_GPIO-1.0.0-py2.7.egg (from -r requirements.txt (line 4))
+Requirement already satisfied (use --upgrade to upgrade): flask in /usr/local/lib/python2.7/dist-packages (from -r requirements.txt (line 1))
+Requirement already satisfied (use --upgrade to upgrade): simplejson in /usr/local/lib/python2.7/dist-packages (from -r requirements.txt (line 2))
+Requirement already satisfied (use --upgrade to upgrade): paho-mqtt in /usr/local/lib/python2.7/dist-packages (from -r requirements.txt (line 3))
+Requirement already satisfied (use --upgrade to upgrade): adafruit-pureio in /usr/local/lib/python2.7/dist-packages/Adafruit_PureIO-0.2.0-py2.7.egg (from Adafruit-GPIO==1.0.0->-r requirements.txt (line 4))
+Requirement already satisfied (use --upgrade to upgrade): spidev in /usr/lib/python2.7/dist-packages (from Adafruit-GPIO==1.0.0->-r requirements.txt (line 4))
+Cleaning up...

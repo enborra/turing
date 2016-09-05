@@ -11,6 +11,7 @@ import Adafruit_GPIO as GPIO
 import Adafruit_GPIO.SPI as SPI
 
 import paho.mqtt.client as mqtt
+from ui.faces.dali import DaliFace
 
 
 class DisplayService(object):
@@ -24,6 +25,7 @@ class DisplayService(object):
     _REFRESH_SPEED = 64000000
     _image = None
     _disp = None
+    _face = None
 
 
     def __init__(self):
@@ -42,16 +44,27 @@ class DisplayService(object):
         self._image = Image.new('RGB', (240,320))
         self._renderer = ImageDraw.Draw(self._image)
 
-
+        self._face = DaliFace(self._renderer)
+        self._face.start()
 
         while True:
             self.update()
 
-    def update(self):
-        self._comm_client.loop()
+    _comm_delay = 0
 
-        self._renderer.rectangle((0,0,240,320), fill=(0,0,0))
+    def update(self):
+        if self._comm_delay > 60:
+            self._comm_client.loop()
+            self._comm_delay = 0
+
+        else:
+            self._comm_delay += 1
+
+        self._face.render()
         self._disp.display(self._image)
+
+
+
 
 
 
@@ -64,6 +77,8 @@ class DisplayService(object):
 
     def _on_message(self, client, userdata, msg):
         print 'GOT MESSAGE (qos=' + str(msg.qos) + ', topic=' + str(msg.topic) + '): ' + str(msg.payload)
+
+        self._face.blink()
 
     def _on_publish(self, mosq, obj, mid):
         print 'mid: ' + str(mid)

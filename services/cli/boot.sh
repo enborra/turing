@@ -52,10 +52,10 @@ fi
 PATH_BIN="/usr/local/bin"
 PATH_BIN_CLI_ALIAS="$PATH_BIN/turing"
 
-PATH_APP="$HOME/projects/turing"
-PATH_APP_CLI="$PATH_APP/os/cli/cli.py"
-PATH_STARTUP_SCRIPT="$PATH_APP/system/run/turing_boot.sh"
-PATH_SHUTDOWN_SCRIPT="$PATH_APP/system/run/turing_stop.sh"
+PATH_APP="$HOME/projects/turing/services/cli"
+PATH_APP_CLI="$PATH_APP/cli.py"
+PATH_STARTUP_SCRIPT="$PATH_APP/system/turing_boot.sh"
+PATH_SHUTDOWN_SCRIPT="$PATH_APP/system/turing_stop.sh"
 
 # If a file exists at the intended cli alias location,
 # remove that file and re-create the alias needed for
@@ -73,7 +73,7 @@ if [ -e "$PATH_BIN_CLI_ALIAS" ]; then
   if [ -h "$PATH_BIN_CLI_ALIAS" ]; then
     PATH_BIN_ALIAS_REALPATH=$(readlink "$PATH_BIN_CLI_ALIAS")
 
-    if [ "$PATH_BIN_ALIAS_REALPATH" == "$PATH_APP_CLI" ]; then
+    if [ "$PATH_BIN_ALIAS_REALPATH" = "$PATH_APP_CLI" ]; then
       echo "--CLI alias confirmed."
     else
       echo "--Alias is a symlink, but pointing to the wrong location."
@@ -96,7 +96,12 @@ if $DOES_ALIAS_REQUIRE_CREATION; then
 
   # Set CLI alias and access permissions for script
 
-  sudo ln -s "$PATH_APP/os/cli/cli.py" "$PATH_BIN/turing"
+  echo "********"
+  echo $PATH_APP_CLI
+  echo $PATH_BIN_CLI_ALIAS
+  echo "********"
+
+  sudo ln -sf "$PATH_APP_CLI" "$PATH_BIN_CLI_ALIAS"
   chmod +x "$PATH_BIN_CLI_ALIAS"
 fi
 

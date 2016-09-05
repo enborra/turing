@@ -29,8 +29,8 @@ while getopts i: opts; do
   esac
 done
 
-if [[ -n "$param_install" ]]; then
-  if [[ "$param_install" = "false" ]]; then
+if [ -n "$param_install" ]; then
+  if [ "$param_install" = "false" ]; then
     install_requirements=false
 
   fi
