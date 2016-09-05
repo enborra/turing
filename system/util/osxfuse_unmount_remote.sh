@@ -1,1 +1,1 @@
-umount -f /Users/andres/Desktop/pi
+umount -f /Users/andres/projects/dolly-proxy
