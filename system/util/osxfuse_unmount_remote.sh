@@ -1,1 +1,1 @@
-umount -f /Users/andres/projects/dolly-proxy
+sudo umount -f /Users/andres/projects/dolly-proxy
