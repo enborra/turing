@@ -11,6 +11,12 @@
 # ------------------------------------------------------------------------------
 
 
+PATH_BIN_NPM="/usr/local/bin/npm"
+PATH_BIN_NODE="/usr/local/bin/node"
+
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PATH_APP="$CURRENT_DIR/app"
+
 param_install=""
 install_requirements=true
 
@@ -18,6 +24,7 @@ install_requirements=true
 # requirements.txt dependencies
 
 echo "[CENTRALSTATION] Booting."
+cd "$PATH_APP"
 
 # Use getopts to pull the -i param from the commandline, to determine whether
 # requirements install is being requested or explicityly denied
@@ -41,7 +48,7 @@ fi
 
 if $install_requirements; then
   echo "[CENTRALSTATION] Installing system requirements."
-  npm install
+  $PATH_BIN_NPM install
 
 else
   echo "[CENTRALSTATION] Skipping system requirements install."
@@ -52,11 +59,7 @@ fi
 
 echo "[CENTRALSTATION] Starting service."
 
-PATH_BIN_NODE="/usr/local/bin/node"
-PATH_APP="$HOME/projects/turing"
+$PATH_BIN_NODE -v
+$PATH_BIN_NPM -v
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
-cd "$DIR/app"
-
-sudo npm start
+sudo $PATH_BIN_NPM start

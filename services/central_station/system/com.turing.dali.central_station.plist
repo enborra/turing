@@ -13,8 +13,8 @@
 	<string>com.turing.dali.central_station</string>
 	<key>ProgramArguments</key>
 	<array>
-		<string>/usr/local/bin/node</string>
-		<string>/usr/local/projects/turing/services/central_station/boot.js</string>
+		<string>/bin/bash</string>
+		<string>/Users/andres/projects/turing/services/central_station/boot.sh</string>
 	</array>
 	<key>RunAtLoad</key>
 	<true/>
