@@ -18,7 +18,7 @@ CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PATH_APP="$CURRENT_DIR/app"
 
 param_install=""
-install_requirements=true
+install_requirements=false
 
 # If the install command-line param is null, go ahead with install of all
 # requirements.txt dependencies
