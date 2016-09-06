@@ -32,6 +32,7 @@ class Eye(Shape):
             self._blink_wait_count = 0
 
         else:
-            self.renderer.ellipse((self.y, self.x, self.y+self.height, self.x+self.width), fill=(255,255,255))
+            if self.renderer:
+                self.renderer.ellipse((self.y, self.x, self.y+self.height, self.x+self.width), fill=(255,255,255))
 
             self._blink_wait_count += 1

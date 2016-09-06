@@ -11,13 +11,20 @@
 # ------------------------------------------------------------------------------
 
 
+PATH_BIN_PYTHON="/usr/bin/python"
+PATH_BIN_PIP="$(which pip)"
+
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PATH_APP="$CURRENT_DIR/app"
+
 param_install=""
-install_requirements=true
+install_requirements=false
 
 # If the install command-line param is null, go ahead with install of all
 # requirements.txt dependencies
 
 echo "[DISPLAY] Booting."
+cd "$PATH_APP"
 
 # Use getopts to pull the -i param from the commandline, to determine whether
 # requirements install is being requested or explicityly denied
@@ -41,7 +48,7 @@ fi
 
 if $install_requirements; then
   echo "[DISPLAY] Installing system requirements."
-  sudo pip install -r requirements.txt > logs/runtime_output.txt 2> logs/runtime_errors.txt
+  sudo $PATH_BIN_PIP install -r requirements.txt > logs/runtime_output.txt 2> logs/runtime_errors.txt
 
 else
   echo "[DISPLAY] Skipping system requirements install."
@@ -52,4 +59,4 @@ fi
 
 echo "[DISPLAY] Starting service."
 
-python boot.py
+$PATH_BIN_PYTHON boot.py

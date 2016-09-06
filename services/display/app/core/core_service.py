@@ -1,5 +1,5 @@
 
-import os
+import os, platform
 import time
 import sys
 
@@ -13,8 +13,12 @@ import Adafruit_GPIO.SPI as SPI
 import paho.mqtt.client as mqtt
 from ui.faces.dali import DaliFace
 
+if platform.system().lower() == 'darwin':
+    print 'RUNNING ON OSX. CAN\'T RUN DISPLAY.'
+
 
 class DisplayService(object):
+    _environment = None
     _comm_client = None
 
     _canvas = None
@@ -24,6 +28,7 @@ class DisplayService(object):
     _SPI_DEVICE = 0
     _REFRESH_SPEED = 64000000
     _image = None
+    _renderer = None
     _disp = None
     _face = None
 
@@ -35,14 +40,18 @@ class DisplayService(object):
         self._comm_client.on_publish = self._on_publish
         self._comm_client.on_subscribe = self._on_subscribe
 
+        if platform.system().lower() == 'darwin':
+            self._environment = 'SIMULATED'
+
     def start(self):
         self._comm_client.connect('localhost', 1883, 60)
 
-        self._disp = TFT( self._DC, rst=self._RST, spi=SPI.SpiDev(self._SPI_PORT, self._SPI_DEVICE, max_speed_hz=self._REFRESH_SPEED))
-        self._disp.begin()
+        if self._environment == 'ONBOARD':
+            self._disp = TFT( self._DC, rst=self._RST, spi=SPI.SpiDev(self._SPI_PORT, self._SPI_DEVICE, max_speed_hz=self._REFRESH_SPEED))
+            self._disp.begin()
 
-        self._image = Image.new('RGB', (240,320))
-        self._renderer = ImageDraw.Draw(self._image)
+            self._image = Image.new('RGB', (240,320))
+            self._renderer = ImageDraw.Draw(self._image)
 
         self._face = DaliFace(self._renderer)
         self._face.start()
@@ -61,7 +70,8 @@ class DisplayService(object):
             self._comm_delay += 1
 
         self._face.render()
-        self._disp.display(self._image)
+        if self._environment == 'ONBOARD':
+            self._disp.display(self._image)
 
 
 

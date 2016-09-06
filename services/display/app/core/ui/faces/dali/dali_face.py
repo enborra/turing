@@ -25,7 +25,8 @@ class DaliFace(object):
         self._eye_right.blink()
 
     def render(self):
-        self.renderer.rectangle((0,0,240,320), fill=(0,0,0))
+        if self.renderer:
+            self.renderer.rectangle((0,0,240,320), fill=(0,0,0))
 
         e_left = self._eye_left.render()
         e_right = self._eye_right.render()
