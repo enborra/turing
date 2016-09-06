@@ -68,13 +68,6 @@ echo "[INSTALLER] Creating symlink at $PATH_BIN_CLI_ALIAS"
 
 # Set CLI alias and access permissions for script
 
-echo "********"
-echo $TURING_APP_DIR
-echo $CURRENT_DIR
-echo $PATH_APP_CLI
-echo $PATH_BIN_CLI_ALIAS
-echo "********"
-
 sudo ln -sf "$PATH_APP_CLI" "$PATH_BIN_CLI_ALIAS"
 chmod +x "$PATH_BIN_CLI_ALIAS"
 
