@@ -42,6 +42,8 @@ class DisplayService(object):
 
         if platform.system().lower() == 'darwin':
             self._environment = 'SIMULATED'
+        else:
+            self._environment = 'ONBOARD'
 
     def start(self):
         self._comm_client.connect('localhost', 1883, 60)
