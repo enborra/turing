@@ -40,7 +40,7 @@ def update():
 def status():
     """Get status of all running local Turing services"""
 
-    print(CommandService.get_env())
+    CommandService.get_system_status()
 
 
 def _run_bash_script(file_path):

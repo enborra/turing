@@ -11,8 +11,17 @@ class CommandService(object):
     ENV_UNKNOWN = 'unknown'
 
 
-    def __init__(self):
-        pass
+    @classmethod
+    def get_system_status(cls):
+        env = cls.get_env()
+
+        if env == cls.ENV_MACOS:
+            print('Status of system services on this Mac:')
+            print('-')
+
+        elif env == cls.ENV_RASPBERRY_PI:
+            print('Status of system services on this Raspberry Pi:')
+            print('-')
 
     @classmethod
     def run_script(cls, file_name=None):
