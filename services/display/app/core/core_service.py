@@ -46,7 +46,7 @@ class DisplayService(object):
             self._environment = 'ONBOARD'
 
     def start(self):
-        self._comm_client.connect('localhost', 1883, 60)
+        self._connect_to_comms()
 
         if self._environment == 'ONBOARD':
             self._disp = TFT( self._DC, rst=self._RST, spi=SPI.SpiDev(self._SPI_PORT, self._SPI_DEVICE, max_speed_hz=self._REFRESH_SPEED))
@@ -78,7 +78,12 @@ class DisplayService(object):
 
 
 
-
+    def _connecto_to_comms(self):
+        try:
+            self._comm_client.connect('localhost', 1883, 60)
+        except Exception, e:
+            time.sleep(1)
+            self._connect_to_comms()
 
 
     def _on_connect(self, client, userdata, flags, rc):
