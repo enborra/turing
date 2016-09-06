@@ -1,5 +1,24 @@
 #!/bin/bash
 
+# ------------------------------------------------------------------------------
+#
+# SERVICE INSTALLER: Central Station
+#
+# This service installer configures the daemon service required to run
+# Central Station on an OSX machine. This script will not function properly
+# on a Raspberry Pi system.
+#
+# The script can be run from any location, and performs the following steps:
+#
+#   - Disables all existing (running) system daemons with the same name
+#
+#   - Creates a symlink from the local service plist to /Library/LaunchDaemons,
+#     and changes permissions needed for system processes to access the symlink
+#
+#   - Re-enables and re-starts the newly installed service
+#
+# ------------------------------------------------------------------------------
+
 
 # Install systemd service on an OSX machine
 
