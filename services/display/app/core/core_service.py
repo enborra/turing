@@ -31,6 +31,9 @@ class DisplayService(object):
     _renderer = None
     _disp = None
     _face = None
+    _comm_delay = 0
+
+
 
 
     def __init__(self):
@@ -60,8 +63,6 @@ class DisplayService(object):
 
         while True:
             self.update()
-
-    _comm_delay = 0
 
     def update(self):
         if self._comm_delay > 60:

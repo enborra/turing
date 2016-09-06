@@ -51,14 +51,12 @@ fi
 # Set paths for use
 
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-PATH_APP="$CURRENT_DIR/app"
+PATH_APP="$TURING_APP_DIR/services/cli/app"
 
 PATH_BIN="/usr/local/bin"
 PATH_BIN_CLI_ALIAS="$PATH_BIN/turing"
 
 PATH_APP_CLI="$PATH_APP/cli.py"
-PATH_STARTUP_SCRIPT="$CURRENT_DIR/system/turing_boot.sh"
-PATH_SHUTDOWN_SCRIPT="$CURRENT_DIR/system/turing_stop.sh"
 
 # If a file exists at the intended cli alias location,
 # remove that file and re-create the alias needed for
@@ -70,12 +68,14 @@ echo "[INSTALLER] Creating symlink at $PATH_BIN_CLI_ALIAS"
 
 # Set CLI alias and access permissions for script
 
+echo "********"
+echo $TURING_APP_DIR
+echo $CURRENT_DIR
+echo $PATH_APP_CLI
+echo $PATH_BIN_CLI_ALIAS
+echo "********"
+
 sudo ln -sf "$PATH_APP_CLI" "$PATH_BIN_CLI_ALIAS"
 chmod +x "$PATH_BIN_CLI_ALIAS"
-
-# Set permissions to all for start & shutdown scripts
-
-chmod +x "$PATH_STARTUP_SCRIPT"
-chmod +x "$PATH_SHUTDOWN_SCRIPT"
 
 echo '[INSTALLER] Successfully installed Turing CLI.'
