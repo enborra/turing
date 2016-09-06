@@ -78,7 +78,7 @@ class DisplayService(object):
 
 
 
-    def _connecto_to_comms(self):
+    def _connect_to_comms(self):
         try:
             self._comm_client.connect('localhost', 1883, 60)
         except Exception, e:
