@@ -4,6 +4,7 @@ import subprocess
 import click
 import os
 
+from core import CommandService
 
 
 cli_path = os.path.dirname(os.path.realpath(__file__))
@@ -19,48 +20,42 @@ def cli():
 def start():
     """Boot Turing client processes in background."""
 
-    # click.echo('[TURING.CLI] Starting Turing services...')
-
-    try:
-        sys_boot_path = core_sys_path + 'services_start_all.sh'
-        bash_cmd = 'sh %s' % sys_boot_path
-
-        output = subprocess.check_output(bash_cmd, shell=True)
-        print(output)
-
-    except Exception, e:
-        print '[TURING.CLI] ERROR: %s' % str(e)
+    CommandService.run_script('services_start_all.sh')
 
 
 @cli.command()
 def stop():
     """Shut down Turing background processes."""
 
-    # click.echo('[TURING.CLI] Stopping Turing services...')
-
-    try:
-        sys_shutdown_path = core_sys_path + 'services_stop_all.sh'
-        # bash_cmd = 'python %s/../boot.py' % cli_path
-
-        output = subprocess.check_output(sys_shutdown_path, shell=True)
-        print(output)
-
-    except Exception, e:
-        print '[TURING.CLI] ERROR: %s' % str(e)
+    CommandService.run_script('services_stop_all.sh')
 
 @cli.command()
 def update():
     """Update the codebase from origin/master"""
 
+    CommandService.run_script('git_update.sh')
+
+
+@cli.command()
+def status():
+    """Get status of all running local Turing services"""
+
+    print(CommandService.get_env())
+
+
+def _run_bash_script(file_path):
     try:
-        sys_boot_path = core_sys_path + 'git_update.sh'
+        sys_boot_path = core_sys_path + file_path
         bash_cmd = 'sh %s' % sys_boot_path
 
         output = subprocess.check_output(bash_cmd, shell=True)
         print(output)
 
     except Exception, e:
-        print '[TURING.CLI] ERROR: %s' % str(e)
+        click.echo('[TURING.CLI] Error: %s' % str(e))
+
+
+
 
 
 
