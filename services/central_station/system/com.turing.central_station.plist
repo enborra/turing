@@ -10,7 +10,7 @@
 		<true/>
 	</dict>
 	<key>Label</key>
-	<string>com.turing.dali.central_station</string>
+	<string>com.turing.central_station</string>
 	<key>ProgramArguments</key>
 	<array>
 		<string>/bin/bash</string>

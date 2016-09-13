@@ -1,0 +1,27 @@
+{
+    "file_locations": {
+        "services_source_directory": "system/",
+        "services_run_directory_osx": "/Library/LaunchDaemons/",
+        "services_run_directory_raspberry_pi": "/lib/systemd/system/"
+    },
+
+    "services": {
+        "central_station": {
+            "name": "com.turing.central_station",
+
+            "install": {
+                "osx": "com.turing.central_station.plist",
+                "raspberry_pi": "centralstation.service"
+            }
+        },
+
+        "display": {
+            "name": "com.turing.display",
+
+            "install": {
+                "osx": "com.turing.display.plist",
+                "raspberry_pi": "com.turing.display.service"
+            }
+        }
+    }
+}

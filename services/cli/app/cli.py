@@ -27,13 +27,19 @@ def start():
 def stop():
     """Shut down Turing background processes."""
 
-    CommandService.run_script('services_stop_all.sh')
+    CommandService._services_stop_all()
 
 @cli.command()
 def update():
     """Update the codebase from origin/master"""
 
     CommandService.run_script('git_update.sh')
+
+@cli.command()
+def install():
+    """Update the codebase from origin/master"""
+
+    CommandService._services_install_all()
 
 
 @cli.command()
