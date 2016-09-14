@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import subprocess
 import click
@@ -10,6 +10,8 @@ from core import CommandService
 cli_path = os.path.dirname(os.path.realpath(__file__))
 core_sys_path = cli_path + '/commands/'
 
+mgr = CommandService()
+
 
 @click.group()
 def cli():
@@ -20,33 +22,33 @@ def cli():
 def start():
     """Boot Turing client processes in background."""
 
-    CommandService.run_script('services_start_all.sh')
+    mgr.run_script('services_start_all.sh')
 
 
 @cli.command()
 def stop():
     """Shut down Turing background processes."""
 
-    CommandService._services_stop_all()
+    mgr._services_stop_all()
 
 @cli.command()
 def update():
     """Update the codebase from origin/master"""
 
-    CommandService.run_script('git_update.sh')
+    mgr.run_script('git_update.sh')
 
 @cli.command()
 def install():
     """Update the codebase from origin/master"""
 
-    CommandService._services_install_all()
+    mgr._services_install_all()
 
 
 @cli.command()
 def status():
     """Get status of all running local Turing services"""
 
-    CommandService.get_system_status()
+    mgr.get_system_status()
 
 
 def _run_bash_script(file_path):
@@ -57,7 +59,7 @@ def _run_bash_script(file_path):
         output = subprocess.check_output(bash_cmd, shell=True)
         print(output)
 
-    except Exception, e:
+    except Exception as e:
         click.echo('[TURING.CLI] Error: %s' % str(e))
 
 
