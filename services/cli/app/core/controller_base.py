@@ -37,7 +37,7 @@ class BaseController(object):
         self._ensure_command_library_loaded()
 
     def display(self, msg):
-        msg = self._colors['white'] + msg
+        msg = self._colors['white'] + '  ' + msg
 
         for color in self._colors:
             msg = msg.replace('{{'+color.upper()+'}}', self._colors[color])
@@ -48,3 +48,6 @@ class BaseController(object):
         output = subprocess.check_output(command_body, shell=True)
 
         return output
+
+    def _cleanup(self):
+        print('')

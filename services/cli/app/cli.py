@@ -68,4 +68,5 @@ def _run_bash_script(file_path):
 
 
 if __name__ == '__main__':
+    print()
     cli()

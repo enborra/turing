@@ -36,6 +36,8 @@ class OsxController(BaseController):
             except Exception as e:
                 self.display('{{YELLOW}}Service was not running:{{WHITE}} %s' % current_name)
 
+        self._cleanup()
+
     def install_service(self):
         super().install_service()
 
@@ -64,3 +66,5 @@ class OsxController(BaseController):
             self.run_command('sudo ln -sf %s %s' % (path_service_source_file, path_service_run_file))
             self.run_command('sudo chown root:wheel %s' % path_service_run_file)
             self.run_command('sudo launchctl load %s' % path_service_run_file)
+
+        self._cleanup()
