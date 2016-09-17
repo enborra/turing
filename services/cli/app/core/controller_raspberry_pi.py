@@ -94,18 +94,19 @@ class RaspberryPiController(BaseController):
             # If the service is running, stop it
 
             try:
-                self.run_command('sudo systemctl list | grep %s' % current_service_name)
-                self.run_command('sudo systemctl stop %s' % path_service_run_file)
+                self.run_command('sudo systemctl stop %s' % current_service_run_file_name)
                 self.run_command('sudo systemctl disable %s' % path_service_run_file)
 
+                print('did a thing.')
+
             except Exception:
-                pass
+                print('thing broke.')
 
             # Now install new service and load it
 
-            self.run_command('sudo cp -f %s %s' % (path_service_source_file, path_service_run_file))
-            self.run_command('sudo chmod +x %s' % path_service_run_file)
-            self.run_command('sudo systemctl enable %s' % path_service_run_file)
-            self.run_command('sudo systemctl start %s' % path_service_source_file)
+            # self.run_command('sudo cp -f %s %s' % (path_service_source_file, path_service_run_file))
+            # self.run_command('sudo chmod +x %s' % path_service_run_file)
+            # self.run_command('sudo systemctl enable %s' % path_service_run_file)
+            # self.run_command('sudo systemctl start %s' % path_service_source_file)
 
         self._cleanup()
