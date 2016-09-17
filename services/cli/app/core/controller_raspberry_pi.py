@@ -99,8 +99,8 @@ class RaspberryPiController(BaseController):
 
                 print('did a thing.')
 
-            except Exception:
-                print('thing broke.')
+            except Exception as e:
+                print('thing broke: %s' % str(e))
 
             # Now install new service and load it
 
