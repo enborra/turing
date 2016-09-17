@@ -27,7 +27,9 @@ class BaseController(object):
 
     def _ensure_command_library_loaded(self):
         if not self._commands:
-            with open('/Users/andres/projects/turing/services/cli/app/commands/command_library.json') as data_file:
+            path_current_file = os.path.dirname(os.path.realpath(__file__)) + '/'
+
+            with open(path_current_file + '../commands/command_library.json') as data_file:
                 self._commands = json.load(data_file)
 
     def stop_service(self):
