@@ -5,6 +5,7 @@ import click
 import simplejson as json
 
 from .controller_osx import OsxController
+from .controller_raspberry_pi import RaspberryPiController
 
 
 class CommandService(object):
@@ -17,12 +18,28 @@ class CommandService(object):
 
 
     def __init__(self):
-        self.get_env()
+        plat_name = platform.system().lower()
+        plat_release = platform.release()
+        plat_full_description = platform._syscmd_uname('-a')
+        os_name = os.name.lower()
+
+        if plat_name == 'linux':
+            if 'raspberrypi' in plat_full_description.lower():
+                self._env = self.ENV_RASPBERRY_PI
+
+            else:
+                self._env = self.ENV_UNKNOWN
+
+        elif plat_name == 'darwin':
+            self._env = self.ENV_MACOS
+
+        # Instantiate controller for right platform
 
         if self._env == self.ENV_MACOS:
             self._os_controller = OsxController()
+
         elif self._env == self.ENV_RASPBERRY_PI:
-            self._os_controller = None
+            self._os_controller = RaspberryPiController()
 
     def get_system_status(self):
         if self._env == self.ENV_MACOS:
@@ -51,20 +68,3 @@ class CommandService(object):
 
     def get_env(self):
         run_env = self.ENV_UNKNOWN
-
-        plat_name = platform.system().lower()
-        plat_release = platform.release()
-        plat_full_description = platform._syscmd_uname('-a')
-        os_name = os.name.lower()
-
-        if plat_name == 'linux':
-            if 'raspberrypi' in plat_full_description.lower():
-                run_env = self.ENV_RASPBERRY_PI
-
-            else:
-                run_env = self.ENV_UNKNOWN
-
-        elif plat_name == 'darwin':
-            run_env = self.ENV_MACOS
-
-        self._env = run_env
