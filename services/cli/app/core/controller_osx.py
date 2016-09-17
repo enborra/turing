@@ -38,6 +38,39 @@ class OsxController(BaseController):
 
         self._cleanup()
 
+    def start_service(self):
+        super().start_service()
+
+        for service_name in self._commands['services']:
+            current_config = self._commands['services'][service_name]
+            current_name = current_config['name']
+            current_run_file_name = current_config['install']['osx']
+
+            # If the service is running, stop it
+
+            try:
+                self.run_command('sudo launchctl list | grep %s' % current_name)
+
+                self.display('{{YELLOW}}Service already running:{{WHITE}} %s' % current_name)
+
+            except Exception as e:
+                self.run_command('sudo launchctl load %s' % (self._path_run_directory + current_run_file_name))
+
+                self.display('{{GREEN}}Service started:{{WHITE}} %s' % current_name)
+
+        self._cleanup()
+
+    def get_service_status(self):
+        for item in self._commands['services']:
+            try:
+                self.run_command('sudo launchctl list | grep ' + self._commands['services'][item]['name'])
+                self.display('{{GREEN}}Service running: {{WHITE}}%s' % item)
+
+            except Exception as e:
+                self.display('{{RED}} Service not running: {{WHITE}}%s' % item)
+
+        print()
+
     def install_service(self):
         super().install_service()
 

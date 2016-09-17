@@ -26,10 +26,7 @@ class CommandService(object):
 
     def get_system_status(self):
         if self._env == self.ENV_MACOS:
-            print('Status of system services on this Mac:')
-            print('-')
-
-            self._services_stop_all()
+            self._get_service_status()
 
         elif self._env == self.ENV_RASPBERRY_PI:
             print('Status of system services on this Raspberry Pi:')
@@ -39,6 +36,14 @@ class CommandService(object):
     def _services_stop_all(self):
         if self._os_controller:
             self._os_controller.stop_service()
+
+    def _services_start_all(self):
+        if self._os_controller:
+            self._os_controller.start_service()
+
+    def _get_service_status(self):
+        if self._os_controller:
+            self._os_controller.get_service_status()
 
     def _services_install_all(self):
         if self._os_controller:

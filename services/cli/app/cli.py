@@ -22,7 +22,7 @@ def cli():
 def start():
     """Boot Turing client processes in background."""
 
-    mgr.run_script('services_start_all.sh')
+    mgr._services_start_all()
 
 
 @cli.command()

@@ -33,6 +33,9 @@ class BaseController(object):
     def stop_service(self):
         self._ensure_command_library_loaded()
 
+    def start_service(self):
+        self._ensure_command_library_loaded()
+
     def install_service(self):
         self._ensure_command_library_loaded()
 
