@@ -71,7 +71,7 @@ class RaspberryPiController(BaseController):
                 self.display('{{GREEN}}Service running: {{WHITE}}%s' % item)
 
             except Exception as e:
-                self.display('{{RED}} Service not running: {{WHITE}}%s' % item)
+                self.display('{{RED}}Service not running: {{WHITE}}%s' % item)
 
         print()
 

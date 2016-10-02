@@ -22,6 +22,15 @@
                 "osx": "com.turing.display.plist",
                 "raspberry_pi": "com.turing.display.service"
             }
+        },
+
+        "vox": {
+            "name": "com.turing.vox",
+
+            "install": {
+                "osx": "com.turing.vox.plist",
+                "raspberry_pi": "com.turing.vox.service"
+            }
         }
     }
 }

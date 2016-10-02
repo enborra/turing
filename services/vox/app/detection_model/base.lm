@@ -1,0 +1,61 @@
+Language model created by QuickLM on Sat Oct  1 19:09:03 EDT 2016
+Copyright (c) 1996-2010 Carnegie Mellon University and Alexander I. Rudnicky
+
+The model is in standard ARPA format, designed by Doug Paul while he was at MITRE.
+
+The code that was used to produce this language model is available in Open Source.
+Please visit http://www.speech.cs.cmu.edu/tools/ for more information
+
+The (fixed) discount mass is 0.5. The backoffs are computed using the ratio method.
+This model based on a corpus of 7 sentences and 11 words
+
+\data\
+ngram 1=11
+ngram 2=16
+ngram 3=11
+
+\1-grams:
+-0.8539 </s> -0.3010
+-0.8539 <s> -0.2148
+-1.2218 DOLLY -0.2355
+-1.6990 HELLO -0.2742
+-1.6990 LIGHT -0.2355
+-1.6990 LOOK -0.2923
+-1.6990 NIGHT -0.2355
+-1.6990 PATCH -0.2355
+-1.6990 PUMPKIN -0.2355
+-1.6990 SWELL -0.2742
+-1.6990 YOU -0.2923
+
+\2-grams:
+-1.1461 <s> DOLLY 0.0000
+-1.1461 <s> HELLO 0.0000
+-1.1461 <s> LIGHT 0.0000
+-1.1461 <s> NIGHT 0.0000
+-1.1461 <s> PATCH 0.0000
+-1.1461 <s> PUMPKIN 0.0000
+-1.1461 <s> YOU 0.0000
+-0.3010 DOLLY </s> -0.3010
+-0.3010 HELLO DOLLY 0.0000
+-0.3010 LIGHT </s> -0.3010
+-0.3010 LOOK SWELL 0.0000
+-0.3010 NIGHT </s> -0.3010
+-0.3010 PATCH </s> -0.3010
+-0.3010 PUMPKIN </s> -0.3010
+-0.3010 SWELL DOLLY 0.0000
+-0.3010 YOU LOOK 0.0000
+
+\3-grams:
+-0.3010 <s> DOLLY </s>
+-0.3010 <s> HELLO DOLLY
+-0.3010 <s> LIGHT </s>
+-0.3010 <s> NIGHT </s>
+-0.3010 <s> PATCH </s>
+-0.3010 <s> PUMPKIN </s>
+-0.3010 <s> YOU LOOK
+-0.3010 HELLO DOLLY </s>
+-0.3010 LOOK SWELL DOLLY
+-0.3010 SWELL DOLLY </s>
+-0.3010 YOU LOOK SWELL
+
+\end\
