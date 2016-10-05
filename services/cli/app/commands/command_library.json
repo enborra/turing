@@ -8,6 +8,7 @@
     "services": {
         "central_station": {
             "name": "com.turing.central_station",
+            "enabled": true,
 
             "install": {
                 "osx": "com.turing.central_station.plist",
@@ -17,12 +18,22 @@
 
         "display": {
             "name": "com.turing.display",
+            "enabled": true,
 
             "install": {
                 "osx": "com.turing.display.plist",
                 "raspberry_pi": "com.turing.display.service"
             }
-        }
+        },
 
+        "vox": {
+            "name": "com.turing.vox",
+            "enabled": false,
+
+            "install": {
+                "osx": "com.turing.vox.plist",
+                "raspberry_pi": "com.turing.vox.service"
+            }
+        }
     }
 }

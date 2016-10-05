@@ -21,20 +21,35 @@ class OsxController(BaseController):
         super().stop_service()
 
         for service_name in self._commands['services']:
+            is_enabled = True
+
             current_config = self._commands['services'][service_name]
             current_name = current_config['name']
-            current_run_file_name = current_config['install']['osx']
 
-            # If the service is running, stop it
+            if 'enabled' in current_config:
+                if current_config['enabled'] == False:
+                    is_enabled = False
 
-            try:
-                self.run_command('sudo launchctl list | grep %s' % current_name)
-                self.run_command('sudo launchctl unload %s' % (self._path_run_directory + current_run_file_name))
+            if is_enabled:
+                current_run_file_name = current_config['install']['osx']
 
-                self.display('{{RED}}Stopped service:{{WHITE}} %s' % current_name)
+                current_config = self._commands['services'][service_name]
+                current_name = current_config['name']
+                current_run_file_name = current_config['install']['osx']
 
-            except Exception as e:
-                self.display('{{YELLOW}}Service was not running:{{WHITE}} %s' % current_name)
+                # If the service is running, stop it
+
+                try:
+                    self.run_command('sudo launchctl list | grep %s' % current_name)
+                    self.run_command('sudo launchctl unload %s' % (self._path_run_directory + current_run_file_name))
+
+                    self.display('{{RED}}Stopped service:{{WHITE}} %s' % current_name)
+
+                except Exception as e:
+                    self.display('{{YELLOW}}Service was not running:{{WHITE}} %s' % current_name)
+
+            else:
+                self.display('{{DARKGRAY}}Skipping disabled service:{{WHITE}} %s' % current_name)
 
         self._cleanup()
 
@@ -42,32 +57,57 @@ class OsxController(BaseController):
         super().start_service()
 
         for service_name in self._commands['services']:
+            is_enabled = True
+
             current_config = self._commands['services'][service_name]
             current_name = current_config['name']
-            current_run_file_name = current_config['install']['osx']
 
-            # If the service is running, stop it
+            if 'enabled' in current_config:
+                if current_config['enabled'] == False:
+                    is_enabled = False
 
-            try:
-                self.run_command('sudo launchctl list | grep %s' % current_name)
+            if is_enabled:
+                current_run_file_name = current_config['install']['osx']
 
-                self.display('{{YELLOW}}Service already running:{{WHITE}} %s' % current_name)
+                # If the service is running, stop it
 
-            except Exception as e:
-                self.run_command('sudo launchctl load %s' % (self._path_run_directory + current_run_file_name))
+                try:
+                    self.run_command('sudo launchctl list | grep %s' % current_name)
 
-                self.display('{{GREEN}}Service started:{{WHITE}} %s' % current_name)
+                    self.display('{{YELLOW}}Service already running:{{WHITE}} %s' % current_name)
+
+                except Exception as e:
+                    self.run_command('sudo launchctl load %s' % (self._path_run_directory + current_run_file_name))
+
+                    self.display('{{GREEN}}Service started:{{WHITE}} %s' % current_name)
+            else:
+                self.display('{{DARKGRAY}}Skipping disabled service:{{WHITE}} %s' % current_name)
 
         self._cleanup()
 
     def get_service_status(self):
-        for item in self._commands['services']:
-            try:
-                self.run_command('sudo launchctl list | grep ' + self._commands['services'][item]['name'])
-                self.display('{{GREEN}}Service running: {{WHITE}}%s' % item)
+        for service_name in self._commands['services']:
+            is_enabled = True
 
-            except Exception as e:
-                self.display('{{RED}}Service not running: {{WHITE}}%s' % item)
+            current_config = self._commands['services'][service_name]
+            current_name = current_config['name']
+
+            if 'enabled' in current_config:
+                if current_config['enabled'] == False:
+                    is_enabled = False
+
+            if is_enabled:
+                current_run_file_name = current_config['install']['osx']
+
+                try:
+                    self.run_command('sudo launchctl list | grep ' + self._commands['services'][service_name]['name'])
+                    self.display('{{GREEN}}Service running: {{WHITE}}%s' % service_name)
+
+                except Exception as e:
+                    self.display('{{RED}}Service not running: {{WHITE}}%s' % service_name)
+
+            else:
+                self.display('{{DARKGRAY}}Service disabled: %s' % current_name)
 
         print()
 
@@ -75,29 +115,45 @@ class OsxController(BaseController):
         super().install_service()
 
         for service_name in self._commands['services']:
-            current_service_config = self._commands['services'][service_name]
-            current_service_name = current_service_config['name']
-            current_service_run_file_name = current_service_config['install']['osx']
 
-            path_service_source_file = self._path_app_root + service_name + '/' + self._path_source_root + current_service_run_file_name
-            path_service_run_file = self._path_run_root + current_service_run_file_name
+            is_enabled = True
+
+            current_config = self._commands['services'][service_name]
+            current_name = current_config['name']
+
+            if 'enabled' in current_config:
+                if current_config['enabled'] == False:
+                    is_enabled = False
+
+            if is_enabled:
+                current_run_file_name = current_config['install']['osx']
+
+                current_service_config = self._commands['services'][service_name]
+                current_service_name = current_service_config['name']
+                current_service_run_file_name = current_service_config['install']['osx']
+
+                path_service_source_file = self._path_app_root + service_name + '/' + self._path_source_root + current_service_run_file_name
+                path_service_run_file = self._path_run_root + current_service_run_file_name
 
 
-            self.display('{{GREEN}}Installing service:{{WHITE}} %s' % current_service_run_file_name)
+                self.display('{{GREEN}}Installing service:{{WHITE}} %s' % current_service_run_file_name)
 
-            # If the service is running, stop it
+                # If the service is running, stop it
 
-            try:
-                self.run_command('sudo launchctl list | grep %s' % current_service_name)
-                self.run_command('sudo launchctl unload %s' % path_service_run_file)
+                try:
+                    self.run_command('sudo launchctl list | grep %s' % current_service_name)
+                    self.run_command('sudo launchctl unload %s' % path_service_run_file)
 
-            except Exception:
-                pass
+                except Exception:
+                    pass
 
-            # Now install new service and load it
+                # Now install new service and load it
 
-            self.run_command('sudo ln -sf %s %s' % (path_service_source_file, path_service_run_file))
-            self.run_command('sudo chown root:wheel %s' % path_service_run_file)
-            self.run_command('sudo launchctl load %s' % path_service_run_file)
+                self.run_command('sudo ln -sf %s %s' % (path_service_source_file, path_service_run_file))
+                self.run_command('sudo chown root:wheel %s' % path_service_run_file)
+                self.run_command('sudo launchctl load %s' % path_service_run_file)
+
+            else:
+                self.display('{{DARKGRAY}}Skipping disabled service: %s' % current_name)
 
         self._cleanup()
