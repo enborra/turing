@@ -67,7 +67,7 @@ class RaspberryPiController(BaseController):
     def get_service_status(self):
         for item in self._commands['services']:
             try:
-                self.run_command('sudo launchctl list | grep ' + self._commands['services'][item]['name'])
+                self.run_command('sudo systemctl ' + self._commands['services'][item]['name'])
                 self.display('{{GREEN}}Service running: {{WHITE}}%s' % item)
 
             except Exception as e:
