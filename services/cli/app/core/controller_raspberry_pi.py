@@ -20,8 +20,6 @@ class RaspberryPiController(BaseController):
     def stop_service(self):
         super().stop_service()
 
-        print('STOP RASPBERRYPI SERVICE.')
-
         for service_name in self._commands['services']:
             current_config = self._commands['services'][service_name]
             current_name = current_config['name']
@@ -30,8 +28,8 @@ class RaspberryPiController(BaseController):
             # If the service is running, stop it
 
             try:
-                self.run_command('sudo systemctl status %s' % self._commands['services'][item]['install']['raspberry_pi'])
-                self.run_command('sudo systemctl stop %s' % self._commands['services'][item]['install']['raspberry_pi'])
+                self.run_command('sudo systemctl status %s' % self._commands['services'][service_name]['install']['raspberry_pi'])
+                self.run_command('sudo systemctl stop %s' % self._commands['services'][service_name]['install']['raspberry_pi'])
 
                 self.display('{{RED}}Stopped service:{{WHITE}} %s' % current_name)
 
@@ -43,8 +41,6 @@ class RaspberryPiController(BaseController):
     def start_service(self):
         super().start_service()
 
-        print('START RASPBERRYPI SERVICE.')
-
         for service_name in self._commands['services']:
             current_config = self._commands['services'][service_name]
             current_name = current_config['name']
@@ -53,12 +49,12 @@ class RaspberryPiController(BaseController):
             # If the service is running, stop it
 
             try:
-                self.run_command('sudo systemctl status %s' % self._commands['services'][item]['install']['raspberry_pi'])
+                self.run_command('sudo systemctl status %s' % self._commands['services'][service_name]['install']['raspberry_pi'])
 
                 self.display('{{YELLOW}}Service already running:{{WHITE}} %s' % current_name)
 
             except Exception as e:
-                self.run_command('sudo systemctl start %s' % self._commands['services'][item]['install']['raspberry_pi'])
+                self.run_command('sudo systemctl start %s' % self._commands['services'][service_name]['install']['raspberry_pi'])
 
                 self.display('{{GREEN}}Service started:{{WHITE}} %s' % current_name)
 
