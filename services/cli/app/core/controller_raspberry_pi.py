@@ -103,8 +103,10 @@ class RaspberryPiController(BaseController):
 
             try:
                 is_active = self.run_command('systemctl is-active %s >/dev/null 2>&1 && echo 1 || echo 0' % current_service_run_file_name)
-                self.run_command('sudo systemctl stop %s' % current_service_run_file_name)
-                self.run_command('sudo systemctl disable %s' % path_service_run_file)
+
+                if str(is_active) == '1':
+                    self.run_command('sudo systemctl stop %s' % current_service_run_file_name)
+                    self.run_command('sudo systemctl disable %s' % path_service_run_file)
 
                 print('successfully uninstalled.')
 
