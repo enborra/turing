@@ -88,8 +88,6 @@ class RaspberryPiController(BaseController):
     def install_service(self):
         super().install_service()
 
-        print('INSTALL RASPBERRYPI SERVICE.')
-
         for service_name in self._commands['services']:
             current_service_config = self._commands['services'][service_name]
             current_service_name = current_service_config['name']
@@ -104,6 +102,7 @@ class RaspberryPiController(BaseController):
             # If the service is running, stop it
 
             try:
+                is_active = self.run_command('systemctl is-active %s >/dev/null 2>&1 && echo 1 || echo 0' % current_service_run_file_name)
                 self.run_command('sudo systemctl stop %s' % current_service_run_file_name)
                 self.run_command('sudo systemctl disable %s' % path_service_run_file)
 
