@@ -62,6 +62,10 @@ class CommandService(object):
         if self._os_controller:
             self._os_controller.get_service_status()
 
+    def _services_update_source(self):
+        if self._os_controller:
+            self._os_controller.update_source()
+
     def _services_install_all(self):
         if self._os_controller:
             self._os_controller.install_service()

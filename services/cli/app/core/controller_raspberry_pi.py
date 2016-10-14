@@ -75,6 +75,20 @@ class RaspberryPiController(BaseController):
 
         print()
 
+    def update_source(self):
+        super().update_source()
+        self.stop_service()
+
+        self.display('{{GREEN}}Pulling new code down from origin/master{{DARKGRAY}}')
+
+        subprocess.check_output('cd $TURING_APP_DIR', shell=True)
+        subprocess.check_output('git pull origin master', shell=True)
+        subprocess.check_output('cd /home/pi/projects/turing/services/central_station', shell=True)
+
+        self.display('{{WHITE}}')
+
+        self.start_service()
+
     def install_service(self):
         super().install_service()
 

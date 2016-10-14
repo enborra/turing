@@ -111,6 +111,19 @@ class OsxController(BaseController):
 
         print()
 
+    def update_source(self):
+        self.stop_service()
+        super().update_source()
+
+        self.display('{{GREEN}}Pulling new code down from origin/master{{DARKGRAY}}')
+
+        self.run_command('cd $TURING_APP_DIR')
+        self.run_command('git pull origin master')
+
+        self.display('{{WHITE}}')
+
+        self.start_service()
+
     def install_service(self):
         super().install_service()
 

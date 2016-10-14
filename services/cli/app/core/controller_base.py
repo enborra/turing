@@ -50,6 +50,9 @@ class BaseController(object):
 
         print(msg)
 
+    def update_source(self):
+        self._ensure_command_library_loaded()
+
     def run_command(self, command_body=None):
         output = subprocess.check_output(command_body, shell=True)
 

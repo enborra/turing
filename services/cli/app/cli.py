@@ -35,7 +35,7 @@ def stop():
 def update():
     """Update the codebase from origin/master"""
 
-    mgr.run_script('git_update.sh')
+    mgr._services_update_source()
 
 @cli.command()
 def install():
