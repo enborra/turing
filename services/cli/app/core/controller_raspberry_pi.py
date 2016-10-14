@@ -22,47 +22,47 @@ class RaspberryPiController(BaseController):
 
         print('STOP RASPBERRYPI SERVICE.')
 
-        # for service_name in self._commands['services']:
-        #     current_config = self._commands['services'][service_name]
-        #     current_name = current_config['name']
-        #     current_run_file_name = current_config['install']['osx']
-        #
-        #     # If the service is running, stop it
-        #
-        #     try:
-        #         self.run_command('sudo launchctl list | grep %s' % current_name)
-        #         self.run_command('sudo launchctl unload %s' % (self._path_run_directory + current_run_file_name))
-        #
-        #         self.display('{{RED}}Stopped service:{{WHITE}} %s' % current_name)
-        #
-        #     except Exception as e:
-        #         self.display('{{YELLOW}}Service was not running:{{WHITE}} %s' % current_name)
-        #
-        # self._cleanup()
+        for service_name in self._commands['services']:
+            current_config = self._commands['services'][service_name]
+            current_name = current_config['name']
+            current_run_file_name = current_config['install']['osx']
+
+            # If the service is running, stop it
+
+            try:
+                self.run_command('sudo systemctl status %s' % self._commands['services'][item]['install']['raspberry_pi'])
+                self.run_command('sudo systemctl stop %s' % self._commands['services'][item]['install']['raspberry_pi'])
+
+                self.display('{{RED}}Stopped service:{{WHITE}} %s' % current_name)
+
+            except Exception as e:
+                self.display('{{YELLOW}}Service was not running:{{WHITE}} %s' % current_name)
+
+        self._cleanup()
 
     def start_service(self):
         super().start_service()
 
         print('START RASPBERRYPI SERVICE.')
 
-        # for service_name in self._commands['services']:
-        #     current_config = self._commands['services'][service_name]
-        #     current_name = current_config['name']
-        #     current_run_file_name = current_config['install']['osx']
-        #
-        #     # If the service is running, stop it
-        #
-        #     try:
-        #         self.run_command('sudo launchctl list | grep %s' % current_name)
-        #
-        #         self.display('{{YELLOW}}Service already running:{{WHITE}} %s' % current_name)
-        #
-        #     except Exception as e:
-        #         self.run_command('sudo launchctl load %s' % (self._path_run_directory + current_run_file_name))
-        #
-        #         self.display('{{GREEN}}Service started:{{WHITE}} %s' % current_name)
-        #
-        # self._cleanup()
+        for service_name in self._commands['services']:
+            current_config = self._commands['services'][service_name]
+            current_name = current_config['name']
+            current_run_file_name = current_config['install']['osx']
+
+            # If the service is running, stop it
+
+            try:
+                self.run_command('sudo systemctl status %s' % self._commands['services'][item]['install']['raspberry_pi'])
+
+                self.display('{{YELLOW}}Service already running:{{WHITE}} %s' % current_name)
+
+            except Exception as e:
+                self.run_command('sudo systemctl start %s' % self._commands['services'][item]['install']['raspberry_pi'])
+
+                self.display('{{GREEN}}Service started:{{WHITE}} %s' % current_name)
+
+        self._cleanup()
 
     def get_service_status(self):
         for item in self._commands['services']:
