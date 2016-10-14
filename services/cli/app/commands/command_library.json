@@ -12,7 +12,7 @@
 
             "install": {
                 "osx": "com.turing.central_station.plist",
-                "raspberry_pi": "centralstation.service"
+                "raspberry_pi": "com.turing.central_station.service"
             }
         },
 
