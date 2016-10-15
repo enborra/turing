@@ -17,7 +17,7 @@ class RaspberryPiController(BaseController):
         self._path_source_root = self._commands['file_locations']['services_source_directory']
         self._path_run_root = self._commands['file_locations']['services_run_directory_raspberry_pi']
 
-    def stop_service(self):
+    def stop_service(self, service_name):
         is_enabled = True
         output_msg = None
 
@@ -46,7 +46,7 @@ class RaspberryPiController(BaseController):
 
         return output_msg
 
-    def start_service(self):
+    def start_service(self, service_name):
         is_enabled = True
         output_msg = None
 
