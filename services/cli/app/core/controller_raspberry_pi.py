@@ -89,10 +89,10 @@ class RaspberryPiController(BaseController):
 
         try:
             self.run_command('sudo systemctl status ' + current_run_file_name)
-            output_msg = '{{GREEN}}Service running: {{WHITE}}%s' % item
+            output_msg = '{{GREEN}}Service running: {{WHITE}}%s' % service_name
 
         except Exception as e:
-            output_msg = '{{RED}}Service not running: {{WHITE}}%s' % item
+            output_msg = '{{RED}}Service not running: {{WHITE}}%s' % service_name
 
         if not is_enabled:
             output_msg += ' {{DARKGRAY}}(disabled)'
