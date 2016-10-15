@@ -106,7 +106,7 @@ class RaspberryPiController(BaseController):
 
                 if str(is_active) == '1':
                     self.run_command('sudo systemctl stop %s' % current_service_run_file_name)
-                    self.run_command('sudo systemctl disable %s' % path_service_run_file)
+                    self.run_command('sudo systemctl disable %s' % current_service_run_file_name)
 
                 print('successfully uninstalled.')
 
@@ -117,7 +117,7 @@ class RaspberryPiController(BaseController):
 
             self.run_command('sudo cp -f %s %s' % (path_service_source_file, path_service_run_file))
             self.run_command('sudo chmod +x %s' % path_service_run_file)
-            self.run_command('sudo systemctl enable %s' % path_service_run_file)
-            self.run_command('sudo systemctl start %s' % path_service_run_file)
+            self.run_command('sudo systemctl enable %s' % current_service_run_file_name)
+            self.run_command('sudo systemctl start %s' % current_service_run_file_name)
 
         self._cleanup()
