@@ -15,7 +15,7 @@ class RaspberryPiController(BaseController):
         self._path_current_file = os.path.dirname(os.path.realpath(__file__)) + '/'
         self._path_app_root = self._path_current_file + '../../../'
         self._path_source_root = self._commands['file_locations']['services_source_directory']
-        self._path_run_root = self._commands['file_locations']['services_run_directory_osx']
+        self._path_run_root = self._commands['file_locations']['services_run_directory_raspberry_pi']
 
     def stop_service(self):
         super().stop_service()
