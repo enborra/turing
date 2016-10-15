@@ -76,15 +76,28 @@ class RaspberryPiController(BaseController):
         return output_msg
 
     def get_service_status(self):
-        for item in self._commands['services']:
-            try:
-                self.run_command('sudo systemctl status ' + self._commands['services'][item]['install']['raspberry_pi'])
-                self.display('{{GREEN}}Service running: {{WHITE}}%s' % item)
+        is_enabled = True
+        output_msg = None
 
-            except Exception as e:
-                self.display('{{RED}}Service not running: {{WHITE}}%s' % item)
+        current_config = self._commands['services'][service_name]
+        current_name = current_config['name']
+        current_run_file_name = current_config['install']['osx']
 
-        print()
+        if 'enabled' in current_config:
+            if current_config['enabled'] == False:
+                is_enabled = False
+
+        try:
+            self.run_command('sudo systemctl status ' + self._commands['services'][item]['install']['raspberry_pi'])
+            output_msg = '{{GREEN}}Service running: {{WHITE}}%s' % item
+
+        except Exception as e:
+            output_msg = '{{RED}}Service not running: {{WHITE}}%s' % item
+
+        if not is_enabled:
+            output_msg += ' {{DARKGRAY}}(disabled)'
+
+        return output_msg
 
     def update_source(self):
         super().update_source()
