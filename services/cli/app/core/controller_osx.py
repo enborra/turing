@@ -17,75 +17,89 @@ class OsxController(BaseController):
         self._path_source_root = self._commands['file_locations']['services_source_directory']
         self._path_run_root = self._commands['file_locations']['services_run_directory_osx']
 
-    def stop_service(self):
-        super().stop_service()
+    def stop_service(self, service_name):
+        is_enabled = True
+        output_msg = None
 
-        for service_name in self._commands['services']:
-            is_enabled = True
+        current_config = self._commands['services'][service_name]
+        current_run_file_name = current_config['install']['osx']
+        current_name = current_config['name']
 
-            current_config = self._commands['services'][service_name]
-            current_name = current_config['name']
+        if 'enabled' in current_config:
+            if current_config['enabled'] == False:
+                is_enabled = False
 
-            if 'enabled' in current_config:
-                if current_config['enabled'] == False:
-                    is_enabled = False
+        # If the service is running, stop it
 
-            if is_enabled:
-                current_run_file_name = current_config['install']['osx']
+        try:
+            self.run_command('sudo launchctl list | grep %s' % current_name)
+            self.run_command('sudo launchctl unload %s' % (self._path_run_directory + current_run_file_name))
 
-                current_config = self._commands['services'][service_name]
-                current_name = current_config['name']
-                current_run_file_name = current_config['install']['osx']
+            output_msg = '{{RED}}Stopped service:{{WHITE}} %s' % current_name
 
-                # If the service is running, stop it
+        except Exception as e:
+            output_msg = '{{YELLOW}}Service was not running:{{WHITE}} %s' % current_name
 
-                try:
-                    self.run_command('sudo launchctl list | grep %s' % current_name)
-                    self.run_command('sudo launchctl unload %s' % (self._path_run_directory + current_run_file_name))
+        if not is_enabled:
+            output_msg += ' {{DARKGRAY}}(disabled)'
 
-                    self.display('{{RED}}Stopped service:{{WHITE}} %s' % current_name)
+        return output_msg
 
-                except Exception as e:
-                    self.display('{{YELLOW}}Service was not running:{{WHITE}} %s' % current_name)
+    def start_service(self, service_name=None):
+        is_enabled = True
+        output_msg = None
 
-            else:
-                self.display('{{DARKGRAY}}Skipping disabled service:{{WHITE}} %s' % current_name)
+        current_config = self._commands['services'][service_name]
+        current_run_file_name = current_config['install']['osx']
+        current_name = current_config['name']
 
-        self._cleanup()
+        if 'enabled' in current_config:
+            if current_config['enabled'] == False:
+                is_enabled = False
 
-    def start_service(self):
-        super().start_service()
+        if is_enabled:
+            # If the service is running, stop it
 
-        for service_name in self._commands['services']:
-            is_enabled = True
+            try:
+                self.run_command('sudo launchctl list | grep %s' % current_name)
 
-            current_config = self._commands['services'][service_name]
-            current_name = current_config['name']
+                output_msg = '{{YELLOW}}Service already running:{{WHITE}} %s' % current_name
 
-            if 'enabled' in current_config:
-                if current_config['enabled'] == False:
-                    is_enabled = False
+            except Exception as e:
+                self.run_command('sudo launchctl load %s' % (self._path_run_directory + current_run_file_name))
 
-            if is_enabled:
-                current_run_file_name = current_config['install']['osx']
+                output_msg = '{{GREEN}}Started service:{{WHITE}} %s' % current_name
 
-                # If the service is running, stop it
+        else:
+            output_msg = '{{DARKGRAY}}Skipping disabled service:{{WHITE}} %s' % current_name
 
-                try:
-                    self.run_command('sudo launchctl list | grep %s' % current_name)
+        return output_msg
 
-                    self.display('{{YELLOW}}Service already running:{{WHITE}} %s' % current_name)
+    def get_service_status(self, service_name):
+        is_enabled = True
+        output_msg = None
 
-                except Exception as e:
-                    self.run_command('sudo launchctl load %s' % (self._path_run_directory + current_run_file_name))
+        current_config = self._commands['services'][service_name]
+        current_name = current_config['name']
+        current_run_file_name = current_config['install']['osx']
 
-                    self.display('{{GREEN}}Service started:{{WHITE}} %s' % current_name)
-            else:
-                self.display('{{DARKGRAY}}Skipping disabled service:{{WHITE}} %s' % current_name)
+        if 'enabled' in current_config:
+            if current_config['enabled'] == False:
+                is_enabled = False
 
-        self._cleanup()
+        try:
+            self.run_command('sudo launchctl list | grep ' + current_name)
+            output_msg = '{{GREEN}}Service running: {{WHITE}}%s' % service_name
 
-    def get_service_status(self):
+        except Exception as e:
+            output_msg = '{{RED}}Service not running: {{WHITE}}%s' % service_name
+
+        if not is_enabled:
+            output_msg += ' {{DARKGRAY}}(disabled)'
+
+        return output_msg
+
+    def get_service_status_OLD(self):
         for service_name in self._commands['services']:
             is_enabled = True
 

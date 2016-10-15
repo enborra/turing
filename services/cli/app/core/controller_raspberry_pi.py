@@ -18,47 +18,62 @@ class RaspberryPiController(BaseController):
         self._path_run_root = self._commands['file_locations']['services_run_directory_raspberry_pi']
 
     def stop_service(self):
-        super().stop_service()
+        is_enabled = True
+        output_msg = None
 
-        for service_name in self._commands['services']:
-            current_config = self._commands['services'][service_name]
-            current_name = current_config['name']
-            current_run_file_name = current_config['install']['osx']
+        current_config = self._commands['services'][service_name]
+        current_name = current_config['name']
+        current_run_file_name = current_config['install']['osx']
 
-            # If the service is running, stop it
 
-            try:
-                self.run_command('sudo systemctl status %s' % self._commands['services'][service_name]['install']['raspberry_pi'])
-                self.run_command('sudo systemctl stop %s' % self._commands['services'][service_name]['install']['raspberry_pi'])
+        if 'enabled' in current_config:
+            if current_config['enabled'] == False:
+                is_enabled = False
 
-                self.display('{{RED}}Stopped service:{{WHITE}} %s' % current_name)
+        # If the service is running, stop it
 
-            except Exception as e:
-                self.display('{{YELLOW}}Service was not running:{{WHITE}} %s' % current_name)
+        try:
+            self.run_command('sudo systemctl status %s' % self._commands['services'][service_name]['install']['raspberry_pi'])
+            self.run_command('sudo systemctl stop %s' % self._commands['services'][service_name]['install']['raspberry_pi'])
 
-        self._cleanup()
+            output_msg = '{{RED}}Stopped service:{{WHITE}} %s' % current_name
+
+        except Exception as e:
+            output_msg = '{{YELLOW}}Service was not running:{{WHITE}} %s' % current_name
+
+        if not is_enabled:
+            output_msg += ' {{DARKGRAY}}(disabled)'
+
+        return output_msg
 
     def start_service(self):
-        super().start_service()
+        is_enabled = True
+        output_msg = None
 
-        for service_name in self._commands['services']:
-            current_config = self._commands['services'][service_name]
-            current_name = current_config['name']
-            current_run_file_name = current_config['install']['osx']
+        current_config = self._commands['services'][service_name]
+        current_name = current_config['name']
+        current_run_file_name = current_config['install']['osx']
 
+        if 'enabled' in current_config:
+            if current_config['enabled'] == False:
+                is_enabled = False
+
+        if is_enabled:
             # If the service is running, stop it
 
             try:
                 self.run_command('sudo systemctl status %s' % self._commands['services'][service_name]['install']['raspberry_pi'])
 
-                self.display('{{YELLOW}}Service already running:{{WHITE}} %s' % current_name)
+                output_msg = '{{YELLOW}}Service already running:{{WHITE}} %s' % current_name
 
             except Exception as e:
                 self.run_command('sudo systemctl start %s' % self._commands['services'][service_name]['install']['raspberry_pi'])
 
-                self.display('{{GREEN}}Service started:{{WHITE}} %s' % current_name)
+                output_msg = '{{GREEN}}Service started:{{WHITE}} %s' % current_name
+        else:
+            output_msg = '{{DARKGRAY}}Skipping disabled service:{{WHITE}} %s' % current_name
 
-        self._cleanup()
+        return output_msg
 
     def get_service_status(self):
         for item in self._commands['services']:
