@@ -75,7 +75,7 @@ class RaspberryPiController(BaseController):
 
         return output_msg
 
-    def get_service_status(self):
+    def get_service_status(self, service_name):
         is_enabled = True
         output_msg = None
 
