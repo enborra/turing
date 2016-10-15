@@ -118,6 +118,6 @@ class RaspberryPiController(BaseController):
             self.run_command('sudo cp -f %s %s' % (path_service_source_file, path_service_run_file))
             self.run_command('sudo chmod +x %s' % path_service_run_file)
             self.run_command('sudo systemctl enable %s' % path_service_run_file)
-            self.run_command('sudo systemctl start %s' % path_service_source_file)
+            self.run_command('sudo systemctl start %s' % path_service_run_file)
 
         self._cleanup()
