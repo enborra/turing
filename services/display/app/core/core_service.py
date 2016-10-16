@@ -12,6 +12,7 @@ import Adafruit_GPIO.SPI as SPI
 
 import paho.mqtt.client as mqtt
 from ui.faces.dali import DaliFace
+from ui.faces.clock import ClockFace
 
 if platform.system().lower() == 'darwin':
     print 'RUNNING ON OSX. CAN\'T RUN DISPLAY.'
