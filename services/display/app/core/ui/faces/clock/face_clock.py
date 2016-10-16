@@ -28,4 +28,6 @@ class ClockFace(object):
             self.renderer.rectangle((0,0,240,320), fill=(0,0,0))
             self.renderer.rectangle((100,self.i,150,self.i+50), fill=(0,255,0))
 
-            self.renderer.text((0, 0), "Hello", (255,255,255), font=ImageFont.truetype(os.getcwd()+'/fonts/futura_book.otf', 16))
+            font_path = os.path.dirname(os.path.realpath(__file__))
+
+            self.renderer.text((0, 0), "Hello", (255,255,255), font=font_dir+'/app/core/fonts/futura_book.otf', 16))
