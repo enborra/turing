@@ -16,10 +16,10 @@ class ClockFace(object):
         pass
 
     def render(self):
-        if self.i>200:
+        if self.i>240:
             self.i = 0
         else:
-            self.i += 1
+            self.i += 4
 
         if self.renderer:
             self.renderer.rectangle((0,0,240,320), fill=(0,0,0))
