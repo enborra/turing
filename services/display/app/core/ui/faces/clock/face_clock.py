@@ -30,6 +30,6 @@ class ClockFace(object):
 
             font_path = os.path.dirname(os.path.realpath(__file__))
 
-            print font_path
+            curr_time_msg = datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")
 
-            self.renderer.text((0, 0), "Dolly", (255,255,255), font=ImageFont.truetype(font_path+'/../../../fonts/futura_book.otf', 70))
+            self.renderer.text((0, 0), curr_time_msg, (255,255,255), font=ImageFont.truetype(font_path+'/../../../fonts/futura_book.otf', 70))
