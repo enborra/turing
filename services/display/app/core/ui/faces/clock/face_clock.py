@@ -30,4 +30,4 @@ class ClockFace(object):
 
             font_path = os.path.dirname(os.path.realpath(__file__))
 
-            self.renderer.text((0, 0), "Hello", (255,255,255), font=font_dir+'/app/core/fonts/futura_book.otf', 16)
+            self.renderer.text((0, 0), "Hello", (255,255,255), font=(font_dir+'/app/core/fonts/futura_book.otf', 16))
