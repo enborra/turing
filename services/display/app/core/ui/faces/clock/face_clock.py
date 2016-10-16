@@ -16,5 +16,5 @@ class ClockFace(object):
 
     def render(self):
         if self.renderer:
-            self.renderer.rectangle((0,0,240,320), fill=(255,0,0))
+            self.renderer.rectangle((0,0,240,320), fill=(0,0,0))
             self.renderer.rectangle((100,100,150,150), fill=(0,255,0))
