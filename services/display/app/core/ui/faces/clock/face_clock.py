@@ -24,4 +24,5 @@ class ClockFace(object):
         if self.renderer:
             self.renderer.rectangle((0,0,240,320), fill=(0,0,0))
             self.renderer.rectangle((100,self.i,150,self.i+50), fill=(0,255,0))
-            self.renderer.line((0, 0, 100, 100), fill=128)
+
+            self.text((0, 0), "Hello", (255,255,255))
