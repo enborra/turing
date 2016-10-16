@@ -32,4 +32,4 @@ class ClockFace(object):
 
             print font_path
 
-            self.renderer.text((0, 0), "Hello", (255,255,255), font=ImageFont.truetype(font_path+'/../../../fonts/futura_book.otf', 70))
+            self.renderer.text((0, 0), "Dolly", (255,255,255), font=ImageFont.truetype(font_path+'/../../../fonts/futura_book.otf', 70))
