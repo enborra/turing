@@ -58,7 +58,8 @@ class DisplayService(object):
             self._image = Image.new('RGB', (240,320))
             self._renderer = ImageDraw.Draw(self._image)
 
-        self._face = DaliFace(self._renderer)
+        # self._face = DaliFace(self._renderer)
+        self._face = ClockFace(self._renderer)
         self._face.start()
 
         while True:
@@ -96,7 +97,7 @@ class DisplayService(object):
     def _on_message(self, client, userdata, msg):
         print 'GOT MESSAGE (qos=' + str(msg.qos) + ', topic=' + str(msg.topic) + '): ' + str(msg.payload)
 
-        self._face.blink()
+        # self._face.blink()
 
     def _on_publish(self, mosq, obj, mid):
         print 'mid: ' + str(mid)
