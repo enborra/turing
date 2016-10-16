@@ -1,5 +1,5 @@
 from PIL import Image
-from PIL import ImageDraw
+from PIL import ImageDraw, ImageFont
 
 from core.ui.faces.dali.eye import Eye
 
