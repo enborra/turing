@@ -1,5 +1,6 @@
 from PIL import Image
-from PIL import ImageDraw, ImageFont
+from PIL import ImageDraw
+from PIL import ImageFont
 
 from core.ui.faces.dali.eye import Eye
 
@@ -25,4 +26,4 @@ class ClockFace(object):
             self.renderer.rectangle((0,0,240,320), fill=(0,0,0))
             self.renderer.rectangle((100,self.i,150,self.i+50), fill=(0,255,0))
 
-            self.renderer.text((0, 0), "Hello", (255,255,255), font=ImageFont.opentype('../../../fonts/futura_book.otf', 16))
+            self.renderer.text((0, 0), "Hello", (255,255,255), font=ImageFont.truetype('../../../fonts/futura_book.otf', 16))
