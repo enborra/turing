@@ -15,6 +15,10 @@ from ui.faces.dali import DaliFace
 from ui.faces.clock import ClockFace
 
 if platform.system().lower() == 'darwin':
+    import pygame
+    import Tkinter
+    from PIL import ImageTk
+
     print 'RUNNING ON OSX. CAN\'T RUN DISPLAY.'
 
 
@@ -34,6 +38,9 @@ class DisplayService(object):
     _face = None
     _comm_delay = 0
 
+    root = None
+    canvas = None
+
 
 
 
@@ -46,6 +53,13 @@ class DisplayService(object):
 
         if platform.system().lower() == 'darwin':
             self._environment = 'SIMULATED'
+
+            # img = ImageTk.PhotoImage(self._image)
+            # self._lbl.configure(image=img)
+            # self._lbl.image = img
+
+            # self._screen.mainloop()
+
         else:
             self._environment = 'ONBOARD'
 
@@ -56,10 +70,27 @@ class DisplayService(object):
             self._disp = TFT( self._DC, rst=self._RST, spi=SPI.SpiDev(self._SPI_PORT, self._SPI_DEVICE, max_speed_hz=self._REFRESH_SPEED))
             self._disp.begin()
 
-            self._image = Image.new('RGB', (240,320))
+        elif self._environment == 'SIMULATED':
+            self._image = Image.new('RGB', (320,240), 'red')
             self._renderer = ImageDraw.Draw(self._image)
+            # self._renderer.rectangle((0,0, 100,100), fill=(0,200,0), outline='blue')
 
-        # self._face = DaliFace(self._renderer)
+            self._screen = Tkinter.Tk(className='Window')
+            # self._canvas = Tkinter.Canvas(self._screen, bg='blue', height=250, width=300)
+            self._screen.geometry("320x240")
+
+            self._image_photo = ImageTk.PhotoImage(self._image)
+
+            self._lbl = Tkinter.Label(self._screen, text='asdf', image=self._image_photo)
+            self._lbl.pack(side='bottom', fill='both', expand='yes')
+
+            # self._screen.mainloop()
+
+
+        # self._image = Image.new('RGB', (240,320), (200,0,0))
+        # self._renderer = ImageDraw.Draw(self._image)
+
+        self._face = DaliFace(self._renderer)
         self._face = ClockFace(self._renderer)
         self._face.start()
 
@@ -75,8 +106,38 @@ class DisplayService(object):
             self._comm_delay += 1
 
         self._face.render()
+
         if self._environment == 'ONBOARD':
             self._disp.display(self._image)
+
+        else:
+            if self._image:
+                # pass
+
+                # pass
+                # print 'IN VIRTUAL ENVIRONMENT.'
+                #
+                # self._renderer.point((0,0), fill='red')
+                #
+                # self._canvas.create_image(0,0, image=ImageTk.PhotoImage(self._image))
+                #
+                # self._canvas.update()
+                # self._screen.update()
+
+                # self._canvas.create_rectangle(50, 20, 150, 80, fill="#476042")
+
+                # self._renderer.point((10,10), fill='red')
+                #
+                # img = ImageTk.PhotoImage(self._image)
+                #
+                # self._canvas.create_image(0, 0, image=img)
+                # self._canvas.image = img
+
+                self._renderer.rectangle((0,0, 100,100), fill=(0,10,0))
+                self._phtimg = ImageTk.PhotoImage(self._image)
+                self._lbl.config(image=self._phtimg)
+
+                self._screen.update()
 
 
 
