@@ -1,11 +1,13 @@
 import time
 import math
-from PIL import Image, ImageDraw
+import os
+from PIL import Image, ImageDraw, ImageFont
 
 from libs import ILI9341 as TFT
 import Adafruit_GPIO as GPIO
 import Adafruit_GPIO.SPI as SPI
 
+from core.framework.interface import Interface
 from core.framework.event_hook import EventHook
 from core.framework.machine_system import MachineSystem
 
@@ -40,6 +42,12 @@ class Foreman(object):
     _recent_frame_perf = []
     _frame_rate_sample_size = 10
 
+    # Typefaces
+
+    font_futura_small = None
+    font_futura_medium = None
+    font_futura_large = None
+
     # Onboard display output settings
 
     _DC = 18
@@ -70,6 +78,13 @@ class Foreman(object):
 
     @classmethod
     def start(cls):
+        font_path = os.path.dirname(os.path.realpath(__file__))
+        font_file_path = font_path+'/../fonts/futura_book.otf'
+
+        cls.font_futura_small = ImageFont.truetype(font_file_path, 12)
+        cls.font_futura_medium = ImageFont.truetype(font_file_path, 30)
+        cls.font_futura_large = ImageFont.truetype(font_file_path, 45)
+
         if MachineSystem.is_onboard():
             cls._disp = TFT(
                 cls._DC,
@@ -80,7 +95,7 @@ class Foreman(object):
             cls._disp.begin()
 
         elif MachineSystem.is_simulated():
-            cls._image = Image.new('RGB', (cls._screen_height, cls._screen_width), 'black')
+            cls._image = Image.new('RGBA', (cls._screen_height, cls._screen_width), Interface.COLOR_BLACK)
             cls.renderer = ImageDraw.Draw(cls._image)
 
             cls._screen = Tkinter.Tk(className='Window')
@@ -97,6 +112,10 @@ class Foreman(object):
     @classmethod
     def get_frame_rate(cls):
         return cls._current_frame_rate
+
+    @classmethod
+    def draw(cls, img):
+        cls._image.paste(img, (0,0))
 
     @classmethod
     def update(cls):

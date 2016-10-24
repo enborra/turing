@@ -5,6 +5,7 @@ import paho.mqtt.client as mqtt
 
 from core.framework import MachineSystem
 from core.framework import Foreman
+from core.framework import Interface
 from core.ui.faces.clock import ClockFace
 
 if MachineSystem.is_simulated():
@@ -49,7 +50,11 @@ class DisplayService(object):
         self._thread_comms.setDaemon(True)
         self._thread_comms.start()
 
-        self._face = ClockFace(Foreman.renderer)
+        self._face = ClockFace(
+            ui_width_size=Interface.UI_SIZE_LARGE,
+            ui_height_size=Interface.UI_SIZE_LARGE
+        )
+
         self._face.start()
 
         while True:
@@ -83,7 +88,10 @@ class DisplayService(object):
         print 'Processed half-second.'
 
     def _process_frame(self, args=None):
-        self._face.render()
+        img = self._face.render()
+        img = img.rotate(-90, expand=True)
+
+        Foreman.draw(img)
 
     def update(self):
         Foreman.update()
