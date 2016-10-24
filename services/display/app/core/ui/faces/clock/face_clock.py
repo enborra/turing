@@ -4,6 +4,8 @@ from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 
+from core.framework import Foreman
+
 from core.ui.faces.dali.eye import Eye
 
 
@@ -31,5 +33,6 @@ class ClockFace(object):
             font_path = os.path.dirname(os.path.realpath(__file__))
 
             curr_time_msg = datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")
+            curr_time_msg = '%s' % Foreman.get_frame_rate()
 
-            self.renderer.text((0, 0), curr_time_msg, (255,255,255), font=ImageFont.truetype(font_path+'/../../../fonts/futura_book.otf', 45))
+            self.renderer.text((0, 0), curr_time_msg, (255,255,255), font=ImageFont.truetype(font_path+'/../../../fonts/futura_book.otf', 30))

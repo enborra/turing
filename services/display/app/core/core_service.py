@@ -1,47 +1,30 @@
-
-import os, platform
 import time
-import sys
-
-from PIL import Image
-from PIL import ImageDraw
-
-from libs import ILI9341 as TFT
-import Adafruit_GPIO as GPIO
-import Adafruit_GPIO.SPI as SPI
+import threading
 
 import paho.mqtt.client as mqtt
-from ui.faces.dali import DaliFace
-from ui.faces.clock import ClockFace
 
-if platform.system().lower() == 'darwin':
-    import pygame
+from core.framework import MachineSystem
+from core.framework import Foreman
+from core.ui.faces.clock import ClockFace
+
+if MachineSystem.is_simulated():
     import Tkinter
     from PIL import ImageTk
 
-    print 'RUNNING ON OSX. CAN\'T RUN DISPLAY.'
-
 
 class DisplayService(object):
-    _environment = None
+    # Communications threading properties
+
     _comm_client = None
-
-    _canvas = None
-    _DC = 18
-    _RST = 23
-    _SPI_PORT = 0
-    _SPI_DEVICE = 0
-    _REFRESH_SPEED = 64000000
-    _image = None
-    _renderer = None
-    _disp = None
-    _face = None
     _comm_delay = 0
+    _thread_comms = None
+    _thread_lock = None
 
-    root = None
-    canvas = None
+    _dummy_variable = 0
 
+    # Ui properties
 
+    _face = None
 
 
     def __init__(self):
@@ -51,95 +34,59 @@ class DisplayService(object):
         self._comm_client.on_publish = self._on_publish
         self._comm_client.on_subscribe = self._on_subscribe
 
-        if platform.system().lower() == 'darwin':
-            self._environment = 'SIMULATED'
-
-            # img = ImageTk.PhotoImage(self._image)
-            # self._lbl.configure(image=img)
-            # self._lbl.image = img
-
-            # self._screen.mainloop()
-
-        else:
-            self._environment = 'ONBOARD'
+        Foreman.initialize()
 
     def start(self):
-        self._connect_to_comms()
+        Foreman.start()
 
-        if self._environment == 'ONBOARD':
-            self._disp = TFT( self._DC, rst=self._RST, spi=SPI.SpiDev(self._SPI_PORT, self._SPI_DEVICE, max_speed_hz=self._REFRESH_SPEED))
-            self._disp.begin()
+        Foreman.on_second += self._process_second
+        Foreman.on_frame += self._process_frame
+        Foreman.on_second_half += self._process_second_half
 
-        elif self._environment == 'SIMULATED':
-            self._image = Image.new('RGB', (320,240), 'red')
-            self._renderer = ImageDraw.Draw(self._image)
-            # self._renderer.rectangle((0,0, 100,100), fill=(0,200,0), outline='blue')
+        self._thread_lock = threading.Lock()
 
-            self._screen = Tkinter.Tk(className='Window')
-            # self._canvas = Tkinter.Canvas(self._screen, bg='blue', height=250, width=300)
-            self._screen.geometry("320x240")
+        self._thread_comms = threading.Thread(target=self._start_thread_comms)
+        self._thread_comms.setDaemon(True)
+        self._thread_comms.start()
 
-            self._image_photo = ImageTk.PhotoImage(self._image)
-
-            self._lbl = Tkinter.Label(self._screen, text='asdf', image=self._image_photo)
-            self._lbl.pack(side='bottom', fill='both', expand='yes')
-
-            # self._screen.mainloop()
-
-
-        # self._image = Image.new('RGB', (240,320), (200,0,0))
-        # self._renderer = ImageDraw.Draw(self._image)
-
-        self._face = DaliFace(self._renderer)
-        self._face = ClockFace(self._renderer)
+        self._face = ClockFace(Foreman.renderer)
         self._face.start()
 
         while True:
             self.update()
 
-    def update(self):
-        if self._comm_delay > 60:
-            self._comm_client.loop()
-            self._comm_delay = 0
+    def _start_thread_comms(self):
+        print 'Comms thread started.'
 
-        else:
-            self._comm_delay += 1
+        self._connect_to_comms()
 
+        print 'Connected to comms server.'
+
+        while True:
+            self._thread_lock.acquire()
+
+            try:
+                if self._comm_delay > 2000:
+                    self._comm_client.loop()
+                    self._comm_delay = 0
+
+                else:
+                    self._comm_delay += 1
+
+            finally:
+                self._thread_lock.release()
+
+    def _process_second(self, args=None):
+        print 'Processed second (frame rate: %s)' % Foreman.get_frame_rate()
+
+    def _process_second_half(self, args=None):
+        print 'Processed half-second.'
+
+    def _process_frame(self, args=None):
         self._face.render()
 
-        if self._environment == 'ONBOARD':
-            self._disp.display(self._image)
-
-        else:
-            if self._image:
-                # pass
-
-                # pass
-                # print 'IN VIRTUAL ENVIRONMENT.'
-                #
-                # self._renderer.point((0,0), fill='red')
-                #
-                # self._canvas.create_image(0,0, image=ImageTk.PhotoImage(self._image))
-                #
-                # self._canvas.update()
-                # self._screen.update()
-
-                # self._canvas.create_rectangle(50, 20, 150, 80, fill="#476042")
-
-                # self._renderer.point((10,10), fill='red')
-                #
-                # img = ImageTk.PhotoImage(self._image)
-                #
-                # self._canvas.create_image(0, 0, image=img)
-                # self._canvas.image = img
-
-                self._renderer.rectangle((0,0, 100,100), fill=(0,10,0))
-                self._phtimg = ImageTk.PhotoImage(self._image)
-                self._lbl.config(image=self._phtimg)
-
-                self._screen.update()
-
-
+    def update(self):
+        Foreman.update()
 
 
     def _connect_to_comms(self):
@@ -149,17 +96,13 @@ class DisplayService(object):
             time.sleep(1)
             self._connect_to_comms()
 
-
     def _on_connect(self, client, userdata, flags, rc):
         print "New connection: " + str(rc)
 
         self._comm_client.subscribe('system', 0)
 
-
     def _on_message(self, client, userdata, msg):
         print 'GOT MESSAGE (qos=' + str(msg.qos) + ', topic=' + str(msg.topic) + '): ' + str(msg.payload)
-
-        # self._face.blink()
 
     def _on_publish(self, mosq, obj, mid):
         print 'mid: ' + str(mid)
