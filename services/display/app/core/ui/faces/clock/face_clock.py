@@ -53,8 +53,6 @@ class ClockFace(object):
             canvas_draw.text(((320-type_width)/2, (240-type_height)/2), curr_time_msg, font=Foreman.font_futura_medium, fill=Interface.COLOR_WHITE)
             canvas_draw.text((10,10), curr_frame_rate_msg, font=Foreman.font_futura_small, fill=Interface.COLOR_WHITE)
 
-            # Rotate canvas to match display needs
-
             resp = canvas_img
 
         return resp

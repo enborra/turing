@@ -155,9 +155,6 @@ class Foreman(object):
     @classmethod
     def _record_frame_render_time(cls):
         if len(cls._recent_frame_perf) >= cls._frame_rate_sample_size:
-            # print 'processing frame sample to create new frame rate'
-            # print self._recent_frame_perf
-
             avg = 0
 
             for sample in cls._recent_frame_perf:
@@ -166,10 +163,8 @@ class Foreman(object):
             avg = avg / len(cls._recent_frame_perf)
 
             cls._current_frame_multiplier = avg
-
-            # print '---average of %s miliseconds during processing of the last %s frames' % (avg*1000, len(self._recent_frame_perf))
-
             cls._recent_frame_perf = []
+
         else:
             frame_process_time = cls.get_millis() - cls._last_frame_update
 
