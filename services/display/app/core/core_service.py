@@ -38,6 +38,8 @@ class DisplayService(object):
         Foreman.initialize()
 
     def start(self):
+        Foreman.debug_msg('Starting CoreService')
+
         Foreman.start()
 
         Foreman.on_second += self._process_second
@@ -59,6 +61,9 @@ class DisplayService(object):
 
         while True:
             self.update()
+
+    def update(self):
+        Foreman.update()
 
     def _start_thread_comms(self):
         print 'Comms thread started.'
@@ -82,20 +87,18 @@ class DisplayService(object):
                 self._thread_lock.release()
 
     def _process_second(self, args=None):
-        print 'Processed second (frame rate: %s)' % Foreman.get_frame_rate()
+        # Foreman.debug_msg('event: half-second elapsed, frame rate %s' % Foreman.get_frame_rate())
+        Foreman.debug_msg('event: second elapsed.')
 
     def _process_second_half(self, args=None):
-        print 'Processed half-second.'
+        # Foreman.debug_msg('event: half-second elapsed, frame rate %s' % Foreman.get_frame_rate())
+        pass
 
     def _process_frame(self, args=None):
         img = self._face.render()
         img = img.rotate(-90, expand=True)
 
         Foreman.draw(img)
-
-    def update(self):
-        Foreman.update()
-
 
     def _connect_to_comms(self):
         try:

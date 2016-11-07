@@ -11,22 +11,26 @@ from core.framework.interface import Interface
 from core.framework.event_hook import EventHook
 from core.framework.machine_system import MachineSystem
 
-# If working in a simulated environment, include
-# needed packages for drawing window-based display
-# output emulation.
+# If running in simulated environment, include module for
+# writing debug output to on-screen window.
 
 if MachineSystem.is_simulated():
     import Tkinter
     from PIL import ImageTk
+
+    from core.framework.output_window import OutputWindow
 
 
 class Foreman(object):
     _screen = None
     _screen_width = 320
     _screen_height = 240
+    _last_update_call = 0
+
+    _debug_window = None
+
     _image = None
     _image_staged = None
-    _last_update_call = 0
 
     # Animation properties
 
@@ -47,6 +51,7 @@ class Foreman(object):
     font_futura_small = None
     font_futura_medium = None
     font_futura_large = None
+    font_lekton_small = None
 
     # Onboard display output settings
 
@@ -76,6 +81,9 @@ class Foreman(object):
         cls.on_second_half = EventHook()
         cls.on_second_quarter = EventHook()
 
+        if MachineSystem.is_simulated:
+            cls._debug_window = OutputWindow()
+
     @classmethod
     def start(cls):
         font_path = os.path.dirname(os.path.realpath(__file__))
@@ -100,10 +108,16 @@ class Foreman(object):
 
             cls._screen = Tkinter.Tk(className='Window')
             cls._screen.resizable(width=False, height=False)
-            cls._screen.geometry('%sx%s' % (cls._screen_width, cls._screen_height))
+            cls._screen.geometry('%sx%s+%s+%s' % (cls._screen_width, cls._screen_height, 50, 50))
 
             cls._lbl = Tkinter.Label(cls._screen)
+            cls._lbl.config(borderwidth='0p')
+            cls._lbl.config(background='black')
             cls._lbl.pack()
+            cls._lbl.place(x=0, y=0)
+
+            cls._debug_window.start()
+            cls._debug_window.create_metric_tab('frame_rate')
 
     @classmethod
     def get_millis(cls):
@@ -115,7 +129,9 @@ class Foreman(object):
 
     @classmethod
     def draw(cls, img):
-        cls._image.paste(img, (0,0))
+        x = 0
+        y = 0
+        cls._image.paste(img, (y,x))
 
     @classmethod
     def update(cls):
@@ -128,6 +144,7 @@ class Foreman(object):
             cls._current_frame_multiplier = float(cls._current_frame_rate) / float(1000)
             cls._current_frame_count = 0
 
+            cls.on_second_half.fire()
             cls.on_second.fire()
 
         else:
@@ -151,6 +168,14 @@ class Foreman(object):
                 cls._lbl.config(image=cls._image_staged)
                 cls._screen.update()
 
+                # Update debug output window
+
+                cls._debug_window.update()
+                cls._debug_window.update_metric_tab('frame_rate', cls.get_frame_rate())
+
+    @classmethod
+    def debug_msg(cls, msg):
+        cls._debug_window.append(msg)
 
     @classmethod
     def _record_frame_render_time(cls):

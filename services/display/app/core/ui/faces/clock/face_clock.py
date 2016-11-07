@@ -32,7 +32,7 @@ class ClockFace(object):
         self._height = 240
 
     def start(self):
-        pass
+        Foreman.debug_msg('Starting ClockFace')
 
     def render(self):
         resp = None
@@ -43,7 +43,7 @@ class ClockFace(object):
 
             # Set up drawing canvas and font
 
-            canvas_img = Image.new('RGBA', (self._width,self._height), Interface.COLOR_BLACK)
+            canvas_img = Image.new('RGB', (self._width,self._height), Interface.COLOR_BLACK)
             canvas_draw = ImageDraw.Draw(canvas_img)
 
             # Add elements to canvas
