@@ -92,6 +92,9 @@ class Foreman(object):
         cls.font_futura_medium = ImageFont.truetype(font_file_path, 30)
         cls.font_futura_large = ImageFont.truetype(font_file_path, 45)
 
+        cls._image = Image.new('RGBA', (cls._screen_height, cls._screen_width), Interface.COLOR_BLACK)
+        cls.renderer = ImageDraw.Draw(cls._image)
+
         if MachineSystem.is_onboard():
             cls._disp = TFT(
                 cls._DC,
@@ -102,9 +105,6 @@ class Foreman(object):
             cls._disp.begin()
 
         elif MachineSystem.is_simulated():
-            cls._image = Image.new('RGBA', (cls._screen_height, cls._screen_width), Interface.COLOR_BLACK)
-            cls.renderer = ImageDraw.Draw(cls._image)
-
             cls._screen = Tkinter.Tk(className='Window')
             cls._screen.resizable(width=False, height=False)
             cls._screen.geometry('%sx%s+%s+%s' % (cls._screen_width, cls._screen_height, 50, 50))

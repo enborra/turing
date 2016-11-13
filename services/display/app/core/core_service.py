@@ -97,11 +97,9 @@ class DisplayService(object):
 
     def _process_frame(self, args=None):
         img = self._face.render()
+        img = img.rotate(-90, expand=True)
 
-        if img:
-            img = img.rotate(-90, expand=True)
-
-            Foreman.draw(img)
+        Foreman.draw(img)
 
     def _connect_to_comms(self):
         try:
