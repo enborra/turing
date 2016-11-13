@@ -67,16 +67,10 @@ class DisplayService(object):
 
     def _start_thread_comms(self):
         print 'Comms thread started.'
-        self._thread_lock.acquire()
-        Foreman.debug_msg('Comms thread started.')
-        self._thread_lock.release()
 
         self._connect_to_comms()
 
         print 'Connected to comms server.'
-        self._thread_lock.acquire()
-        Foreman.debug_msg('Connected to comms server.')
-        self._thread_lock.release()
 
         while True:
             self._thread_lock.acquire()
@@ -103,9 +97,11 @@ class DisplayService(object):
 
     def _process_frame(self, args=None):
         img = self._face.render()
-        img = img.rotate(-90, expand=True)
 
-        Foreman.draw(img)
+        if img:
+            img = img.rotate(-90, expand=True)
+
+            Foreman.draw(img)
 
     def _connect_to_comms(self):
         try:
