@@ -64,7 +64,7 @@ class OutputWindow(object):
             self._text = Tkinter.Text(
                 self._screen,
                 width=59,
-                height=27,
+                height=23,
                 font=self._font_helvetica
             )
 
@@ -87,23 +87,13 @@ class OutputWindow(object):
             self._text.insert(1.0, msg + '\n')
 
     def create_metric_tab(self, tab_name):
-        self._metrics_tabs[tab_name] = MetricTab()
-
-        self._metrics_tabs[tab_name].obj = Tkinter.Text(
-            self._screen,
-            width=20,
-            height=10,
-            font=self._font_helvetica_large
+        self._metrics_tabs[tab_name] = MetricTab(
+            title='Framerate',
+            parent_screen=self._screen,
+            x=20+(70*len(self._metrics_tabs)),
+            y=self._height-60
         )
-
-        self._metrics_tabs[tab_name].obj.config(foreground='white')
-        self._metrics_tabs[tab_name].obj.config(background='black')
-        self._metrics_tabs[tab_name].obj.config(highlightbackground='black')
-
-        self._metrics_tabs[tab_name].obj.pack()
-        self._metrics_tabs[tab_name].obj.place(x=20+(70*(len(self._metrics_tabs)-1)), y=self._height-60)
 
     def update_metric_tab(self, tab_name, metric):
         if self._metrics_tabs[tab_name]:
-            self._metrics_tabs[tab_name].obj.delete(1.0, 'end')
-            self._metrics_tabs[tab_name].obj.insert(1.0, str(metric))
+            self._metrics_tabs[tab_name].update(metric)

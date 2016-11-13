@@ -67,10 +67,16 @@ class DisplayService(object):
 
     def _start_thread_comms(self):
         print 'Comms thread started.'
+        self._thread_lock.acquire()
+        Foreman.debug_msg('Comms thread started.')
+        self._thread_lock.release()
 
         self._connect_to_comms()
 
         print 'Connected to comms server.'
+        self._thread_lock.acquire()
+        Foreman.debug_msg('Connected to comms server.')
+        self._thread_lock.release()
 
         while True:
             self._thread_lock.acquire()
@@ -88,7 +94,8 @@ class DisplayService(object):
 
     def _process_second(self, args=None):
         # Foreman.debug_msg('event: half-second elapsed, frame rate %s' % Foreman.get_frame_rate())
-        Foreman.debug_msg('event: second elapsed.')
+        # Foreman.debug_msg('event: second elapsed.')
+        pass
 
     def _process_second_half(self, args=None):
         # Foreman.debug_msg('event: half-second elapsed, frame rate %s' % Foreman.get_frame_rate())
@@ -103,12 +110,13 @@ class DisplayService(object):
     def _connect_to_comms(self):
         try:
             self._comm_client.connect('localhost', 1883, 60)
+            Foreman.debug_msg('Connected to local Grand Central.')
         except Exception, e:
             time.sleep(1)
             self._connect_to_comms()
 
     def _on_connect(self, client, userdata, flags, rc):
-        print "New connection: " + str(rc)
+        Foreman.debug_msg("New connection: " + str(rc))
 
         self._comm_client.subscribe('system', 0)
 
