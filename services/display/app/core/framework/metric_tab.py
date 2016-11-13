@@ -1,6 +1,13 @@
-import Tkinter
-from PIL import ImageTk
-import tkFont
+from core.framework.machine_system import MachineSystem
+
+# If working in a simulated environment, include
+# needed packages for drawing window-based display
+# output emulation.
+
+if MachineSystem.is_simulated():
+    import Tkinter
+    from PIL import ImageTk
+    import tkFont
 
 
 class MetricTab(object):
