@@ -7,6 +7,7 @@ from core.framework import MachineSystem
 from core.framework import Foreman
 from core.framework import Interface
 from core.ui.faces.clock import ClockFace
+from core.ui.faces.dali import DaliFace
 
 if MachineSystem.is_simulated():
     import Tkinter
@@ -52,10 +53,21 @@ class DisplayService(object):
         self._thread_comms.setDaemon(True)
         self._thread_comms.start()
 
-        self._face = ClockFace(
+        # self._face = ClockFace(
+        #     ui_width_size=Interface.UI_SIZE_LARGE,
+        #     ui_height_size=Interface.UI_SIZE_LARGE
+        # )
+
+        self._face = DaliFace(
             ui_width_size=Interface.UI_SIZE_LARGE,
             ui_height_size=Interface.UI_SIZE_LARGE
         )
+
+        #
+        # 
+        # TODO: MAKE THIS FACE WORK
+        #
+        #
 
         self._face.start()
 

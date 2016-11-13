@@ -1,12 +1,11 @@
-# import os
 import datetime
+
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 
 from core.framework import Foreman
 from core.framework import Interface
-
 from core.ui.faces.dali.eye import Eye
 
 
