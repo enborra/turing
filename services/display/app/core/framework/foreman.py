@@ -10,6 +10,7 @@ import Adafruit_GPIO.SPI as SPI
 from core.framework.interface import Interface
 from core.framework.event_hook import EventHook
 from core.framework.machine_system import MachineSystem
+from core.framework.output_window import OutputWindow
 
 # If running in simulated environment, include module for
 # writing debug output to on-screen window.
@@ -17,8 +18,6 @@ from core.framework.machine_system import MachineSystem
 if MachineSystem.is_simulated():
     import Tkinter
     from PIL import ImageTk
-
-    from core.framework.output_window import OutputWindow
 
 
 class Foreman(object):
