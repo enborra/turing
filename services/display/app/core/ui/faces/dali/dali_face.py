@@ -36,7 +36,10 @@ class DaliFace(object):
         )
 
     def start(self):
-        Foreman.debug_msg('Starting Dali face.')
+        print('Starting Dali face.')
+
+    def stop(self):
+        print('Stopping Dali face.')
 
     def blink(self):
         self._eye_left.blink()

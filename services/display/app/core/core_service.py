@@ -53,29 +53,38 @@ class DisplayService(object):
         self._thread_comms.setDaemon(True)
         self._thread_comms.start()
 
-        # self._face = ClockFace(
-        #     ui_width_size=Interface.UI_SIZE_LARGE,
-        #     ui_height_size=Interface.UI_SIZE_LARGE
-        # )
+        # Load initial display face
 
-        self._face = DaliFace(
-            ui_width_size=Interface.UI_SIZE_LARGE,
-            ui_height_size=Interface.UI_SIZE_LARGE
-        )
-
-        #
-        # 
-        # TODO: MAKE THIS FACE WORK
-        #
-        #
-
-        self._face.start()
+        self._load_face('clock')
 
         while True:
             self.update()
 
     def update(self):
         Foreman.update()
+
+    def _load_face(self, face_name):
+        if face_name == 'dali':
+            if self._face:
+                self._face.stop()
+
+            self._face = DaliFace(
+                ui_width_size=Interface.UI_SIZE_LARGE,
+                ui_height_size=Interface.UI_SIZE_LARGE
+            )
+
+            self._face.start()
+
+        elif face_name == 'clock':
+            if self._face:
+                self._face.stop()
+
+            self._face = ClockFace(
+                ui_width_size=Interface.UI_SIZE_LARGE,
+                ui_height_size=Interface.UI_SIZE_LARGE
+            )
+
+            self._face.start()
 
     def _start_thread_comms(self):
         print 'Comms thread started.'
@@ -114,20 +123,35 @@ class DisplayService(object):
         Foreman.draw(img)
 
     def _connect_to_comms(self):
+        print 'connecting to comms system.'
+
         try:
             self._comm_client.connect('localhost', 1883, 60)
-            Foreman.debug_msg('Connected to local Grand Central.')
+            print('Connected to local Grand Central.')
         except Exception, e:
+            print('Could not connect to local Grand Central. Retrying..')
+
             time.sleep(1)
             self._connect_to_comms()
 
     def _on_connect(self, client, userdata, flags, rc):
-        Foreman.debug_msg("New connection: " + str(rc))
+        print("New connection: " + str(rc))
 
         self._comm_client.subscribe('system', 0)
 
     def _on_message(self, client, userdata, msg):
         print 'GOT MESSAGE (qos=' + str(msg.qos) + ', topic=' + str(msg.topic) + '): ' + str(msg.payload)
+
+        req_msg = str(msg.payload)
+
+        if req_msg == 'clock':
+            self._load_face('clock')
+
+        elif req_msg == 'dali':
+            self._load_face('dali')
+
+        import sys
+        sys.stdout.flush()
 
     def _on_publish(self, mosq, obj, mid):
         print 'mid: ' + str(mid)

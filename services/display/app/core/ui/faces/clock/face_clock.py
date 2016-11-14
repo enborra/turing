@@ -31,7 +31,10 @@ class ClockFace(object):
         self._height = 240
 
     def start(self):
-        Foreman.debug_msg('Starting ClockFace')
+        print('Starting ClockFace')
+
+    def stop(self):
+        print('Stopping Clock face.')
 
     def render(self):
         resp = None
