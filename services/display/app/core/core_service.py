@@ -127,37 +127,35 @@ class DisplayService(object):
 
         try:
             self._comm_client.connect('localhost', 1883, 60)
-            print('Connected to local Grand Central.')
+
         except Exception, e:
-            print('Could not connect to local Grand Central. Retrying..')
+            Foreman.debug_msg('Could not connect to local Grand Central. Retrying in one second.')
 
             time.sleep(1)
             self._connect_to_comms()
 
     def _on_connect(self, client, userdata, flags, rc):
-        print("New connection: " + str(rc))
+        Foreman.debug_msg("Established connection into local hub: " + str(rc))
 
         self._comm_client.subscribe('system', 0)
 
     def _on_message(self, client, userdata, msg):
-        print 'GOT MESSAGE (qos=' + str(msg.qos) + ', topic=' + str(msg.topic) + '): ' + str(msg.payload)
+        Foreman.debug_msg('Got message on local hub (qos=' + str(msg.qos) + ', topic=' + str(msg.topic) + '): ' + str(msg.payload))
 
-        req_msg = str(msg.payload)
+        if msg.payload:
+            req_msg = str(msg.payload)
 
-        if req_msg == 'clock':
-            self._load_face('clock')
+            if req_msg == 'clock':
+                self._load_face('clock')
 
-        elif req_msg == 'dali':
-            self._load_face('dali')
-
-        import sys
-        sys.stdout.flush()
+            elif req_msg == 'dali':
+                self._load_face('dali')
 
     def _on_publish(self, mosq, obj, mid):
         print 'mid: ' + str(mid)
 
     def _on_subscribe(self, mosq, obj, mid, granted_qos):
-        print 'Subscribed: ' + str(mid) + ' ' + str(granted_qos)
+        Foreman.debug_msg('Subscribed successfully to topic on local hub: ' + str(mid) + ' ' + str(granted_qos))
 
     def _on_log(self, mosq, obj, level, string):
         print 'Log: ' + str(string)

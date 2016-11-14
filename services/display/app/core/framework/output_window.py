@@ -78,13 +78,17 @@ class OutputWindow(object):
 
     def update(self):
         if self._screen:
+            if self._text:
+                if self._text.get('1.0', 'end') != self._full_text:
+                    self._text.delete(1.0, 'end')
+                    self._text.insert(1.0, self._full_text + '\n')
+
+
+
             self._screen.update()
 
     def append(self, msg):
         self._full_text = ('%s\n' + self._full_text) % msg
-
-        if self._text:
-            self._text.insert(1.0, msg + '\n')
 
     def create_metric_tab(self, tab_name):
         self._metrics_tabs[tab_name] = MetricTab(
