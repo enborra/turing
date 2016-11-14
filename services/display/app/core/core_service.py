@@ -8,6 +8,7 @@ from core.framework import Foreman
 from core.framework import Interface
 from core.ui.faces.clock import ClockFace
 from core.ui.faces.dali import DaliFace
+from core.ui.faces.weather import WeatherFace
 
 if MachineSystem.is_simulated():
     import Tkinter
@@ -55,7 +56,7 @@ class DisplayService(object):
 
         # Load initial display face
 
-        self._load_face('clock')
+        self._load_face('weather')
 
         while True:
             self.update()
@@ -86,12 +87,23 @@ class DisplayService(object):
 
             self._face.start()
 
+        elif face_name == 'weather':
+            if self._face:
+                self._face.stop()
+
+            self._face = WeatherFace(
+                ui_width_size=Interface.UI_SIZE_LARGE,
+                ui_height_size=Interface.UI_SIZE_LARGE
+            )
+
+            self._face.start()
+
     def _start_thread_comms(self):
-        print 'Comms thread started.'
+        Foreman.debug_msg('Comms thread started.')
 
         self._connect_to_comms()
 
-        print 'Connected to comms server.'
+        Foreman.debug_msg('Connected to comms server.')
 
         while True:
             self._thread_lock.acquire()
@@ -123,7 +135,7 @@ class DisplayService(object):
         Foreman.draw(img)
 
     def _connect_to_comms(self):
-        print 'connecting to comms system.'
+        Foreman.debug_msg('connecting to comms system.')
 
         try:
             self._comm_client.connect('localhost', 1883, 60)
