@@ -163,6 +163,9 @@ class DisplayService(object):
             elif req_msg == 'dali':
                 self._load_face('dali')
 
+            elif req_msg == 'weather':
+                self._load_face('weather')
+
     def _on_publish(self, mosq, obj, mid):
         print 'mid: ' + str(mid)
 
