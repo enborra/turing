@@ -34,6 +34,16 @@
                 "osx": "com.turing.vox.plist",
                 "raspberry_pi": "com.turing.vox.service"
             }
+        },
+
+        "kanata": {
+            "name": "com.turing.kanata",
+            "enabled": true,
+
+            "install": {
+                "osx": "com.turing.kanata.plist",
+                "raspberry_pi": "com.turing.kanata.service"
+            }
         }
     }
 }

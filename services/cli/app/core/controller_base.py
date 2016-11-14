@@ -22,3 +22,6 @@ class BaseController(object):
         output = subprocess.check_output(command_body, shell=True)
 
         return output
+
+    def install_service(self):
+        pass

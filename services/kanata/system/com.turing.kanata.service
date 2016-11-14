@@ -1,0 +1,12 @@
+[Unit]
+Description=Turing Kanata
+Wants=network.target
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/bin/bash /home/pi/projects/turing/services/kanata/boot.sh
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target

@@ -25,7 +25,6 @@ class RaspberryPiController(BaseController):
         current_name = current_config['name']
         current_run_file_name = current_config['install']['osx']
 
-
         if 'enabled' in current_config:
             if current_config['enabled'] == False:
                 is_enabled = False
@@ -103,17 +102,21 @@ class RaspberryPiController(BaseController):
         super().update_source()
         self.stop_service()
 
-        self.display('{{GREEN}}Pulling new code down from origin/master{{DARKGRAY}}')
+        output_msg = '{{GREEN}}Pulling new code down from origin/master{{DARKGRAY}}'
 
         subprocess.check_output('cd $TURING_APP_DIR', shell=True)
         subprocess.check_output('git pull origin master', shell=True)
         subprocess.check_output('cd /home/pi/projects/turing/services/central_station', shell=True)
 
-        self.display('{{WHITE}}')
+        output_msg += '{{WHITE}}'
 
-        self.start_service()
+        output_msg += '\n' + self.start_service()
+
+        return output_msg
 
     def install_service(self):
+        output_msg = ''
+
         super().install_service()
 
         for service_name in self._commands['services']:
@@ -125,7 +128,7 @@ class RaspberryPiController(BaseController):
             path_service_run_file = self._path_run_root + current_service_run_file_name
 
 
-            self.display('{{GREEN}}Installing service:{{WHITE}} %s' % current_service_run_file_name)
+            output_msg += '{{GREEN}}Installing service:{{WHITE}} %s\n' % current_service_run_file_name
 
             # If the service is running, stop it
 
@@ -139,7 +142,7 @@ class RaspberryPiController(BaseController):
                 print('successfully uninstalled.')
 
             except Exception as e:
-                print('Had a problem uninstalling service: %s' % str(e))
+                output_msg += 'Had a problem uninstalling service: %s\n' % str(e)
 
             # Now install new service and load it
 
@@ -148,4 +151,4 @@ class RaspberryPiController(BaseController):
             self.run_command('sudo systemctl enable %s' % current_service_run_file_name)
             self.run_command('sudo systemctl start %s' % current_service_run_file_name)
 
-        self._cleanup()
+        return output_msg

@@ -100,6 +100,8 @@ class OsxController(BaseController):
         return output_msg
 
     def get_service_status_OLD(self):
+        output_msg = ''
+
         for service_name in self._commands['services']:
             is_enabled = True
 
@@ -115,30 +117,35 @@ class OsxController(BaseController):
 
                 try:
                     self.run_command('sudo launchctl list | grep ' + self._commands['services'][service_name]['name'])
-                    self.display('{{GREEN}}Service running: {{WHITE}}%s' % service_name)
+                    output_msg += '{{GREEN}}Service running: {{WHITE}}%s' % service_name + '\n'
 
                 except Exception as e:
-                    self.display('{{RED}}Service not running: {{WHITE}}%s' % service_name)
+                    output_msg += '{{RED}}Service not running: {{WHITE}}%s\n' % service_name
 
             else:
-                self.display('{{DARKGRAY}}Service disabled: %s' % current_name)
+                output_msg += '{{DARKGRAY}}Service disabled: %s\n' % current_name
 
-        print()
+        return output_msg
 
     def update_source(self):
+        output_msg = None
+
         self.stop_service()
         super().update_source()
 
-        self.display('{{GREEN}}Pulling new code down from origin/master{{DARKGRAY}}')
+        output_msg = '{{GREEN}}Pulling new code down from origin/master{{DARKGRAY}}'
 
         self.run_command('cd $TURING_APP_DIR')
         self.run_command('git pull origin master')
 
-        self.display('{{WHITE}}')
+        output_msg += '{{WHITE}}'
+        output_msg += '\n' + self.start_service()
 
-        self.start_service()
+        return output_msg
 
     def install_service(self):
+        output_msg = ''
+
         super().install_service()
 
         for service_name in self._commands['services']:
@@ -163,7 +170,7 @@ class OsxController(BaseController):
                 path_service_run_file = self._path_run_root + current_service_run_file_name
 
 
-                self.display('{{GREEN}}Installing service:{{WHITE}} %s' % current_service_run_file_name)
+                output_msg += '{{GREEN}}Installing service:{{WHITE}} %s\n' % current_service_run_file_name
 
                 # If the service is running, stop it
 
@@ -181,6 +188,4 @@ class OsxController(BaseController):
                 self.run_command('sudo launchctl load %s' % path_service_run_file)
 
             else:
-                self.display('{{DARKGRAY}}Skipping disabled service: %s' % current_name)
-
-        self._cleanup()
+                output_msg += '{{DARKGRAY}}Skipping disabled service: %s\n' % current_name
