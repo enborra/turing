@@ -19,3 +19,11 @@ function recieve(packet, client){
 function setup(){
   console.log( 'Mosca server is up and running.' );
 }
+
+
+var http     = require('http')
+  , httpServ = http.createServer();
+
+server.attachHttpServer(httpServ);
+
+httpServ.listen(3000);

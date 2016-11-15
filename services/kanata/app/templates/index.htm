@@ -1,0 +1,63 @@
+<html>
+<head>
+    <title>Turing Droid</title>
+
+    <link href="/static/css/global.css" rel="stylesheet" type="text/css" />
+    <script src="/static/js/mqtt.js"></script>
+</head>
+
+<body>
+
+    rendering.
+
+    <script>
+
+        var port = 3000;
+        var host = 'localhost';
+        var options = {
+            // host: host,
+            // port: port,
+            // clientId: 'Browser' + new Date().getTime(),
+            // reconnectPeriod: 1000
+        };
+
+        var handleConnect = function(){
+            console.log('Connected');
+            client.subscribe('/system');
+        }
+
+        var handleClose = function(){
+            console.log('Closed, reconnecting in '+ options.reconnectPeriod);
+        }
+
+        var handleMessage = function(topic, message){
+            console.log('Received:', topic, 'Message:', message);
+
+            document.write('Received message: ' + message);
+            document.write('<br/>');
+        }
+
+        console.log('Connecting...');
+
+        var client = mqtt.connect('mqtt://localhost', {
+            port: port
+        });
+
+        client.on('connect', handleConnect);
+        client.on('message', handleMessage);
+        client.on('close'  , handleClose);
+
+        var heartbeatCount = 0;
+        // var heartbeatTimer = setInterval(function(){
+        //     heartbeatCount++;
+        //
+        //     var topic = '/system';
+        //
+        //     client.publish(topic, 'hrm');
+        //     console.log('Published', topic);
+        // }, 1000);
+
+    </script>
+
+</body>
+</html>
