@@ -172,6 +172,7 @@ class Foreman(object):
                 cls._debug_window.update()
                 cls._debug_window.update_metric_tab('frame_rate', cls.get_frame_rate())
 
+
     @classmethod
     def debug_msg(cls, msg):
         cls._debug_window.append(msg)

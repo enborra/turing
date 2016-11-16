@@ -126,7 +126,26 @@ class DisplayService(object):
 
     def _process_second_half(self, args=None):
         # Foreman.debug_msg('event: half-second elapsed, frame rate %s' % Foreman.get_frame_rate())
-        pass
+        # pass
+
+
+
+
+        import random
+
+        if random.random() > 0.9:
+            import StringIO
+
+            output = StringIO.StringIO()
+            Foreman._image.save(output, format='JPEG')
+            contents = output.getvalue()
+            output.close()
+
+            import base64
+
+            a = base64.b64encode(contents)
+
+            self._comm_client.publish('/system/face', a)
 
     def _process_frame(self, args=None):
         img = self._face.render()
@@ -149,13 +168,15 @@ class DisplayService(object):
     def _on_connect(self, client, userdata, flags, rc):
         Foreman.debug_msg("Established connection into local hub: " + str(rc))
 
-        self._comm_client.subscribe('system', 0)
+        self._comm_client.subscribe('/system', 0)
 
     def _on_message(self, client, userdata, msg):
+        msg_str = msg.payload.replace('\n', '')
+
         Foreman.debug_msg('Got message on local hub (qos=' + str(msg.qos) + ', topic=' + str(msg.topic) + '): ' + str(msg.payload))
 
-        if msg.payload:
-            req_msg = str(msg.payload)
+        if msg_str:
+            req_msg = msg_str
 
             if req_msg == 'clock':
                 self._load_face('clock')
@@ -165,6 +186,9 @@ class DisplayService(object):
 
             elif req_msg == 'weather':
                 self._load_face('weather')
+
+            else:
+                Foreman.debug_msg('Got unknown command: "%s"' % msg_str)
 
     def _on_publish(self, mosq, obj, mid):
         print 'mid: ' + str(mid)

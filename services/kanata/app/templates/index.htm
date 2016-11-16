@@ -1,63 +1,82 @@
-<html>
-<head>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <title>Turing Droid</title>
 
+    <link href="/static/libs/bootstrap/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <link href="/static/css/global.css" rel="stylesheet" type="text/css" />
-    <script src="/static/js/mqtt.js"></script>
+
 </head>
 
 <body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">TURING DROID</a>
+        </div>
 
-    rendering.
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="#">Machine Vitals</a></li>
+            <li><a href="#">Services</a></li>
+            <li><a href="#">Video feed</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
 
-    <script>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div style="margin-left: 90px;">
+                    <h4 style="padding-top: 30px; margin-bottom: -30px;">Live screen output</h4>
+                    <img id='display-photo' style="margin-left: 30px; border: solid 10px white; transform: rotate(-90deg);" src="" />
+                </div>
+            </div>
+        </div>
+    </div>
 
-        var port = 3000;
-        var host = 'localhost';
-        var options = {
-            // host: host,
-            // port: port,
-            // clientId: 'Browser' + new Date().getTime(),
-            // reconnectPeriod: 1000
-        };
+    <div class="container-fluid">
+      <div class="row">
 
-        var handleConnect = function(){
-            console.log('Connected');
-            client.subscribe('/system');
-        }
+        <div class="col-sm-12 col-md-12 main">
+            <br /><br />
+            <br /><br />
+            <br /><br />
+            <br /><br />
 
-        var handleClose = function(){
-            console.log('Closed, reconnecting in '+ options.reconnectPeriod);
-        }
 
-        var handleMessage = function(topic, message){
-            console.log('Received:', topic, 'Message:', message);
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Header</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+</div>
 
-            document.write('Received message: ' + message);
-            document.write('<br/>');
-        }
 
-        console.log('Connecting...');
 
-        var client = mqtt.connect('mqtt://localhost', {
-            port: port
-        });
-
-        client.on('connect', handleConnect);
-        client.on('message', handleMessage);
-        client.on('close'  , handleClose);
-
-        var heartbeatCount = 0;
-        // var heartbeatTimer = setInterval(function(){
-        //     heartbeatCount++;
-        //
-        //     var topic = '/system';
-        //
-        //     client.publish(topic, 'hrm');
-        //     console.log('Published', topic);
-        // }, 1000);
-
-    </script>
+    <script src="/static/js/mqtt.js"></script>
+    <script src="/static/libs/jquery/jquery.min.js"></script>
+    <script src="/static/libs/bootstrap/bootstrap.min.js"></script>
+    <script src="/static/js/global.js"></script>
 
 </body>
 </html>
