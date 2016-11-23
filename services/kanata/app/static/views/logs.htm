@@ -1,0 +1,65 @@
+<!-- <div class="content"> -->
+    <div class="container-fluid">
+        <div class="row no-gutters">
+
+            <!-- CONSOLE REPL -->
+
+            <div class="col-sm-12 col-md-6 col-lg-5">
+                <div class="console-input">
+                    <h2>Console</h2>
+
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="input-field col-sm-6 col-md-6">
+                                <span>CHANNEL</span>
+                                <input class="form-control" type="text" value="/system" ng-model="channel" />
+                            </div>
+
+                            <div class="input-field col-sm-6 col-md-6">
+                                <span>MESSAGE TYPE</span>
+                                <select class="form-control">
+                                    <option default="true">display_override</option>
+                                </select>
+                                <div class="arrow-down"></div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="input-field">
+                                    <span>MESSAGE</span>
+                                    <input class="form-control" type="text" value="" ng-model="msg" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div ng-click="publish_msg()" class="button">Send</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- LOGS CONSOLE OUTPUT -->
+
+            <div class="col-sm-12 col-md-6 col-lg-7">
+                <div class="log-collection">
+
+                    <div class="log-item" ng-repeat="log in logs | orderBy:'timestamp':true">
+                        <div class="blinker"></div>
+                        <div class="data">
+                            <span class="topic">{{log.topic}}</span>
+                            <span class="timestamp">{{computeTime(log.timestamp)}}</span>
+                            <span class="description">{{log.description}}</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- </div> -->

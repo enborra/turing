@@ -147,6 +147,8 @@ class DisplayService(object):
 
             self._comm_client.publish('/system/face', a)
 
+            # https://developer.ibm.com/recipes/tutorials/sending-and-receiving-pictures-from-a-raspberry-pi-via-mqtt/
+
     def _process_frame(self, args=None):
         img = self._face.render()
         img = img.rotate(-90, expand=True)
