@@ -123,7 +123,7 @@ core_app.service('grand_central_service', function($rootScope){
         if( topic == '/system' ){
             self.add_log_entry({
                 topic: topic,
-                description: message,
+                description: message.toString(),
                 timestamp: Date.now()
             });
 
