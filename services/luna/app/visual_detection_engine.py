@@ -3,6 +3,7 @@ import numpy as np
 import cv2
 import time
 from datetime import datetime
+from PIL import Image
 
 from framework import BaseController
 from framework import EventHook
@@ -96,6 +97,171 @@ class VisualDetectionEngine(BaseController):
 
         except Exception, e:
             print 'ERROR: ' + str(e)
+
+
+    _pending_face_learn = False
+
+    def continuous_recognize(self):
+        recognizer = cv2.face.createLBPHFaceRecognizer()
+
+        while True:
+            if self._pending_face_learn:
+                self.learn_face()
+                self._pending_face_learn = False
+
+    def learn_face(self):
+        # self._is_capturing_active = True
+
+        training_dir = os.path.dirname(os.path.realpath(__file__)) + '/training'
+
+        recognizer = cv2.face.createLBPHFaceRecognizer()
+        # recognizer.load(training_dir + '/faces.xml')
+
+        photo_normal = None
+        photo_smile = None
+        photo_frown = None
+        photo_surprise = None
+
+        has_found_face = False
+
+        photo_time = str(time.time())
+
+        recog_images = []
+        recog_labels = []
+
+        # Andres 3000 for testing
+
+        # id_test = 3000
+        #
+        # print('Look mischievious!')
+        #
+        # img = self._test_capture_face_photo()
+        # recog_images.append(np.array(img, 'uint8'))
+        # recog_labels.append(id_test)
+        # cv2.imwrite(training_dir + '/positive/photo_' + str(time.time()) + '.png', img)
+        #
+        # print 'Look bored!'
+        #
+        # img = self._test_capture_face_photo()
+        # recog_images.append(np.array(img, 'uint8'))
+        # recog_labels.append(id_test)
+        # cv2.imwrite(training_dir + '/positive/photo_' + str(time.time()) + '.png', img)
+        #
+        # print 'Smile!'
+        #
+        # img = self._test_capture_face_photo()
+        # recog_images.append(np.array(img, 'uint8'))
+        # recog_labels.append(id_test)
+        # cv2.imwrite(training_dir + '/positive/photo_' + str(time.time()) + '.png', img)
+        #
+        # print 'Look bizarre!'
+        #
+        # img = self._test_capture_face_photo()
+        # recog_images.append(np.array(img, 'uint8'))
+        # recog_labels.append(id_test)
+        # cv2.imwrite(training_dir + '/positive/photo_' + str(time.time()) + '.png', img)
+
+
+        #----------
+
+        print('Processing standard photoset training portraits...')
+
+        path = training_dir + '/photoset-yale'
+
+        # Append all the absolute image paths in a list image_paths
+        # We will not read the image with the .sad extension in the training set
+        # Rather, we will use them to test our accuracy of the training
+        image_paths = [os.path.join(path, f) for f in os.listdir(path) if not f.endswith('DS_Store')]
+
+        # images will contains face images
+        images = []
+
+        # labels will contains the label that is assigned to the image
+        labels = []
+
+        for image_path in image_paths:
+            # Read the image and convert to grayscale
+            image_pil = Image.open(image_path).convert('L')
+
+            # Convert the image format into numpy array
+            image = np.array(image_pil, 'uint8')
+
+            # Get the label of the image
+            nbr = int(os.path.split(image_path)[1].split(".")[0].replace("subject", ""))
+
+            # Detect the face in the image
+            faces = self._cascades['face'].detectMultiScale(image)
+
+            # If face is detected, append the face to images and the label to labels
+            for (x, y, w, h) in faces:
+                recog_images.append(image[y: y + h, x: x + w])
+                recog_labels.append(nbr)
+                # cv2.imshow("Adding faces to traning set...", image[y: y + h, x: x + w])
+                cv2.waitKey(50)
+
+
+        #----------
+
+        print('Retraining recognizer...')
+
+        try:
+            recognizer.train(recog_images, np.array(recog_labels))
+            recognizer.save(training_dir + '/faces.xml')
+
+        except Exception, e:
+            print('Encountered a problem training recognizer: %s' % str(e))
+
+        print('Training finished. Moving on to identify dummy test image against recognizer.')
+
+        # dummy_img_pil = Image.open(training_dir + '/positive/photo_dummy_test.png').convert('L')
+        # dummy_img_pil = Image.open(training_dir + '/positive/photo_dummy_turing.jpg').convert('L')
+        # dummy_img = np.array(dummy_img_pil, 'uint8')
+
+        print 'Smile!'
+
+        capture_img = self._test_capture_face_photo()
+
+        label_predicted, confidence_level = recognizer.predict(capture_img)
+
+        print('Prediction results:')
+        print('-- Label predicted: %s' % label_predicted)
+        print('-- Confidence level: %s' % confidence_level)
+
+
+        print('Done with photo time.')
+
+
+        cv2.destroyWindow('face')
+        cv2.destroyWindow('face_isolation')
+
+        self._camera_source.release()
+        cv2.destroyAllWindows()
+
+    def _test_capture_face_photo(self):
+        resp_img = None
+        has_found_face = False
+
+        time.sleep(1)
+        print '3'
+        time.sleep(1)
+        print '2'
+        time.sleep(1)
+        print '1'
+        time.sleep(1)
+
+        while has_found_face is False:
+            self.get_capture()
+
+            if len(self._current_detected_faces) > 0:
+                f = self._current_detected_faces[0]['frame']
+                f = cv2.cvtColor(f, cv2.COLOR_BGR2GRAY)
+
+                has_found_face = True
+
+                resp_img = np.array(f, 'uint8')
+
+        return resp_img
+
 
     def get_continuous_capture(self):
         self._is_capturing_active = True
@@ -705,11 +871,15 @@ class VisualDetectionEngine(BaseController):
     def _detect_faces(self):
         found_faces = []
 
+
+        minimum_nearest_neighbors = 20
+        search_scale_factor = 1.05
+
         face_data_arrays = self._cascades['face'].detectMultiScale3(
             self._current_working_frame,
-            scaleFactor=1.05,
-            minNeighbors=5,
-            minSize=(140, 140),
+            scaleFactor=search_scale_factor,
+            minNeighbors=minimum_nearest_neighbors,
+            minSize=(200, 200),
             flags=cv2.CASCADE_SCALE_IMAGE,
             outputRejectLevels=True,
         )

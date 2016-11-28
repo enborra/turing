@@ -11,11 +11,7 @@ angular.module('core_app').controller('LogController', function LogController($s
     $('.navbar').removeClass('dark-mode');
 
     $scope.channel = '/system';
-    $scope.msg = 'testing.';
-
-    $scope.$watch('logs', function(newVal, oldVal, scope){
-        console.log( '$scope.logs was modified. length is ' + $scope.logs.length);
-    }, true);
+    $scope.msg = '{"sender": "harness", "type": "warning", "message": "Testing harness."}';
 
     setInterval(function(){
         $scope.$apply();
@@ -30,9 +26,9 @@ angular.module('core_app').controller('LogController', function LogController($s
         if( minutes_delta < 0.25 ){
             resp = 'Just now';
         } else if( minutes_delta < 1 ){
-            resp = 'Less than a minute ago.';
+            resp = '< 1 min ago.';
         } else if( minutes_delta < 60 ){
-            resp = Math.round(minutes_delta) + ' minutes ago';
+            resp = Math.round(minutes_delta) + ' min ago';
         } else if( minutes_delta < 1440 ){
             resp = 'more than an hour ago.';
         } else {

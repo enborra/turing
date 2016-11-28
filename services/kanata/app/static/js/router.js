@@ -50,13 +50,13 @@ core_app.service('grand_central_service', function($rootScope){
             id: self.logs.length,
             title: msg_obj['title'],
             description: msg_obj['description'],
+            sender: msg_obj['sender'],
             timestamp: msg_obj['timestamp'],
-            topic: msg_obj['topic']
+            topic: msg_obj['topic'],
+            type: msg_obj['type']
         };
 
         self.logs.push(new_log);
-
-        console.log('Added new log entry. total log collection size is ' + this.logs.length.toString());
     };
 
 
@@ -116,20 +116,55 @@ core_app.service('grand_central_service', function($rootScope){
 
         // $('tbody').append('<tr><td>'+Date().toString()+'</td><td>'+message+'</td></tr>');
 
-        if( message.length > 20 ){
+        if( message.length > 200 ){
             $('#display-photo').attr('src', 'data:image/jpeg;base64,'+message)
         }
 
+        var requesting_msg = message;
+
         if( topic == '/system' ){
+            var requesting_sender = null;
+            var requesting_type = null;
+
+            if( self.isJson(message) ){
+                var json_payload = JSON.parse(message);
+
+                if( json_payload['sender'] != null ){
+                    requesting_sender = json_payload['sender'];
+                }
+
+                if( json_payload['message'] != null ){
+                    requesting_msg = json_payload['message'];
+                }
+
+                if( json_payload['type'] != null ){
+                    requesting_type = json_payload['type'];
+                }
+            }
+
             self.add_log_entry({
                 topic: topic,
                 description: message.toString(),
-                timestamp: Date.now()
+                sender: requesting_sender,
+                timestamp: Date.now(),
+                type: requesting_type
             });
 
             $rootScope.$apply();
         }
     };
+
+    this.isJson = function(str){
+        try {
+            JSON.parse(str);
+
+        } catch (e) {
+            return false;
+
+        }
+
+        return true;
+    }
 
     console.log('Connecting...');
 

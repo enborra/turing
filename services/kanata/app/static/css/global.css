@@ -258,6 +258,12 @@
 @media (min-width: 992px) {
   .main .console-input {
     min-height: 70vh;
+    position: fixed;
+  }
+}
+@media (min-width: 1200px) {
+  .main .console-input {
+    width: 36%;
   }
 }
 .main .console-input .form-control {
@@ -322,6 +328,14 @@
   padding-left: 20px;
   padding-right: 80px;
 }
+.main .log-collection:hover .log-item {
+  -moz-opacity: 0.6;
+  -khtml-opacity: 0.6;
+  -webkit-opacity: 0.6;
+  opacity: 0.6;
+  -ms-filter: progid:DXImageTransform.Microsoft.Alpha(opacity=60);
+  filter: alpha(opacity=60);
+}
 @media (max-width: 499px) {
   .main .log-collection {
     padding-left: 40px;
@@ -338,8 +352,65 @@
     margin-top: 60px;
   }
 }
+@media (min-width: 992px) and (max-width: 1023px) {
+  .main .log-collection {
+    padding-left: 25px;
+  }
+}
+@media (min-width: 1200px) {
+  .main .log-collection {
+    padding-left: 80px;
+  }
+}
+@media (min-width: 1200px+200) {
+  .main .log-collection {
+    padding-left: 0px;
+  }
+}
 .main .log-collection .log-item {
-  margin-bottom: 30px;
+  -moz-opacity: 1;
+  -khtml-opacity: 1;
+  -webkit-opacity: 1;
+  opacity: 1;
+  -ms-filter: progid:DXImageTransform.Microsoft.Alpha(opacity=100);
+  filter: alpha(opacity=100);
+  -webkit-transition: all 0.07s ease-out;
+  -moz-transition: all 0.07s ease-out;
+  -o-transition: all 0.07s ease-out;
+  transition: all 0.07s ease-out;
+  padding-bottom: 30px;
+}
+.main .log-collection .log-item:hover {
+  -moz-opacity: 1;
+  -khtml-opacity: 1;
+  -webkit-opacity: 1;
+  opacity: 1;
+  -ms-filter: progid:DXImageTransform.Microsoft.Alpha(opacity=100);
+  filter: alpha(opacity=100);
+}
+.main .log-collection .log-item:hover .data .description {
+  color: #ffffff;
+}
+.main .log-collection .log-item:hover.warning .data .timestamp {
+  color: #fed800;
+}
+.main .log-collection .log-item:hover.warning .data .sender {
+  color: #fed800;
+}
+.main .log-collection .log-item:hover.error .data .timestamp {
+  color: #cf2026;
+}
+.main .log-collection .log-item:hover.error .data .sender {
+  color: #cf2026;
+}
+.main .log-collection .log-item.warning .blinker {
+  background-color: #fed800;
+}
+.main .log-collection .log-item.error .blinker {
+  background-color: #cf2026;
+}
+.main .log-collection .log-item.info .blinker {
+  background-color: #00b9c9;
 }
 .main .log-collection .log-item .blinker {
   -webkit-border-radius: 4px;
@@ -373,7 +444,7 @@
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
   border-radius: 3px;
-  background-color: #00b9c9;
+  border: solid 1px #ffffff;
   color: #ffffff;
   padding-left: 6px;
   padding-top: 3px;
@@ -383,10 +454,30 @@
 .main .log-collection .log-item .data .timestamp {
   color: #ffffff;
   font-size: 14px;
+  text-transform: lowercase;
+  background-color: rgba(0, 0, 0, 0.25);
+  border: solid 1px #666666;
+  color: #999999;
+  padding-left: 6px;
+  padding-top: 3px;
+  padding-right: 6px;
+  padding-bottom: 3px;
 }
 .main .log-collection .log-item .data .description {
+  display: block;
+  padding-top: 15px;
   font-style: italic;
   color: rgba(255, 255, 255, 0.4);
+}
+.main .log-collection .log-item .data .sender {
+  text-transform: lowercase;
+  background-color: rgba(0, 0, 0, 0.25);
+  border: solid 1px #666666;
+  color: #999999;
+  padding-left: 6px;
+  padding-top: 3px;
+  padding-right: 6px;
+  padding-bottom: 3px;
 }
 body {
   color: rgba(255, 255, 255, 0.8);

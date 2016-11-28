@@ -48,12 +48,14 @@
             <div class="col-sm-12 col-md-6 col-lg-7">
                 <div class="log-collection">
 
-                    <div class="log-item" ng-repeat="log in logs | orderBy:'timestamp':true">
+                    <div class="log-item" ng-repeat="log in logs | orderBy:'timestamp':true" ng-class="{'warning': log.type == 'warning', 'error': log.type == 'error'}">
                         <div class="blinker"></div>
                         <div class="data">
                             <span class="topic">{{log.topic}}</span>
+                            <span class="sender" title="Service that ">{{log.sender}}</span>
                             <span class="timestamp">{{computeTime(log.timestamp)}}</span>
                             <span class="description">{{log.description}}</span>
+                            <span class="packet">{{log.packet}}</span>
                         </div>
                     </div>
 
