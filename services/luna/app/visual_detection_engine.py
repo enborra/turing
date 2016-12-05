@@ -1,4 +1,5 @@
 import os
+from collections import deque
 import numpy as np
 import cv2
 import time
@@ -10,10 +11,12 @@ from framework import EventHook
 from storage import Storable
 
 
-class VisualDetectionEngine(BaseController):
+class VisualDetectionEngine(object):
     _environment = None
     _camera_source = None
     _cascades = None
+    _recognizer = None
+    _action_queue = None
 
     _is_capturing_active = False
     _current_source_frame = None
@@ -22,6 +25,7 @@ class VisualDetectionEngine(BaseController):
 
     # Class event emitters
 
+    on_log = None
     on_face_detected = None
 
     # Other class properties
@@ -41,12 +45,9 @@ class VisualDetectionEngine(BaseController):
 
 
     def __init__(self, environment=None):
-        BaseController.__init__(self)
-
-        self._class_output_id = 'turing.os.optics'
-
         self._environment = environment
 
+        self.on_log = EventHook()
         self.on_face_detected = EventHook()
 
         algorithm_dir = os.path.dirname(os.path.realpath(__file__)) + '/algorithms'
@@ -59,18 +60,78 @@ class VisualDetectionEngine(BaseController):
         }
 
         if self._environment == 'onboard':
-            self.output('Running (onboard)')
+            self._log('Running (onboard)')
         else:
-            self.output('Running (simulated)')
+            self._log('Running (simulated)')
 
+        # Initialize the action queue
 
-        self.output('Starting video capture')
-        self._camera_source = cv2.VideoCapture(0)
-        self.output('Video capture enabled')
+        self._action_queue = deque()
+
+        # Initialize the facial recognition algorithm
+
+        self._recognizer = cv2.face.createLBPHFaceRecognizer()
+        # self._recognizer.load(training_dir + '/faces.xml')
 
         self._tracking_state = None
         self._track_window = None
         self._hist = None
+
+
+        self._tracking_state = 0
+
+
+    def _log(self, msg_obj):
+        self.on_log.fire(msg_obj)
+
+    def get_capture(self):
+        is_frame_available, self._current_source_frame = self._camera_source.read()
+        self._current_working_frame = self._current_source_frame
+
+        try:
+            self._current_detected_faces = self._detect_faces()
+            source_width, source_height, source_channels = self._current_source_frame.shape
+
+        except Exception, e:
+            self._log('ERROR: ' + str(e))
+
+
+    def continuous_recognize(self):
+        while True:
+            if len(self._action_queue) > 0:
+                requested_action = self._action_queue.popleft()
+
+                if requested_action == 'retrain_faces':
+                    self._retrain_facial_model()
+
+                elif requested_action == 'learn_face':
+                    self.learn_face()
+
+    def queue_action(self, action_name):
+        self._log('action name: %s' % action_name)
+
+        self._action_queue.append(action_name)
+
+    def learn_face(self):
+        self._load_facial_model()
+
+        print 'loading recognition model done.'
+
+        self._log('Recognition model loaded. Moving on to identify dummy test image against recognizer.')
+
+        # dummy_img_pil = Image.open(training_dir + '/positive/photo_dummy_test.png').convert('L')
+        # dummy_img_pil = Image.open(training_dir + '/positive/photo_dummy_turing.jpg').convert('L')
+        # dummy_img = np.array(dummy_img_pil, 'uint8')
+
+        self._log({'msg':'Smile!', 'type':'warning'})
+
+
+
+
+
+        self._log('Starting video capture')
+        self._camera_source = cv2.VideoCapture(0)
+        self._log('Video capture enabled')
 
         if self._environment == 'simulated':
             cv2.namedWindow('hist')
@@ -84,38 +145,38 @@ class VisualDetectionEngine(BaseController):
             cv2.moveWindow('camshift', 450, 100)
             cv2.moveWindow('hist', 450, 850)
 
-        self._tracking_state = 0
 
 
-    def get_capture(self):
-        is_frame_available, self._current_source_frame = self._camera_source.read()
-        self._current_working_frame = self._current_source_frame
-
-        try:
-            self._current_detected_faces = self._detect_faces()
-            source_width, source_height, source_channels = self._current_source_frame.shape
-
-        except Exception, e:
-            print 'ERROR: ' + str(e)
 
 
-    _pending_face_learn = False
 
-    def continuous_recognize(self):
-        recognizer = cv2.face.createLBPHFaceRecognizer()
+        capture_img = self._test_capture_face_photo()
 
-        while True:
-            if self._pending_face_learn:
-                self.learn_face()
-                self._pending_face_learn = False
+        label_predicted, confidence_level = self._recognizer.predict(capture_img)
 
-    def learn_face(self):
-        # self._is_capturing_active = True
+        self._log('Finished computing prediction results: Label predicted: %s, Confidence level: %s' % (label_predicted, confidence_level))
 
+        cv2.destroyWindow('face')
+        cv2.destroyWindow('face_isolation')
+
+        self._camera_source.release()
+        cv2.destroyAllWindows()
+
+    def _load_facial_model(self):
         training_dir = os.path.dirname(os.path.realpath(__file__)) + '/training'
 
-        recognizer = cv2.face.createLBPHFaceRecognizer()
-        # recognizer.load(training_dir + '/faces.xml')
+        print 'Creating a new recognizer without destroying previous'
+
+        self._recognizer = cv2.face.createLBPHFaceRecognizer()
+
+        print 'loading facial model from %s' % training_dir+'/faces.xml'
+
+        self._recognizer.load(training_dir + '/faces.xml')
+
+        print 'loaded recognition model.'
+
+    def _retrain_facial_model(self):
+        training_dir = os.path.dirname(os.path.realpath(__file__)) + '/training'
 
         photo_normal = None
         photo_smile = None
@@ -129,42 +190,9 @@ class VisualDetectionEngine(BaseController):
         recog_images = []
         recog_labels = []
 
-        # Andres 3000 for testing
-
-        # id_test = 3000
-        #
-        # print('Look mischievious!')
-        #
-        # img = self._test_capture_face_photo()
-        # recog_images.append(np.array(img, 'uint8'))
-        # recog_labels.append(id_test)
-        # cv2.imwrite(training_dir + '/positive/photo_' + str(time.time()) + '.png', img)
-        #
-        # print 'Look bored!'
-        #
-        # img = self._test_capture_face_photo()
-        # recog_images.append(np.array(img, 'uint8'))
-        # recog_labels.append(id_test)
-        # cv2.imwrite(training_dir + '/positive/photo_' + str(time.time()) + '.png', img)
-        #
-        # print 'Smile!'
-        #
-        # img = self._test_capture_face_photo()
-        # recog_images.append(np.array(img, 'uint8'))
-        # recog_labels.append(id_test)
-        # cv2.imwrite(training_dir + '/positive/photo_' + str(time.time()) + '.png', img)
-        #
-        # print 'Look bizarre!'
-        #
-        # img = self._test_capture_face_photo()
-        # recog_images.append(np.array(img, 'uint8'))
-        # recog_labels.append(id_test)
-        # cv2.imwrite(training_dir + '/positive/photo_' + str(time.time()) + '.png', img)
-
-
         #----------
 
-        print('Processing standard photoset training portraits...')
+        self._log('Processing standard photoset training portraits...')
 
         path = training_dir + '/photoset-yale'
 
@@ -202,52 +230,22 @@ class VisualDetectionEngine(BaseController):
 
         #----------
 
-        print('Retraining recognizer...')
+        self._log('Retraining recognizer...')
 
         try:
-            recognizer.train(recog_images, np.array(recog_labels))
-            recognizer.save(training_dir + '/faces.xml')
+            self._recognizer.train(recog_images, np.array(recog_labels))
+            self._recognizer.save(training_dir + '/faces.xml')
+            self._log('Successfully completed retraining recognizer.')
 
         except Exception, e:
-            print('Encountered a problem training recognizer: %s' % str(e))
-
-        print('Training finished. Moving on to identify dummy test image against recognizer.')
-
-        # dummy_img_pil = Image.open(training_dir + '/positive/photo_dummy_test.png').convert('L')
-        # dummy_img_pil = Image.open(training_dir + '/positive/photo_dummy_turing.jpg').convert('L')
-        # dummy_img = np.array(dummy_img_pil, 'uint8')
-
-        print 'Smile!'
-
-        capture_img = self._test_capture_face_photo()
-
-        label_predicted, confidence_level = recognizer.predict(capture_img)
-
-        print('Prediction results:')
-        print('-- Label predicted: %s' % label_predicted)
-        print('-- Confidence level: %s' % confidence_level)
-
-
-        print('Done with photo time.')
-
-
-        cv2.destroyWindow('face')
-        cv2.destroyWindow('face_isolation')
-
-        self._camera_source.release()
-        cv2.destroyAllWindows()
+            self._log({
+                'type': 'error',
+                'msg': 'Encountered a problem training recognizer: %s' % str(e)
+            })
 
     def _test_capture_face_photo(self):
         resp_img = None
         has_found_face = False
-
-        time.sleep(1)
-        print '3'
-        time.sleep(1)
-        print '2'
-        time.sleep(1)
-        print '1'
-        time.sleep(1)
 
         while has_found_face is False:
             self.get_capture()
@@ -280,7 +278,7 @@ class VisualDetectionEngine(BaseController):
             cv2.imshow('img', self._current_working_frame)
 
             # if self._current_detected_faces:
-            #     print 'FACES: ' + str(len(self._current_detected_faces))
+            #     self._log('FACES: ' + str(len(self._current_detected_faces)))
 
             if (cv2.waitKey(30) & 0xff) == 27:
                 self._is_capturing_active = False
@@ -299,13 +297,13 @@ class VisualDetectionEngine(BaseController):
             cv2.imshow('img', self._current_working_frame)
 
             if self._current_detected_faces:
-                self.output('Detected a face.')
+                self._log('Detected a face.')
 
                 if len(self._current_detected_faces) > 0:
                     is_face_found = True
 
         if is_face_found:
-            self.output('FOUND A FACE. TIME TO TRACK IT.')
+            self._log('FOUND A FACE. TIME TO TRACK IT.')
 
         r = self._current_detected_faces[0]['y']
         h = self._current_detected_faces[0]['h']
@@ -618,10 +616,10 @@ class VisualDetectionEngine(BaseController):
             cv2.circle(self._current_source_frame, (30, 35), 10, (255, 255, 255), -1)
             cv2.putText(self._current_source_frame, ('Tracking for ' + str(int(seconds_tracking)) + ' seconds'), (50, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255,255,255))
 
-            # print 'Tracking for ' + str(int(seconds_tracking)) + ' seconds'
+            # self._log('Tracking for ' + str(int(seconds_tracking)) + ' seconds')
 
         except Exception, e:
-            self.output('Had a problem: ' + str(e))
+            self._log('Had a problem: ' + str(e))
 
         if self._environment == 'simulated':
             cv2.imshow('camshift', self._current_source_frame)
@@ -830,7 +828,10 @@ class VisualDetectionEngine(BaseController):
                         cv2.putText(self._current_source_frame, ('Tracking for ' + str(int(seconds_tracking)) + ' seconds'), (50, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255,255,255))
 
                     except Exception, e:
-                        self.output('ERROR: ' + str(e))
+                        self._log({
+                            'type': 'error',
+                            'msg': str(e)
+                        })
 
                     if self._environment == 'simulated':
                         cv2.imshow('camshift', self._current_source_frame)
@@ -842,7 +843,10 @@ class VisualDetectionEngine(BaseController):
 
 
             except Exception, e:
-                self.output('ERROR: ' + str(e))
+                self._log({
+                    'type': 'error',
+                    'msg': str(e)
+                })
 
 
 
