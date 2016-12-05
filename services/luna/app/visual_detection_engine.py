@@ -5,6 +5,9 @@ import cv2
 import time
 from datetime import datetime
 from PIL import Image
+import json
+import piexif
+
 
 from framework import BaseController
 from framework import EventHook
@@ -147,7 +150,7 @@ class VisualDetectionEngine(object):
 
 
 
-
+        training_dir = os.path.dirname(os.path.realpath(__file__)) + '/training'
 
 
         capture_img = self._test_capture_face_photo()
@@ -155,6 +158,26 @@ class VisualDetectionEngine(object):
         label_predicted, confidence_level = self._recognizer.predict(capture_img)
 
         self._log('Finished computing prediction results: Label predicted: %s, Confidence level: %s' % (label_predicted, confidence_level))
+
+
+        storage_img = Image.fromarray(capture_img)
+        storage_filename = training_dir + '/captures/%s.jpg' % time.time()
+
+
+        exif_dict = {
+            '0th': {},
+            'Exif': {},
+        }
+
+        exif_dict['Exif'][piexif.ExifIFD.UserComment] = json.dumps({
+            'predicted_user': str(label_predicted),
+            'prediction_distance': confidence_level,
+        })
+
+        exif_bytes = piexif.dump(exif_dict)
+
+        storage_img.save(storage_filename, exif=exif_bytes)
+
 
         cv2.destroyWindow('face')
         cv2.destroyWindow('face_isolation')
