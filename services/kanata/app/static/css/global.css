@@ -323,6 +323,15 @@
   border-bottom: solid 1px rgba(255, 255, 255, 0.3);
   background-color: transparent;
 }
+.main .console-input .input-field > textarea {
+  min-height: 200px;
+  border-left: solid 1px #1a1a1a;
+  border-top: solid 1px #1a1a1a;
+  border-right: solid 1px #1a1a1a;
+  border-bottom: solid 1px #4d4d4d;
+  outline: none;
+  box-shadow: none !important;
+}
 .main .log-collection {
   margin-top: 70px;
   padding-left: 20px;

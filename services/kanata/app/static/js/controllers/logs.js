@@ -10,9 +10,6 @@ angular.module('core_app').controller('LogController', function LogController($s
 
     $('.navbar').removeClass('dark-mode');
 
-    $scope.channel = '/system';
-    $scope.msg = '{"sender": "harness", "type": "warning", "message": "Testing harness."}';
-
     setInterval(function(){
         $scope.$apply();
     }, 5000);
@@ -36,6 +33,71 @@ angular.module('core_app').controller('LogController', function LogController($s
         }
 
         return resp;
+    };
+
+    $scope.msg_template_items = [
+        {
+            'value': 'logging_info',
+            'category': 'logging',
+            'channel': '/system',
+            'label': 'Logging: Standard info log message',
+            'obj': {
+                'sender': 'harness',
+                'type': 'info',
+                'msg': 'Something clever.'
+            }
+        },
+        {
+            'value': 'logging_warning',
+            'category': 'logging',
+            'channel': '/system',
+            'label': 'Logging: Standard warning log message',
+            'obj': {
+                'sender': 'harness',
+                'type': 'warning',
+                'msg': 'Something concerning.'
+            }
+        },
+        {
+            'value': 'logging_error',
+            'category': 'logging',
+            'channel': '/system',
+            'label': 'Logging: Standard error log message',
+            'obj': {
+                'sender': 'harness',
+                'type': 'error',
+                'msg': 'Something alarming.'
+            }
+        },
+        {
+            'value': 'learn_face',
+            'category': 'optics',
+            'channel': '/optics',
+            'label': 'Optics: Trigger learn of any face currently in camera view',
+            'obj': {
+                'sender': 'harness',
+                'type': 'action',
+                'msg': 'learn_face'
+            }
+        },
+        {
+            'value': 'retrain_faces',
+            'category': 'optics',
+            'channel': '/optics',
+            'label': 'Optics: Trigger full retrain of library',
+            'obj': {
+                'sender': 'harness',
+                'type': 'action',
+                'msg': 'retrain_faces'
+            }
+        }
+    ];
+
+    $scope.on_msg_template_change = function(){
+        console.log('Changed: ' + $scope.selectedItem.name);
+
+        $scope.channel = $scope.selectedItem.channel;
+        $scope.msg = JSON.stringify($scope.selectedItem.obj, undefined, 4);
     };
 
     $scope.publish_msg = function(){

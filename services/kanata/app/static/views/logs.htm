@@ -9,19 +9,23 @@
                     <h2>Console</h2>
 
                     <div class="container-fluid">
-                        <div class="row">
-                            <div class="input-field col-sm-6 col-md-6">
-                                <span>CHANNEL</span>
-                                <input class="form-control" type="text" value="/system" ng-model="channel" />
-                            </div>
 
-                            <div class="input-field col-sm-6 col-md-6">
-                                <span>MESSAGE TYPE</span>
-                                <select class="form-control">
-                                    <option default="true">display_override</option>
-                                    <option>learn_face</option>
+                        <div class="row">
+                            <div class="input-field col-sm-12 col-md-12">
+                                <span>PREBUILT MESSAGES</span>
+                                <select class="form-control"
+                                    ng-model="selectedItem"
+                                    ng-options="item.label group by item.category for item in msg_template_items"
+                                    ng-change="on_msg_template_change()">
                                 </select>
                                 <div class="arrow-down"></div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="input-field col-sm-12 col-md-12">
+                                <span>CHANNEL</span>
+                                <input class="form-control" type="text" ng-model="channel" />
                             </div>
                         </div>
 
@@ -29,7 +33,7 @@
                             <div class="col-sm-12">
                                 <div class="input-field">
                                     <span>MESSAGE</span>
-                                    <input class="form-control" type="text" value="" ng-model="msg" />
+                                    <textarea class="form-control" type="text" ng-model="msg"></textarea>
                                 </div>
                             </div>
                         </div>
