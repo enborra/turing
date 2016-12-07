@@ -40,6 +40,7 @@ class CoreService(object):
         self._engine = VisualDetectionEngine()
         self._engine.on_log += self._on_engine_log
         self._engine.on_face_detected += self._handle_face_detection
+        self._engine.on_frame += self._handle_frame
 
 
         # FIND AND TRACK A FACE
@@ -87,13 +88,15 @@ class CoreService(object):
             msg_compiled['sender'] = 'service_luna'
 
             self._comm_client.publish('/system', json.dumps(msg_compiled))
-            
+
         finally:
             self._thread_lock.release()
 
     def _handle_face_detection(self):
         self._comm_client.publish('/system', '{"sender": "service_luna", "message": "detected_face"}')
-        # pass
+
+    def _handle_frame(self, frame_encoded):
+        self._comm_client.publish('/system/camera', frame_encoded)
 
     def _on_connect(self, client, userdata, flags, rc):
         self.output('{"sender": "service_luna", "message": "Connected to GrandCentral."}')

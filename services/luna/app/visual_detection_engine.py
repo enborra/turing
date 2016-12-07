@@ -1,4 +1,7 @@
 import os
+import random
+import StringIO
+
 from collections import deque
 import numpy as np
 import cv2
@@ -30,6 +33,7 @@ class VisualDetectionEngine(object):
 
     on_log = None
     on_face_detected = None
+    on_frame = None
 
     # Other class properties
 
@@ -52,6 +56,7 @@ class VisualDetectionEngine(object):
 
         self.on_log = EventHook()
         self.on_face_detected = EventHook()
+        self.on_frame = EventHook()
 
         algorithm_dir = os.path.dirname(os.path.realpath(__file__)) + '/algorithms'
 
@@ -99,6 +104,9 @@ class VisualDetectionEngine(object):
             self._log('ERROR: ' + str(e))
 
 
+    _last_frame_capture_time = 0
+    _frame_capture_seconds_delay = 0.1
+
     def continuous_recognize(self):
         while True:
             if len(self._action_queue) > 0:
@@ -109,6 +117,32 @@ class VisualDetectionEngine(object):
 
                 elif requested_action == 'learn_face':
                     self.learn_face()
+
+            if time.clock() > (self._last_frame_capture_time + self._frame_capture_seconds_delay):
+                self._last_frame_capture_time = time.clock()
+
+                self._capture_passive_frame()
+
+
+    def _capture_passive_frame(self):
+        if not self._camera_source:
+            self._camera_source = cv2.VideoCapture(0)
+
+        is_frame_available, frame = self._camera_source.read()
+
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        frame = Image.fromarray(frame)
+
+        output = StringIO.StringIO()
+        frame.save(output, format='JPEG')
+        contents = output.getvalue()
+        output.close()
+
+        import base64
+
+        a = base64.b64encode(contents)
+
+        self.on_frame.fire(a)
 
     def queue_action(self, action_name):
         self._log('action name: %s' % action_name)

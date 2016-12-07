@@ -98,6 +98,7 @@ core_app.service('grand_central_service', function($rootScope){
         console.log('Connected');
         client.subscribe('/system');
         client.subscribe('/system/face');
+        client.subscribe('/system/camera');
 
         $('.blinker').addClass('connected');
     };
@@ -116,8 +117,12 @@ core_app.service('grand_central_service', function($rootScope){
 
         // $('tbody').append('<tr><td>'+Date().toString()+'</td><td>'+message+'</td></tr>');
 
-        if( message.length > 200 ){
-            $('#display-photo').attr('src', 'data:image/jpeg;base64,'+message)
+        if( topic == '/system/face' ){
+            $('#display-photo').attr('src', 'data:image/jpeg;base64,'+message);
+
+        } else if( topic == '/system/camera' ){
+            $('#display-camera').attr('src', 'data:image/jpeg;base64,'+message);
+
         }
 
         var requesting_msg = message;
