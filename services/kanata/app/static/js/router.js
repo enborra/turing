@@ -99,6 +99,7 @@ core_app.service('grand_central_service', function($rootScope){
         client.subscribe('/system');
         client.subscribe('/system/face');
         client.subscribe('/system/camera');
+        client.subscribe('/system/camera/faces');
 
         $('.blinker').addClass('connected');
     };
@@ -118,10 +119,20 @@ core_app.service('grand_central_service', function($rootScope){
         // $('tbody').append('<tr><td>'+Date().toString()+'</td><td>'+message+'</td></tr>');
 
         if( topic == '/system/face' ){
-            $('#display-photo').attr('src', 'data:image/jpeg;base64,'+message);
+            $('.view-screen.face-feed img').attr('src', 'data:image/jpeg;base64,'+message);
 
         } else if( topic == '/system/camera' ){
-            $('#display-camera').attr('src', 'data:image/jpeg;base64,'+message);
+            $('.view-screen.camera-feed img').attr('src', 'data:image/jpeg;base64,'+message);
+
+        } else if( topic == '/system/camera/faces' ){
+            var frame_box = JSON.parse(message);
+
+            $('.view-screen.camera-feed .face-box').css({
+                left: (frame_box['x']*.265)+'px',
+                top: (frame_box['y']*.265)+'px',
+                width: (frame_box['w']*.265)+'px',
+                height: (frame_box['h']*.265)+'px',
+            });
 
         }
 

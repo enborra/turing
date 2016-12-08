@@ -105,7 +105,7 @@ class VisualDetectionEngine(object):
 
 
     _last_frame_capture_time = 0
-    _frame_capture_seconds_delay = 0.1
+    _frame_capture_seconds_delay = 1
 
     def continuous_recognize(self):
         while True:
@@ -130,11 +130,19 @@ class VisualDetectionEngine(object):
 
         is_frame_available, frame = self._camera_source.read()
 
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        frame = Image.fromarray(frame)
+        frame_color = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        frame_img = Image.fromarray(frame_color)
+
+        faces = self._cascades['face'].detectMultiScale(
+            frame,
+            scaleFactor=1.05,
+            minNeighbors=15,
+            minSize=(100, 100),
+            flags = cv2.CASCADE_SCALE_IMAGE,
+        )
 
         output = StringIO.StringIO()
-        frame.save(output, format='JPEG')
+        frame_img.save(output, format='JPEG')
         contents = output.getvalue()
         output.close()
 
@@ -142,7 +150,7 @@ class VisualDetectionEngine(object):
 
         a = base64.b64encode(contents)
 
-        self.on_frame.fire(a)
+        self.on_frame.fire(a, faces)
 
     def queue_action(self, action_name):
         self._log('action name: %s' % action_name)

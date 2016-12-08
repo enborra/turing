@@ -193,7 +193,8 @@ class DisplayService(object):
                 Foreman.debug_msg('Got unknown command: "%s"' % msg_str)
 
     def _on_publish(self, mosq, obj, mid):
-        print 'mid: ' + str(mid)
+        # print 'mid: ' + str(mid)
+        pass
 
     def _on_subscribe(self, mosq, obj, mid, granted_qos):
         Foreman.debug_msg('Subscribed successfully to topic on local hub: ' + str(mid) + ' ' + str(granted_qos))
