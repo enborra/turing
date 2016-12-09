@@ -127,13 +127,18 @@ core_app.service('grand_central_service', function($rootScope){
         } else if( topic == '/system/camera/faces' ){
             var frame_box = JSON.parse(message);
 
-            $('.view-screen.camera-feed .face-box').css({
-                left: (frame_box['x']*.265)+'px',
-                top: (frame_box['y']*.265)+'px',
-                width: (frame_box['w']*.265)+'px',
-                height: (frame_box['h']*.265)+'px',
-            });
+            if( frame_box['face'] ){
+                resize_ratio = (400/frame_box['screen']['w']);
 
+                $('.view-screen.camera-feed .face-box').css({
+                    left: (frame_box['face']['x']*resize_ratio)+'px',
+                    top: (frame_box['face']['y']*resize_ratio)+'px',
+                    width: (frame_box['face']['w']*resize_ratio)+'px',
+                    height: (frame_box['face']['h']*resize_ratio)+'px',
+                });
+
+                $('.view-screen.camera-feed .face-box .name-label').text(frame_box['face']['label']);
+            }
         }
 
         var requesting_msg = message;

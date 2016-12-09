@@ -78,7 +78,7 @@ class VisualDetectionEngine(object):
 
         # Initialize the facial recognition algorithm
 
-        self._recognizer = cv2.face.createLBPHFaceRecognizer()
+        # self._recognizer = cv2.face.createLBPHFaceRecognizer()
         # self._recognizer.load(training_dir + '/faces.xml')
 
         self._tracking_state = None
@@ -105,7 +105,7 @@ class VisualDetectionEngine(object):
 
 
     _last_frame_capture_time = 0
-    _frame_capture_seconds_delay = 1
+    _frame_capture_seconds_delay = 0.01
 
     def continuous_recognize(self):
         while True:
@@ -133,6 +133,13 @@ class VisualDetectionEngine(object):
         frame_color = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         frame_img = Image.fromarray(frame_color)
 
+        base_width = 300
+        width_percent = (base_width / float(frame_img.size[0]))
+        height_size = int((float(frame_img.size[1]) * float(width_percent)))
+
+        frame_img_sized = frame_img.resize((base_width, height_size), Image.ANTIALIAS)
+        frame_img_sized_array = np.array(frame_img_sized)
+
         faces = self._cascades['face'].detectMultiScale(
             frame,
             scaleFactor=1.05,
@@ -142,15 +149,23 @@ class VisualDetectionEngine(object):
         )
 
         output = StringIO.StringIO()
-        frame_img.save(output, format='JPEG')
+        frame_img_sized.save(output, format='JPEG')
         contents = output.getvalue()
         output.close()
 
         import base64
 
         a = base64.b64encode(contents)
+        label_predicted = None
 
-        self.on_frame.fire(a, faces)
+        if len(faces) > 0:
+            if not self._recognizer:
+                self._load_facial_model()
+
+            frame_bw = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            label_predicted, confidence_level = self._recognizer.predict(frame_bw)
+
+        self.on_frame.fire(a, faces, label_predicted)
 
     def queue_action(self, action_name):
         self._log('action name: %s' % action_name)

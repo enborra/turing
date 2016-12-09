@@ -95,15 +95,23 @@ class CoreService(object):
     def _handle_face_detection(self):
         self._comm_client.publish('/system', '{"sender": "service_luna", "message": "detected_face"}')
 
-    def _handle_frame(self, frame_encoded, faces_detected):
+    def _handle_frame(self, frame_encoded, faces_detected, recognized_face):
         self._comm_client.publish('/system/camera', frame_encoded)
 
         if len(faces_detected) > 0:
             face_frame_box = {
-                'x': int(faces_detected[0][0]),
-                'y': int(faces_detected[0][1]),
-                'w': int(faces_detected[0][2]),
-                'h': int(faces_detected[0][3]),
+                'face': {
+                    'x': int(faces_detected[0][0]),
+                    'y': int(faces_detected[0][1]),
+                    'w': int(faces_detected[0][2]),
+                    'h': int(faces_detected[0][3]),
+                    'label': recognized_face,
+                },
+
+                'screen': {
+                    'w': 1280,
+                    'h': 720,
+                }
             }
 
             self._comm_client.publish('/system/camera/faces', json.dumps(face_frame_box))
