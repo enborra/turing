@@ -78,7 +78,7 @@ class VisualDetectionEngine(object):
 
         # Initialize the facial recognition algorithm
 
-        # self._recognizer = cv2.face.createLBPHFaceRecognizer()
+        # self._recognizer = cv2.face.createLBPHFaceRecognizer(threshold=50)
         # self._recognizer.load(training_dir + '/faces.xml')
 
         self._tracking_state = None
@@ -143,8 +143,8 @@ class VisualDetectionEngine(object):
         faces = self._cascades['face'].detectMultiScale(
             frame,
             scaleFactor=1.05,
-            minNeighbors=15,
-            minSize=(100, 100),
+            minNeighbors=20,
+            minSize=(150, 150),
             flags = cv2.CASCADE_SCALE_IMAGE,
         )
 
@@ -162,8 +162,19 @@ class VisualDetectionEngine(object):
             if not self._recognizer:
                 self._load_facial_model()
 
-            frame_bw = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            label_predicted, confidence_level = self._recognizer.predict(frame_bw)
+            frame_bw = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
+            # frame_bw = cv2.equalizeHist(frame_bw)
+
+            x, y, w, h = faces[0]
+            frame_bw_face = frame_bw[y: y + h, x: x + w]
+
+            label_predicted, confidence_level = self._recognizer.predict(frame_bw_face)
+
+            if len(faces) > 1:
+                print 'Faces: ' + str(faces)
+
+            # if confidence_level > 35.0:
+            #     label_predicted = None
 
         self.on_frame.fire(a, faces, label_predicted)
 
@@ -247,7 +258,10 @@ class VisualDetectionEngine(object):
 
         print 'Creating a new recognizer without destroying previous'
 
-        self._recognizer = cv2.face.createLBPHFaceRecognizer()
+        self._recognizer = cv2.face.createLBPHFaceRecognizer(
+            # threshold=50
+            # threshold=40
+        )
 
         print 'loading facial model from %s' % training_dir+'/faces.xml'
 
@@ -256,6 +270,8 @@ class VisualDetectionEngine(object):
         print 'loaded recognition model.'
 
     def _retrain_facial_model(self):
+        self._load_facial_model()
+
         training_dir = os.path.dirname(os.path.realpath(__file__)) + '/training'
 
         photo_normal = None
@@ -294,33 +310,36 @@ class VisualDetectionEngine(object):
             # Convert the image format into numpy array
             image = np.array(image_pil, 'uint8')
 
-            # Get the label of the image
-            nbr = int(os.path.split(image_path)[1].split(".")[0].replace("subject", ""))
+            if '_' in image_path:
 
-            # Detect the face in the image
-            faces = self._cascades['face'].detectMultiScale(image)
+                # Get the label of the image
+                nbr = int(os.path.split(image_path)[1].split("_")[0])
 
-            # If face is detected, append the face to images and the label to labels
-            for (x, y, w, h) in faces:
-                recog_images.append(image[y: y + h, x: x + w])
-                recog_labels.append(nbr)
-                # cv2.imshow("Adding faces to traning set...", image[y: y + h, x: x + w])
-                cv2.waitKey(50)
+                # Detect the face in the image
+                faces = self._cascades['face'].detectMultiScale(image)
 
+                # If face is detected, append the face to images and the label to labels
+                for (x, y, w, h) in faces:
+                    # cv2.imshow('face_train', image[y: y + h, x: x + w])
+
+                    recog_images.append(image[y: y + h, x: x + w])
+                    recog_labels.append(nbr)
+                    # cv2.imshow("Adding faces to traning set...", image[y: y + h, x: x + w])
+                    cv2.waitKey(50)
 
         #----------
 
         self._log('Retraining recognizer...')
 
         try:
-            self._recognizer.train(recog_images, np.array(recog_labels))
+            self._recognizer.train(np.array(recog_images), np.array(recog_labels))
             self._recognizer.save(training_dir + '/faces.xml')
             self._log('Successfully completed retraining recognizer.')
 
         except Exception, e:
             self._log({
                 'type': 'error',
-                'msg': 'Encountered a problem training recognizer: %s' % str(e)
+                'msg': 'Encountered a problem training recognizer: %s' % (str(e))
             })
 
     def _test_capture_face_photo(self):

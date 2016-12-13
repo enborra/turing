@@ -36,13 +36,13 @@
             }
         },
 
-        "kanata": {
-            "name": "com.turing.kanata",
+        "maz": {
+            "name": "com.turing.maz",
             "enabled": true,
 
             "install": {
-                "osx": "com.turing.kanata.plist",
-                "raspberry_pi": "com.turing.kanata.service"
+                "osx": "com.turing.maz.plist",
+                "raspberry_pi": "com.turing.maz.service"
             }
         }
     }

@@ -126,21 +126,42 @@ class CoreService(object):
         # set rather than a method call. OpenCV chokes on threading if a method
         # call is used here.
 
-        if str(msg.payload) == 'learn_face':
-            self._thread_lock.acquire()
+        msg_struct = None
 
-            try:
-                self._engine.queue_action('learn_face')
-            finally:
-                self._thread_lock.release()
+        try:
+            msg_struct = json.loads(msg.payload)
 
-        elif str(msg.payload) == 'retrain_faces':
-            self._thread_lock.acquire()
+        except:
+            # Message passed was not a JSON object
+            pass
 
-            try:
-                self._engine.queue_action('retrain_faces')
-            finally:
-                self._thread_lock.release()
+        if msg_struct:
+            if 'type' in msg_struct:
+                if msg_struct['type'] == 'action':
+                    if 'msg' in msg_struct:
+                        if (msg_struct['msg'] == 'retrain_faces') or (msg_struct['msg'] == 'learn_face'):
+                            self._thread_lock.acquire()
+                            try:
+                                self._engine.queue_action(msg_struct['msg'])
+
+                            finally:
+                                self._thread_lock.release()
+
+        # if str(msg.payload) == 'learn_face':
+        #     self._thread_lock.acquire()
+        #
+        #     try:
+        #         self._engine.queue_action('learn_face')
+        #     finally:
+        #         self._thread_lock.release()
+
+        # elif str(msg.payload) == 'retrain_faces':
+        #     self._thread_lock.acquire()
+        #
+        #     try:
+        #         self._engine.queue_action('retrain_faces')
+        #     finally:
+        #         self._thread_lock.release()
 
     def _on_publish(self, mosq, obj, mid):
         pass
