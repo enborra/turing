@@ -47,9 +47,6 @@ class OsxController(BaseController):
 
             output_msg = '{{GREEN}}Started service:{{WHITE}} %s' % service_name
 
-        # else:
-        #     output_msg = '{{GRAYDARK}}Skipping disabled service:{{WHITE}} %s' % current_name
-
         return output_msg
 
     def get_service_status(self, service_name, config_obj):
