@@ -2,7 +2,7 @@
 
 # ------------------------------------------------------------------------------
 #
-# BOOTER: KANATA
+# BOOTER: MAZ
 #
 # USAGE:
 #     Force dependencies install: sh boot.sh -i true

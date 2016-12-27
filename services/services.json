@@ -1,0 +1,7 @@
+{
+    "services": {
+        "maz": {
+            "enabled": false
+        }
+    }
+}

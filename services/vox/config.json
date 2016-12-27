@@ -1,0 +1,8 @@
+{
+    "service_name": "com.turing.vox",
+
+    "install": {
+        "osx": "com.turing.vox.plist",
+        "raspberry_pi": "com.turing.vox.service"
+    }
+}

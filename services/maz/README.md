@@ -1,1 +1,1 @@
-# Kanata - internal service for web ui
+# Maz - internal service for web ui

@@ -1,0 +1,8 @@
+{
+    "service_name": "com.turing.central_station",
+
+    "install": {
+        "osx": "com.turing.central_station.plist",
+        "raspberry_pi": "com.turing.central_station.service"
+    }
+}

@@ -1,0 +1,8 @@
+{
+    "service_name": "com.turing.poe",
+
+    "install": {
+        "osx": "com.turing.poe.plist",
+        "raspberry_pi": "com.turing.poe.service"
+    }
+}

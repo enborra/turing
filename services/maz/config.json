@@ -1,0 +1,8 @@
+{
+    "service_name": "com.turing.maz",
+
+    "install": {
+        "osx": "com.turing.maz.plist",
+        "raspberry_pi": "com.turing.maz.service"
+    }
+}
