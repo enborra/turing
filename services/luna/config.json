@@ -1,8 +1,0 @@
-{
-    "service_name": "com.turing.luna",
-
-    "install": {
-        "osx": "com.turing.luna.plist",
-        "raspberry_pi": "com.turing.luna.service"
-    }
-}
