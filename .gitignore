@@ -8,4 +8,5 @@ npm-debug.log
 logs/*
 
 venv/
-services/poe
+services/*
+! services/services.json

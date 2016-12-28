@@ -1,6 +1,0 @@
-flask
-simplejson
-paho-mqtt
-pygame
-astral
-git+https://github.com/adafruit/Adafruit_Python_GPIO

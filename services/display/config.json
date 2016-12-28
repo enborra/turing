@@ -1,8 +1,0 @@
-{
-    "service_name": "com.turing.display",
-
-    "install": {
-        "osx": "com.turing.display.plist",
-        "raspberry_pi": "com.turing.display.service"
-    }
-}
