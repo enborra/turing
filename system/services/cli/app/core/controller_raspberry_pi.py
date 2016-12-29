@@ -85,34 +85,33 @@ class RaspberryPiController(BaseController):
     def install_service(self, service_name, dir_services, config_obj):
         output_msg = ''
 
-        for service_name in self._commands['services']:
-            current_service_name = config_obj['service_name']
-            current_service_run_file_name = config_obj['install']['raspberry_pi']
+        current_service_name = config_obj['service_name']
+        current_service_run_file_name = config_obj['install']['raspberry_pi']
 
-            path_service_source_file = self._path_app_root + service_name + '/' + self._path_source_root + current_service_run_file_name
-            path_service_run_file = self._path_run_root + current_service_run_file_name
+        path_service_source_file = self._path_app_root + service_name + '/' + self._path_source_root + current_service_run_file_name
+        path_service_run_file = self._path_run_root + current_service_run_file_name
 
-            output_msg += '{{GREEN}}Installing service:{{WHITE}} %s\n' % current_service_run_file_name
+        output_msg += '{{GREEN}}Installing service:{{WHITE}} %s\n' % current_service_run_file_name
 
-            # If the service is running, stop it
+        # If the service is running, stop it
 
-            try:
-                is_active = self.run_command('systemctl is-active %s >/dev/null 2>&1 && echo 1 || echo 0' % current_service_run_file_name)
+        try:
+            is_active = self.run_command('systemctl is-active %s >/dev/null 2>&1 && echo 1 || echo 0' % current_service_run_file_name)
 
-                if str(is_active) == '1':
-                    self.run_command('sudo systemctl stop %s' % current_service_run_file_name)
-                    self.run_command('sudo systemctl disable %s' % current_service_run_file_name)
+            if str(is_active) == '1':
+                self.run_command('sudo systemctl stop %s' % current_service_run_file_name)
+                self.run_command('sudo systemctl disable %s' % current_service_run_file_name)
 
-                print('successfully uninstalled.')
+            print('successfully uninstalled.')
 
-            except Exception as e:
-                output_msg += 'Had a problem uninstalling service: %s\n' % str(e)
+        except Exception as e:
+            output_msg += 'Had a problem uninstalling service: %s\n' % str(e)
 
-            # Now install new service and load it
+        # Now install new service and load it
 
-            self.run_command('sudo cp -f %s %s' % (path_service_source_file, path_service_run_file))
-            self.run_command('sudo chmod +x %s' % path_service_run_file)
-            self.run_command('sudo systemctl enable %s' % current_service_run_file_name)
-            self.run_command('sudo systemctl start %s' % current_service_run_file_name)
+        self.run_command('sudo cp -f %s %s' % (path_service_source_file, path_service_run_file))
+        self.run_command('sudo chmod +x %s' % path_service_run_file)
+        self.run_command('sudo systemctl enable %s' % current_service_run_file_name)
+        self.run_command('sudo systemctl start %s' % current_service_run_file_name)
 
         return output_msg
