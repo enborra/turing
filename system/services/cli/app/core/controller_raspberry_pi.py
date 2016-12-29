@@ -13,14 +13,14 @@ class RaspberryPiController(BaseController):
     def stop_service(self, service_name, config_obj):
         output_msg = None
 
-        current_config = self._commands['services'][service_name]
         current_name = config_obj['service_name']
+        current_run_file_name = config_obj['install']['raspberry_pi']
 
         # If the service is running, stop it
 
         try:
-            self.run_command('sudo systemctl status %s' % self._commands['services'][service_name]['install']['raspberry_pi'])
-            self.run_command('sudo systemctl stop %s' % self._commands['services'][service_name]['install']['raspberry_pi'])
+            self.run_command('sudo systemctl status %s' % current_run_file_name)
+            self.run_command('sudo systemctl stop %s' % current_run_file_name)
 
             output_msg = '{{RED}}Stopped service:{{WHITE}} %s' % current_name
 
