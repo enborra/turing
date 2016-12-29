@@ -54,10 +54,6 @@ class RaspberryPiController(BaseController):
         current_name = config_obj['service_name']
         current_run_file_name = config_obj['install']['raspberry_pi']
 
-        if 'enabled' in current_config:
-            if current_config['enabled'] == False:
-                is_enabled = False
-
         try:
             self.run_command('sudo systemctl status ' + current_run_file_name)
             output_msg = '{{GREEN}}Service running: {{WHITE}}%s' % service_name
