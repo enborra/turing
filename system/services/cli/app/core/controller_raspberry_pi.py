@@ -33,7 +33,7 @@ class RaspberryPiController(BaseController):
         output_msg = None
 
         current_name = config_obj['service_name']
-        current_run_file_name = current_config['install']['raspberry_pi']
+        current_run_file_name = config_obj['install']['raspberry_pi']
 
         try:
             self.run_command('sudo systemctl status %s' % current_name)
