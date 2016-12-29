@@ -102,7 +102,7 @@ class RaspberryPiController(BaseController):
                 self.run_command('sudo systemctl stop %s' % current_service_run_file_name)
                 self.run_command('sudo systemctl disable %s' % current_service_run_file_name)
 
-            self.display('Successfully uninstalled %s' % service_name)
+            print('Successfully uninstalled %s' % service_name)
 
         except Exception as e:
             output_msg += 'Had a problem uninstalling service: %s\n' % str(e)
