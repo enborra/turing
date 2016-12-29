@@ -82,7 +82,7 @@ class RaspberryPiController(BaseController):
 
         return output_msg
 
-    def install_service(self, service_name, config_obj):
+    def install_service(self, service_name, dir_services, config_obj):
         output_msg = ''
 
         for service_name in self._commands['services']:
