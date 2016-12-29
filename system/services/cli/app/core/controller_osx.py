@@ -6,18 +6,17 @@ from .controller_base import BaseController
 
 class OsxController(BaseController):
     def __init__(self):
-        self._path_current_file = os.path.dirname(os.path.realpath(__file__)) + '/'
-        self._path_app_root = self._path_current_file + '../../../../../services/'
-        self._path_current_file = os.path.dirname(os.path.realpath(__file__)) + '/'
-        self._path_app_root = self._path_current_file + '../../../../../services/'
         self._path_run_directory = '/Library/LaunchDaemons/'
+        self._path_current_file = os.path.dirname(os.path.realpath(__file__)) + '/'
+        self._path_app_root = self._path_current_file + '../../../../../services/'
 
     def stop_service(self, service_name, config_obj):
-        is_enabled = True
         output_msg = None
 
         current_run_file_name = config_obj['install']['osx']
         current_name = config_obj['service_name']
+
+        # If the service is running, stop it
 
         try:
             self.run_command('sudo launchctl list | grep %s' % current_name)
@@ -31,11 +30,10 @@ class OsxController(BaseController):
         return output_msg
 
     def start_service(self, service_name=None, config_obj=None):
-        is_enabled = True
         output_msg = None
 
-        current_run_file_name = config_obj['install']['osx']
         current_name = config_obj['service_name']
+        current_run_file_name = config_obj['install']['osx']
 
         try:
             self.run_command('sudo launchctl list | grep %s' % current_name)

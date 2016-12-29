@@ -1,6 +1,8 @@
 {
     "service_name": "com.turing.cli",
 
+    "on_demand": true,
+
     "install": {
         "osx": "",
         "raspberry_pi": ""
