@@ -88,13 +88,11 @@ class RaspberryPiController(BaseController):
         super().install_service()
 
         for service_name in self._commands['services']:
-            current_service_config = self._commands['services'][service_name]
-            current_service_name = current_service_config['name']
-            current_service_run_file_name = current_service_config['install']['raspberry_pi']
+            current_service_name = config_obj['service_name']
+            current_service_run_file_name = config_obj['install']['raspberry_pi']
 
             path_service_source_file = self._path_app_root + service_name + '/' + self._path_source_root + current_service_run_file_name
             path_service_run_file = self._path_run_root + current_service_run_file_name
-
 
             output_msg += '{{GREEN}}Installing service:{{WHITE}} %s\n' % current_service_run_file_name
 
