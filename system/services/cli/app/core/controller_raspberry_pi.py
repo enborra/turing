@@ -51,7 +51,7 @@ class RaspberryPiController(BaseController):
         is_enabled = True
         output_msg = None
 
-        current_name = config_obj['servie_name']
+        current_name = config_obj['service_name']
         current_run_file_name = config_obj['install']['raspberry_pi']
 
         if 'enabled' in current_config:
