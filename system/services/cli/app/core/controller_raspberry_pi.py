@@ -47,13 +47,12 @@ class RaspberryPiController(BaseController):
 
         return output_msg
 
-    def get_service_status(self, service_name):
+    def get_service_status(self, service_name, config_obj):
         is_enabled = True
         output_msg = None
 
-        current_config = self._commands['services'][service_name]
-        current_name = current_config['name']
-        current_run_file_name = current_config['install']['raspberry_pi']
+        current_name = config_obj['servie_name']
+        current_run_file_name = config_obj['install']['raspberry_pi']
 
         if 'enabled' in current_config:
             if current_config['enabled'] == False:
