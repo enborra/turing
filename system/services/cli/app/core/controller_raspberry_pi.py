@@ -6,9 +6,9 @@ from .controller_base import BaseController
 
 class RaspberryPiController(BaseController):
     def __init__(self):
+        self._path_run_directory = '/lib/systemd/system/'
         self._path_current_file = os.path.dirname(os.path.realpath(__file__)) + '/'
         self._path_app_root = self._path_current_file + '../../../'
-        self._path_run_directory = '/lib/systemd/system/'
 
     def stop_service(self, service_name, config_obj):
         output_msg = None

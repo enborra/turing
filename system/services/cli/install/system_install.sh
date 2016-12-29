@@ -51,7 +51,7 @@ fi
 # Set paths for use
 
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-PATH_APP="$TURING_APP_DIR/services/cli/app"
+PATH_APP="$TURING_APP_DIR/system/services/cli/app"
 
 PATH_BIN="/usr/local/bin"
 PATH_BIN_CLI_ALIAS="$PATH_BIN/turing"
