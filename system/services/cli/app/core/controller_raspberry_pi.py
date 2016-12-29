@@ -41,7 +41,7 @@ class RaspberryPiController(BaseController):
             output_msg = '{{YELLOW}}Service already running:{{WHITE}} %s' % current_name
 
         except Exception as e:
-            self.run_command('sudo systemctl start %s' % (self._path_run_directory + current_run_file_name))
+            self.run_command('sudo systemctl start %s' % current_run_file_name)
 
             output_msg = '{{GREEN}}Service started:{{WHITE}} %s' % service_name
 
