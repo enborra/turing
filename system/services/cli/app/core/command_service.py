@@ -50,22 +50,22 @@ class CommandService(object):
         is_config_valid = True
         config_err_msg = None
 
-        if 'install' in config_obj:
-            if 'osx' in config_obj['install']:
-                if (config_obj['install']['osx'] is not None) and (str(config_obj['install']['osx']) is not ''):
-                    current_run_file_name = config_obj['install']['osx']
-
-                else:
-                    is_config_valid = False
-                    config_err_msg = 'service.json "osx" install parameter empty'
-
-            else:
-                is_config_valid = False
-                config_err_msg = 'service.json "install" attribute collection missing "osx" property'
-
-        else:
-            is_config_valid = False
-            config_err_msg = 'service.json missing "install" attribute collection'
+        # if 'install' in config_obj:
+        #     if 'osx' in config_obj['install']:
+        #         if (config_obj['install']['osx'] is not None) and (str(config_obj['install']['osx']) is not ''):
+        #             current_run_file_name = config_obj['install']['osx']
+        #
+        #         else:
+        #             is_config_valid = False
+        #             config_err_msg = 'service.json "osx" install parameter empty'
+        #
+        #     else:
+        #         is_config_valid = False
+        #         config_err_msg = 'service.json "install" attribute collection missing "osx" property'
+        #
+        # else:
+        #     is_config_valid = False
+        #     config_err_msg = 'service.json missing "install" attribute collection'
 
         if 'service_name' in config_obj:
             current_name = config_obj['service_name']
@@ -77,7 +77,7 @@ class CommandService(object):
         return (is_config_valid, config_err_msg)
 
     def display(self, msg):
-        msg = self._colors['white'] + '  ' + msg
+        msg = self._colors['white'] + '    ' + msg
 
         for color in self._colors:
             msg = msg.replace('{{'+color.upper()+'}}', self._colors[color])
@@ -134,29 +134,45 @@ class CommandService(object):
         service_dir_names = next(os.walk(dir_services))[1]
 
         if self._os_controller:
-            for service_name in service_dir_names:
-                path_service_config = dir_services + service_name + '/service.json'
-                is_config_available = True
-                is_config_valid = True
-                cfg = None
-                config_err_msg = None
-
-                try:
-                    json_data_raw = open(path_service_config).read()
-                    cfg = json.loads(json_data_raw)
-
-                except Exception:
-                    is_config_available = False
-
-                is_config_valid, config_err_msg = self._validate_service_config(cfg)
-
-                if is_config_valid:
-                    msg = self._os_controller.get_service_status(service_name, cfg)
-
-                else:
-                    msg = '{{RED}}%s: %s' % (config_err_msg, service_name)
+            if len(service_dir_names) == 0:
+                msg = '{{YELLOW}}No services installed.{{WHITE}}'
 
                 self.display(msg)
+
+            else:
+                for service_name in service_dir_names:
+                    path_service_config = dir_services + service_name + '/service.json'
+                    is_config_available = True
+                    is_config_valid = True
+                    cfg = None
+                    config_err_msg = None
+
+                    try:
+                        json_data_raw = open(path_service_config).read()
+                        cfg = json.loads(json_data_raw)
+
+                    except Exception:
+                        is_config_available = False
+
+                    is_config_valid, config_err_msg = self._validate_service_config(cfg)
+
+                    if is_config_valid:
+                        is_always_on = False
+
+                        if 'always-on' in cfg:
+                            if cfg['always-on'] == True:
+                                is_always_on = True
+
+                        if is_always_on:
+                            msg = '{{GREEN}}Service always on: {{WHITE}}%s' % (service_name)
+
+                        else:
+                            msg = self._os_controller.get_service_status(service_name, cfg)
+
+                    else:
+                        msg = '{{RED}}%s: %s' % (config_err_msg, service_name)
+
+                    self.display(msg)
 
 
         self._cleanup()
@@ -200,7 +216,17 @@ class CommandService(object):
                 is_config_valid, config_err_msg = self._validate_service_config(cfg)
 
                 if is_config_valid:
-                    msg = self._os_controller.stop_service(service_name, cfg)
+                    is_always_on = False
+
+                    if 'always-on' in cfg:
+                        if cfg['always-on'] == True:
+                            is_always_on = True
+
+                    if is_always_on:
+                        msg = '{{GREEN}}Service always on: {{WHITE}}%s' % (service_name)
+
+                    else:
+                        msg = self._os_controller.stop_service(service_name, cfg)
 
                 else:
                     msg = '{{PURPLE}}%s:{{WHITE}} %s' % (config_err_msg, service_name)
@@ -248,7 +274,17 @@ class CommandService(object):
                 is_config_valid, config_err_msg = self._validate_service_config(cfg)
 
                 if is_config_valid:
-                    msg = self._os_controller.start_service(service_name, cfg)
+                    is_always_on = False
+
+                    if 'always-on' in cfg:
+                        if cfg['always-on'] == True:
+                            is_always_on = True
+
+                    if is_always_on:
+                        msg = '{{GREEN}}Service always on: {{WHITE}}%s' % (service_name)
+
+                    else:
+                        msg = self._os_controller.start_service(service_name, cfg)
 
                 else:
                     msg = '{{PURPLE}}%s:{{WHITE}} %s' % (config_err_msg, service_name)

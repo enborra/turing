@@ -9,3 +9,11 @@
 
 
 sudo apt-get install nodejs npm
+
+
+## Ground-up Install
+
+- Read /system/install/base_setup.md
+
+
+## Installing Turing Services
