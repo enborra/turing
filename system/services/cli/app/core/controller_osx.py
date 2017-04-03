@@ -116,3 +116,6 @@ class OsxController(BaseController):
             output_msg = '{{RED}}Had a problem stopping %s' % current_name
 
         return output_msg
+
+    def elevate_privaleges(self):
+        self.run_command('sudo printf ""')

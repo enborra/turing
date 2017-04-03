@@ -122,6 +122,8 @@ class CommandService(object):
     # --------------------------------------------------------------------------
 
     def get_system_status(self):
+        self._os_controller.elevate_privaleges()
+
         self.display('{{WHITE}}CORE SERVICES:')
         self.display('------------------------------------------------')
         self._get_service_status(self._path_services_system)

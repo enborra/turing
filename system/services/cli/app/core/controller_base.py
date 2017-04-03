@@ -15,3 +15,6 @@ class BaseController(object):
 
     def install_service(self):
         pass
+
+    def elevate_privaleges(self):
+        pass
