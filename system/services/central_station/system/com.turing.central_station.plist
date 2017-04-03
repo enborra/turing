@@ -19,8 +19,8 @@
 	<key>RunAtLoad</key>
 	<true/>
 	<key>StandardErrorPath</key>
-	<string>/tmp/com.turing.dali.central_station.err</string>
+	<string>/tmp/com.turing.central_station.err</string>
 	<key>StandardOutPath</key>
-	<string>/tmp/com.turing.dali.central_station.out</string>
+	<string>/tmp/com.turing.central_station.out</string>
 </dict>
 </plist>

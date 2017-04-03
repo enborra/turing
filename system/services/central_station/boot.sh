@@ -59,7 +59,10 @@ fi
 
 echo "[CENTRALSTATION] Starting service."
 
-$PATH_BIN_NODE -v
-$PATH_BIN_NPM -v
+# $PATH_BIN_NODE -v
+# $PATH_BIN_NPM -v
+pwd
+# cd /Users/andres/projects/turing/system/services/central_station
+sudo /usr/local/bin/node boot.js
 
-sudo $PATH_BIN_NPM start
+echo "[CENTRALSTATION] Booted main application."

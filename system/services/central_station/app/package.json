@@ -11,7 +11,7 @@
   },
 
   "scripts": {
-    "start": "node boot.js"
+    "start": "$(which node) boot.js"
   },
 
   "dependencies": {
