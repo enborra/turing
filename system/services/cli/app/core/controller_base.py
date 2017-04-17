@@ -9,9 +9,15 @@ class BaseController(object):
         pass
 
     def run_command(self, command_body=None):
-        output = subprocess.check_output(command_body, shell=True)
+        output = None
 
-        return output
+        output = subprocess.check_output(
+            command_body,
+            stderr=subprocess.STDOUT,
+            shell=True
+        )
+
+        return output.decode('UTF-8')
 
     def install_service(self):
         pass

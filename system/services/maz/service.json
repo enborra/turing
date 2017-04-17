@@ -1,5 +1,5 @@
 {
-    "service_name": "com.turing.maz",
+    "service-name": "com.turing.maz",
 
     "install": {
         "osx": "com.turing.maz.plist",

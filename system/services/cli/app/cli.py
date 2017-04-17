@@ -50,6 +50,13 @@ def status():
 
     mgr.get_system_status()
 
+@cli.command()
+@click.argument('droid_name')
+def boot(droid_name):
+    """Set the specified droid to active."""
+
+    mgr.set_active_droid(droid_name)
+
 
 def _run_bash_script(file_path):
     try:

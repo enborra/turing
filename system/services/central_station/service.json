@@ -1,5 +1,5 @@
 {
-    "service_name": "com.turing.central_station",
+    "service-name": "com.turing.central_station",
 
     "install": {
         "osx": "com.turing.central_station.plist",

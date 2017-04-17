@@ -13,7 +13,7 @@ class RaspberryPiController(BaseController):
     def stop_service(self, service_name, config_obj):
         output_msg = None
 
-        current_name = config_obj['service_name']
+        current_name = config_obj['service-name']
         current_run_file_name = config_obj['install']['raspberry_pi']
 
         # If the service is running, stop it
@@ -32,7 +32,7 @@ class RaspberryPiController(BaseController):
     def start_service(self, service_name, config_obj):
         output_msg = None
 
-        current_name = config_obj['service_name']
+        current_name = config_obj['service-name']
         current_run_file_name = config_obj['install']['raspberry_pi']
 
         try:
@@ -51,7 +51,7 @@ class RaspberryPiController(BaseController):
         is_enabled = True
         output_msg = None
 
-        current_name = config_obj['service_name']
+        current_name = config_obj['service-name']
         current_run_file_name = config_obj['install']['raspberry_pi']
 
         try:
@@ -85,7 +85,7 @@ class RaspberryPiController(BaseController):
     def install_service(self, service_name, dir_services, config_obj):
         output_msg = ''
 
-        current_service_name = config_obj['service_name']
+        current_service_name = config_obj['service-name']
         current_service_run_file_name = config_obj['install']['raspberry_pi']
 
         path_service_source_file = dir_services + service_name + '/system/' + current_service_run_file_name

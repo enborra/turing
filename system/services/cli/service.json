@@ -1,5 +1,5 @@
 {
-    "service_name": "com.turing.cli",
+    "service-name": "com.turing.cli",
 
     "always-on": true,
 
