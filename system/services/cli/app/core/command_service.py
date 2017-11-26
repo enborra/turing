@@ -332,9 +332,10 @@ class CommandService(object):
         plat_name = platform.system().lower()
         plat_release = platform.release()
         plat_full_description = platform._syscmd_uname('-a')
+        plat_machine = platform.machine()
         os_name = os.name.lower()
 
-        self.display('Current running platform: %s, release number %s, (%s), on the %s OS' % (plat_name, plat_release, plat_full_description, os_name))
+        self.display('Current running platform: %s, release number %s, (%s), on the %s OS' % (plat_name, plat_release, plat_full_description, plat_machine))
 
     # --------------------------------------------------------------------------
     # STOP METHODS
