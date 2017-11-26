@@ -11,7 +11,7 @@
 # ------------------------------------------------------------------------------
 
 
-PATH_BIN_PYTHON="/usr/local/bin/python"
+PATH_BIN_PYTHON="/usr/bin/python"
 PATH_BIN_PIP="$(which pip)"
 
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
