@@ -69,12 +69,16 @@ class CommandService(object):
 
     def __init__(self):
         plat_name = platform.system().lower()
+        plat_machine = platform.machine()
         plat_release = platform.release()
         plat_full_description = platform._syscmd_uname('-a')
         os_name = os.name.lower()
 
         if plat_name == 'linux':
             if 'raspberrypi' in plat_full_description.lower():
+                self._env = self.ENV_RASPBERRY_PI
+
+            elif plat_machine.startswith('arm'):
                 self._env = self.ENV_RASPBERRY_PI
 
             else:
