@@ -329,7 +329,7 @@ class CommandService(object):
 
 
     def get_system_info(self):
-        self.display('Current running platform: %' % self._env)
+        self.display('Current running platform: %s' % self._env)
 
     # --------------------------------------------------------------------------
     # STOP METHODS
