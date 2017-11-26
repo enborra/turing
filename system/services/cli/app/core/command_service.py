@@ -543,7 +543,7 @@ class CommandService(object):
 
         if self._os_controller:
             for service_name in service_dir_names:
-                self._install_service(service_name, dir_services)
+                self._install_service(dir_services, service_name)
 
         self._cleanup()
 
