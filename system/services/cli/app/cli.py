@@ -51,6 +51,12 @@ def status():
     mgr.get_system_status()
 
 @cli.command()
+def system():
+    """Get details about current running environment"""
+
+    mgr.get_system_info()
+
+@cli.command()
 @click.argument('droid_name')
 def boot(droid_name):
     """Set the specified droid to active."""
