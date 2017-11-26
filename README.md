@@ -21,13 +21,20 @@ any droid. The Turing OS codebase is kept physically separate from the code that
 runs your droid, allowing source control of the droid itself.
 
 #### Turing Framework
-Turing framework lives at: ~/projects/turing
+Turing framework lives at: `/etc/turing/framework`
 
-Turing expects a config file to exist at /private/etc/turing/config.json, which
+Turing expects a config file to exist at `/private/etc/turing/config.json`, which
 details which Droid should be loaded, and the local file paths to available
 droids, and available Turing services.
 
-Droid code lives at `/etc/turing`
+Droid code lives at `/etc/turing/droids`
+
+
+## SYSTEM INSTALL
+
+### Manual Setup
+
+Follow install instructions under /system/install/base_setup.md
 
 
 ## SYSTEM OPERATION

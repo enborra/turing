@@ -115,3 +115,6 @@ class RaspberryPiController(BaseController):
         self.run_command('sudo systemctl start %s' % current_service_run_file_name)
 
         return output_msg
+
+    def elevate_privileges(self):
+        self.run_command('sudo printf "Priviledges elevated."')

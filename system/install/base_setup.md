@@ -5,7 +5,7 @@ OSX: Add the following to ~/.bash_profile so that it sets on every login
 export TURING_APP_DIR=~/projects/turing
 
 Raspberry Pi: Add the following to ~/.bashrc
-export TURING_APP_DIR=/home/pi/projects/turing
+export TURING_APP_DIR=/private/etc/turing
 
 2. Install Python & Homebrew
 Run the following on macOS commandline:
