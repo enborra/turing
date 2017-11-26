@@ -329,7 +329,12 @@ class CommandService(object):
 
 
     def get_system_info(self):
-        self.display('Current running platform: %s' % self._env)
+        plat_name = platform.system().lower()
+        plat_release = platform.release()
+        plat_full_description = platform._syscmd_uname('-a')
+        os_name = os.name.lower()
+
+        self.display('Current running platform: %s, release number %s, (%s), on the %s OS' % (plat_name, plat_release, plat_full_description, os_name))
 
     # --------------------------------------------------------------------------
     # STOP METHODS
