@@ -52,7 +52,7 @@ fi
 PATH_BIN="/usr/local/bin"
 PATH_BIN_CLI_ALIAS="$PATH_BIN/turing"
 
-PATH_APP="$HOME/projects/turing"
+PATH_APP="/etc/turing/framework"
 PATH_APP_CLI="$PATH_APP/os/cli/cli.py"
 PATH_STARTUP_SCRIPT="$PATH_APP/system/run/turing_boot.sh"
 PATH_SHUTDOWN_SCRIPT="$PATH_APP/system/run/turing_stop.sh"
