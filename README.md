@@ -34,6 +34,25 @@ Droid code lives at `/etc/turing/droids`
 
 ### Manual Setup
 
+Run setup script:
+  sudo bash /system/install/install_env.sh
+
+Assumes a file system structured in a predictive way:
+
++ /etc/turing
+  + /framework (this repo)
+  + /droids (your droid codebases)
+  + /services (all installed services droids are dependent on)
+  + /config.json
+
+System running configuration file at config.json expected to follow this format:
+
+  {
+      "current-droid": "oswald",                // directory of droid to run
+      "droid-path": "/etc/turing/droids",       // base dir that contains droids
+      "service-path": "/etc/turing/services"    // base dir of services
+  }
+
 Follow install instructions under /system/install/base_setup.md
 
 
