@@ -57,6 +57,11 @@ PATH_APP_CLI="$PATH_APP/system/services/cli/app/cli.py"
 PATH_STARTUP_SCRIPT="$PATH_APP/system/run/turing_boot.sh"
 PATH_SHUTDOWN_SCRIPT="$PATH_APP/system/run/turing_stop.sh"
 
+# Install CLI dependencies in Python 3
+
+sudo pip3 install -r "$PATH_APP/system/services/cli/app/requirements.txt"
+
+
 # If a file exists at the intended cli alias location,
 # remove that file and re-create the alias needed for
 # operation.
