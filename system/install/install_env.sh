@@ -53,7 +53,7 @@ PATH_BIN="/usr/local/bin"
 PATH_BIN_CLI_ALIAS="$PATH_BIN/turing"
 
 PATH_APP="/etc/turing/framework"
-PATH_APP_CLI="$PATH_APP/os/cli/cli.py"
+PATH_APP_CLI="$PATH_APP/system/services/cli/cli.py"
 PATH_STARTUP_SCRIPT="$PATH_APP/system/run/turing_boot.sh"
 PATH_SHUTDOWN_SCRIPT="$PATH_APP/system/run/turing_stop.sh"
 
@@ -96,7 +96,7 @@ if $DOES_ALIAS_REQUIRE_CREATION; then
 
   # Set CLI alias and access permissions for script
 
-  sudo ln -s "$PATH_APP/os/cli/cli.py" "$PATH_BIN/turing"
+  sudo ln -s "$PATH_APP/system/services/cli/cli.py" "$PATH_BIN/turing"
   chmod +x "$PATH_BIN_CLI_ALIAS"
 fi
 
