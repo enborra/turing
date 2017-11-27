@@ -7,8 +7,6 @@ if [ $EUID != 0 ]; then
     exit $?
 fi
 
-brew install rethinkdb
-
 # ------------------------------------------------------------------------------
 # DETECT CURRENT SYSTEM ENVIRONMENT
 # ------------------------------------------------------------------------------
@@ -60,7 +58,7 @@ PATH_SHUTDOWN_SCRIPT="$PATH_APP/system/run/turing_stop.sh"
 # Install CLI dependencies in Python 3
 
 sudo pip3 install -r "$PATH_APP/system/services/cli/app/requirements.txt"
-
+brew install rethinkdb
 
 # If a file exists at the intended cli alias location,
 # remove that file and re-create the alias needed for
