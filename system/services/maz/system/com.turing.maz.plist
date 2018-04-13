@@ -21,6 +21,6 @@
 	<key>StandardErrorPath</key>
 	<string>/tmp/com.turing.maz.err</string>
 	<key>StandardOutPath</key>
-	<string>/Users/andres/Desktop/stdout</string>
+	<string>/etc/turing/outputs/maz/stdout</string>
 </dict>
 </plist>

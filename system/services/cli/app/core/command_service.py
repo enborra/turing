@@ -18,6 +18,7 @@ class CommandService(object):
     _os_controller = None
     _path_services_system = os.path.dirname(os.path.realpath(__file__)) + '/../../../'
     _path_services_skill = os.path.dirname(os.path.realpath(__file__)) + '/../../../../../services/'
+    _path_services_droid = os.path.dirname(os.path.realpath(__file__)) + '/../../../../../../droids/'
     _path_current_droid = None
 
     _storage_dir_path = '/etc/turing'
@@ -359,6 +360,7 @@ class CommandService(object):
         self.display('{{WHITE}}DROID:')
         self.display('------------------------------------------------')
         self.display('{{RED}}Droid disabled: {{WHITE}}%s' % (self._get_config_value('current-droid')))
+        self._stop_service(self._path_services_droid, self._get_config_value('current-droid'))
         self.display('')
         self.display('')
 
@@ -368,6 +370,46 @@ class CommandService(object):
         self.display('------------------------------------------------')
         self._stop_services_by_dir(self._path_services_skill)
         self.display('')
+
+    def _stop_service(self, base_dir_path, service_name):
+        path_service_config = os.path.join(
+            base_dir_path,
+            service_name,
+            'service.json'
+        )
+
+        is_config_available = True
+        is_config_valid = True
+        cfg = None
+        config_err_msg = None
+
+        try:
+            with open(path_service_config) as f:
+                cfg = json.loads(f.read())
+
+        except Exception:
+            is_config_available = False
+
+        is_config_valid, config_err_msg = self._validate_service_config(cfg)
+
+        if is_config_valid:
+            is_always_on = False
+
+            if 'always-on' in cfg:
+                if cfg['always-on'] == True:
+                    is_always_on = True
+
+            if is_always_on:
+                msg = '{{GRAYDARK}}Service always on: {{WHITE}}%s' % (service_name)
+
+            else:
+                msg = self._os_controller.stop_service(service_name, cfg)
+
+        else:
+            msg = '{{PURPLE}}%s:{{WHITE}} %s' % (config_err_msg, service_name)
+            msg = base_dir_path + ' ::: ' + service_name
+
+        self.display(msg)
 
     def _stop_services_by_dir(self, dir_services):
         service_dir_names = next(os.walk(dir_services))[1]
