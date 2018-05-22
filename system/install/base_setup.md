@@ -1,5 +1,9 @@
 # Setting up basic environment for app scripts to run
 
+
+## INSTALL NODE.JS
+
+
 ##1. Add environmental variables for turing app path
 
 ### OSX: Add the following to ~/.bash_profile so that it sets on every login
