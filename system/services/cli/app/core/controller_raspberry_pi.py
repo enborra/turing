@@ -85,6 +85,10 @@ class RaspberryPiController(BaseController):
     def install_service(self, service_name, dir_services, config_obj):
         output_msg = ''
 
+        if dir_services:
+            if not dir_services.endswith('/'):
+                dir_services += '/'
+
         current_service_name = config_obj['service-name']
         current_service_run_file_name = config_obj['install']['raspberry_pi']
 

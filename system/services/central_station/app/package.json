@@ -4,16 +4,13 @@
   "license": "UNLICENSED",
   "version": "1.0.0",
   "main": "boot.js",
-
   "repository": {
     "type": "git",
     "url": "git://github.com/enborra/turing"
   },
-
   "scripts": {
     "start": "$(which node) boot.js"
   },
-
   "dependencies": {
     "mosca": "*",
     "express": "*"
