@@ -486,6 +486,7 @@ class CommandService(object):
         # Start skill services in the /services directory
 
         self.display('{{WHITE}}SKILL SERVICES:')
+        self.display(self._path_services_skill)
         self.display('------------------------------------------------')
         self._start_services_by_dir(self._path_services_skill)
         self.display('')
