@@ -368,7 +368,7 @@ class CommandService(object):
 
         self.display('{{WHITE}}SKILL SERVICES:')
         self.display('------------------------------------------------')
-        self._stop_services_by_dir(self._path_services_skill)
+        self._stop_services_by_dir(self._get_config_value('service-path'))
         self.display('')
 
     def _stop_service(self, base_dir_path, service_name):
@@ -488,7 +488,7 @@ class CommandService(object):
         self.display('{{WHITE}}SKILL SERVICES:')
         self.display(self._path_services_skill)
         self.display('------------------------------------------------')
-        self._start_services_by_dir(self._path_services_skill)
+        self._start_services_by_dir(self._get_config_value('service-path'))
         self.display('')
 
     def _start_services_by_dir(self, dir_services):
