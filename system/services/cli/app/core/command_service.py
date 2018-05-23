@@ -275,7 +275,7 @@ class CommandService(object):
 
         self.display('{{WHITE}}SKILL SERVICES:')
         self.display('------------------------------------------------')
-        self._get_service_status_by_dir(self._path_services_skill)
+        self._get_service_status_by_dir(self._get_config_value('service-path'))
         self.display('')
 
 
