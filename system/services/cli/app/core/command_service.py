@@ -578,7 +578,7 @@ class CommandService(object):
 
             self.display('{{WHITE}}SKILL SERVICES:')
             self.display('------------------------------------------------')
-            self._install_services_by_dir(self._path_services_skill)
+            self._install_services_by_dir(self._get_config_value('service-path'))
             self.display('')
 
     def _install_services_by_dir(self, dir_services):
