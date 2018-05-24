@@ -367,6 +367,7 @@ class CommandService(object):
         # Stop skill services in the /services directory
 
         self.display('{{WHITE}}SKILL SERVICES:')
+        self.display(self._get_config_value('service-path'))
         self.display('------------------------------------------------')
         self._stop_services_by_dir(self._get_config_value('service-path'))
         self.display('')
@@ -422,11 +423,16 @@ class CommandService(object):
 
             else:
                 for service_name in service_dir_names:
-                    path_service_config = dir_services + service_name + '/service.json'
                     is_config_available = True
                     is_config_valid = True
                     cfg = None
                     config_err_msg = None
+
+                    path_service_config = os.path.join(
+                        dir_services,
+                        service_name,
+                        'service.json'
+                    )
 
                     try:
                         json_data_raw = open(path_service_config).read()
