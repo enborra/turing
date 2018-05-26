@@ -98,8 +98,8 @@ core_app.service('grand_central_service', function($rootScope){
         console.log('Connected');
         client.subscribe('/system');
         client.subscribe('/system/face');
-        client.subscribe('/system/camera');
-        client.subscribe('/system/camera/faces');
+        client.subscribe('/camera/rpi');
+        client.subscribe('/camera/faces');
 
         $('.blinker').addClass('connected');
     };
@@ -118,13 +118,13 @@ core_app.service('grand_central_service', function($rootScope){
 
         // $('tbody').append('<tr><td>'+Date().toString()+'</td><td>'+message+'</td></tr>');
 
-        if( topic == '/system/face' ){
+        if( topic == '/camera/face' ){
             $('.view-screen.face-feed img').attr('src', 'data:image/jpeg;base64,'+message);
 
-        } else if( topic == '/system/camera' ){
+        } else if( topic == '/camera/rpi' ){
             $('.view-screen.camera-feed img').attr('src', 'data:image/jpeg;base64,'+message);
 
-        } else if( topic == '/system/camera/faces' ){
+        } else if( topic == '/camera/faces' ){
             var frame_box = JSON.parse(message);
 
             console.log(frame_box);
