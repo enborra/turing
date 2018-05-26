@@ -53,7 +53,9 @@ System running configuration file at config.json expected to follow this format:
       "service-path": "/etc/turing/services"    // base dir of services
   }
 
-Follow install instructions under /system/install/base_setup.md
+Detailed install instructions under /system/install/base_setup.md
+Basic install_env script appears to install basic CLI support. TODO: need to
+diff out what manual steps need to be taken
 
 
 ## SYSTEM OPERATION

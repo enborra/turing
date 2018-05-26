@@ -14,7 +14,7 @@
 	<key>ProgramArguments</key>
 	<array>
 		<string>/bin/bash</string>
-		<string>/Users/andres/projects/turing/system/services/central_station/boot.sh</string>
+		<string>/etc/turing/framework/system/services/central_station/boot.sh</string>
 	</array>
 	<key>RunAtLoad</key>
 	<true/>
