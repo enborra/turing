@@ -1,3 +1,7 @@
+## Install upgrades
+
+- Script the initial folder structure creation that's needed to successfully install Turing framework (creation of config.json, /droids, /services directories
+
 
 ## Misc rainy day projects
 
