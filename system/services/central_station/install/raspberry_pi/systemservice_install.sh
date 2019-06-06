@@ -22,14 +22,14 @@
 
 # Install systemd service on a Raspberry Pi machine
 
-SCRIPT_ORIGIN=$TURING_APP_DIR/services/central_station/system/centralstation.service
-SCRIPT_SYSTEMD_LOCATION=/lib/systemd/system/centralstation.service
+SCRIPT_ORIGIN=$TURING_APP_DIR/services/central_station/system/com.turing.central_station.service
+SCRIPT_SYSTEMD_LOCATION=/lib/systemd/system/com.turing.central_station.service
 
 # Stop any pre-existing service and disable
 
 echo '[INSTALLER] Shutting down and disabling any existing services.'
-sudo systemctl stop centralstation.service
-sudo systemctl disable centralstation.service
+sudo systemctl stop com.turing.central_station.service
+sudo systemctl disable com.turing.central_station.service
 
 # Force-copy of script into systemd directory, and update permissions
 
@@ -46,7 +46,7 @@ sudo systemctl daemon-reload
 # Enable and start new service
 
 echo '[INSTALLER] Starting new service.'
-sudo systemctl enable centralstation.service
-sudo systemctl start centralstation.service
+sudo systemctl enable com.turing.central_station.service
+sudo systemctl start com.turing.central_station.service
 
 echo '[INSTALLER] Successfully installed Central Station service.'
