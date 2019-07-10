@@ -3,6 +3,9 @@
 
 ## INSTALL NODE.JS
 
+ONLY INSTALL NODE FROM HERE:
+https://github.com/cncjs/cncjs/wiki/Setup-Guide:-Raspberry-Pi-%7C-Install-Node.js-via-Node-Version-Manager-(NVM)
+
 
 ##1. Add environmental variables for turing app path
 
