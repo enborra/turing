@@ -3,7 +3,7 @@
 #
 # DOWNLOAD WITH THIS COMMAND
 #
-# curl -S -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/enborra/turing/master/docs/bootstrap.sh | bash -s
+# sudo curl -S -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/enborra/turing/master/docs/bootstrap.sh | bash -s
 #
 
 # Run this file remote to kick off install
