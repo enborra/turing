@@ -16,6 +16,16 @@
 
 # Check for nodejs on system
 ## Install if nodejs doesn't exist
+### Install NVM
+curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
+source ~/.bashrc  # Rerun profile after installing nvm
+
+### Install NodeJS
+nvm install 8
+nvm use 8
+
+### Ensure that NPM is updated to latest
+npm install npm@latest -g
 
 # Create file structuremeghancakes
 
