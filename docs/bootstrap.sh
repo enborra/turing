@@ -1,5 +1,11 @@
 
 
+#
+# DOWNLOAD WITH THIS COMMAND
+#
+# curl -S https://gist.githubusercontent.com/enborra/7afcd1b994c9a313af2a474af10c7ccd/raw/3cbacd2552e9c11ea1464b65291524a589578c96/bootstrap | bash -s
+#
+
 # Run this file remote to kick off install
 
 # Check for git on system
@@ -20,6 +26,6 @@ sudo mkdir /etc/turing/services
 
 # Clone the Turing repo (this repo) to the local system at the /etc location
 
-git clone https://github.com/enborra/turing.git /etc/turing/framework
+sudo git clone https://github.com/enborra/turing.git /etc/turing/framework
 
 # Run the install script for the main Turing repo (this repo)
