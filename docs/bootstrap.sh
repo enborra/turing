@@ -22,8 +22,8 @@ sleep 3s
 . ~/.bashrc  # Rerun profile after installing nvm
 
 ### Install NodeJS
-nvm install 8
-nvm use 8
+nvm install 8.0
+nvm use 8.0
 
 ### Ensure that NPM is updated to latest
 npm install npm@latest -g
