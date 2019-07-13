@@ -382,10 +382,10 @@ class CommandService(object):
         # Stop skill services in the /services directory
 
         self.display('{{WHITE}}SKILL SERVICES:')
-        self.display(self._get_config_value('service-path'))
         self.display('------------------------------------------------')
 
         try:
+            self.display(self._get_config_value('service-path'))
             self._stop_services_by_dir(self._get_config_value('service-path'))
         except ConfigKeyNotFoundError:
             self.display('{{GRAYDARK}}Services not configured.')
