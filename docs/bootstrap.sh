@@ -19,7 +19,8 @@
 ### Install NVM
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
 sleep 3s
-. ~/.bashrc  # Rerun profile after installing nvm
+. ~/.bashrc
+sleep 3s
 
 ### Install NodeJS
 nvm install 8.0
