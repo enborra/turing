@@ -369,13 +369,13 @@ class CommandService(object):
 
         self.display('{{WHITE}}DROID:')
         self.display('------------------------------------------------')
-        self.display('{{RED}}Droid disabled: {{WHITE}}%s' % (self._get_config_value('current-droid')))
 
         try:
             self._stop_service(self._path_services_droid, self._get_config_value('current-droid'))
+            self.display('{{RED}}Droid disabled: {{WHITE}}%s' % (self._get_config_value('current-droid')))
         except ConfigKeyNotFoundError:
             self.display('{{GRAYDARK}}Droid not configured.')
-            
+
         self.display('')
         self.display('')
 
