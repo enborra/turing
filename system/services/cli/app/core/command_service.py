@@ -266,10 +266,15 @@ class CommandService(object):
 
         self.display('{{WHITE}}DROID:')
         self.display('------------------------------------------------')
-        self._get_service_status(
-            self._get_config_value('droid-path'),
-            self._get_config_value('current-droid')
-        )
+
+        try:
+            self._get_service_status(
+                self._get_config_value('droid-path'),
+                self._get_config_value('current-droid')
+            )
+        except ConfigKeyNotFoundError:
+            self.display('{{GRAYDARK}}Droid not configured.')
+            
         self.display('')
         self.display('')
 
