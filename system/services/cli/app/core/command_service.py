@@ -285,7 +285,7 @@ class CommandService(object):
             self._get_service_status_by_dir(self._get_config_value('service-path'))
         except ConfigKeyNotFoundError:
             self.display('{{GRAYDARK}}Skills not configured.')
-            
+
         self.display('')
 
 
@@ -370,7 +370,12 @@ class CommandService(object):
         self.display('{{WHITE}}DROID:')
         self.display('------------------------------------------------')
         self.display('{{RED}}Droid disabled: {{WHITE}}%s' % (self._get_config_value('current-droid')))
-        self._stop_service(self._path_services_droid, self._get_config_value('current-droid'))
+
+        try:
+            self._stop_service(self._path_services_droid, self._get_config_value('current-droid'))
+        except ConfigKeyNotFoundError:
+            self.display('{{GRAYDARK}}Droid not configured.')
+            
         self.display('')
         self.display('')
 
@@ -379,7 +384,12 @@ class CommandService(object):
         self.display('{{WHITE}}SKILL SERVICES:')
         self.display(self._get_config_value('service-path'))
         self.display('------------------------------------------------')
-        self._stop_services_by_dir(self._get_config_value('service-path'))
+
+        try:
+            self._stop_services_by_dir(self._get_config_value('service-path'))
+        except ConfigKeyNotFoundError:
+            self.display('{{GRAYDARK}}Services not configured.')
+
         self.display('')
 
     def _stop_service(self, base_dir_path, service_name):
