@@ -274,13 +274,18 @@ class CommandService(object):
             )
         except ConfigKeyNotFoundError:
             self.display('{{GRAYDARK}}Droid not configured.')
-            
+
         self.display('')
         self.display('')
 
         self.display('{{WHITE}}SKILL SERVICES:')
         self.display('------------------------------------------------')
-        self._get_service_status_by_dir(self._get_config_value('service-path'))
+
+        try:
+            self._get_service_status_by_dir(self._get_config_value('service-path'))
+        except ConfigKeyNotFoundError:
+            self.display('{{GRAYDARK}}Skills not configured.')
+            
         self.display('')
 
 
