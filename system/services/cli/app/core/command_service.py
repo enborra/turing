@@ -76,7 +76,7 @@ class CommandService(object):
         os_name = os.name.lower()
 
         if plat_name == 'linux':
-            if 'raspberrypi' in plat_full_description.lower():
+            if 'raspberry' in plat_full_description.lower():
                 self._env = self.ENV_RASPBERRY_PI
 
             elif plat_machine.startswith('arm'):
