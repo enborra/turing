@@ -55,11 +55,7 @@ Assumes a file system structured in a predictive way:
 
 System running configuration file at config.json expected to follow this format:
 
-  {
-      "current-droid": "oswald",                // directory of droid to run
-      "droid-path": "/etc/turing/droids",       // base dir that contains droids
-      "service-path": "/etc/turing/services"    // base dir of services
-  }
+  {"current-droid": "oswald", "droid-path": "/etc/turing/droids", "service-path": "/etc/turing/services"}
 
 Where `droid-path` represents the absolute system path of your droid folder (keeping the default is recommended), `service-path` is the absolute system path of your services folder (keeping the default is recommended), and `current-droid` is the name of the directory that you've symlinked into `droid-path`
 
