@@ -38,7 +38,7 @@ Clone the repo:
   sudo git clone https://github.com/enborra/turing.git /etc/turing/framework
 
 Run setup script:
-  sudo bash /system/install/install_env.sh
+  sudo bash system/install/install_env.sh
 
 Assumes a file system structured in a predictive way:
 
