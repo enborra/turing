@@ -61,6 +61,8 @@ System running configuration file at config.json expected to follow this format:
       "service-path": "/etc/turing/services"    // base dir of services
   }
 
+Where `droid-path` represents the absolute system path of your droid folder (keeping the default is recommended), `service-path` is the absolute system path of your services folder (keeping the default is recommended), and `current-droid` is the name of the directory that you've symlinked into `droid-path`
+
 Detailed install instructions under /system/install/base_setup.md
 Basic install_env script appears to install basic CLI support. TODO: need to
 diff out what manual steps need to be taken
