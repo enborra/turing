@@ -34,11 +34,16 @@ Droid code lives at `/etc/turing/droids`
 
 ### Manual Setup
 
-Clone the repo:
+1. Clone the repo:
   sudo git clone https://github.com/enborra/turing.git /etc/turing/framework
 
-Run setup script:
+2. Run setup script:
   sudo bash system/install/install_env.sh
+  
+3. Add your droid
+  + Clone a droid to a local folder: git clone https://github.com/enborra/turing-droid-telkes.git ~/projects/turing-droid-telkes
+  + Or, create one: mkdir {{YOUR_DROID_DIRECTORY_NAME}}
+  + Then, symlink it into the turing app directory: sudo ln -s /etc/turing/droids/{{YOUR_DROID_DIRECTORY_NAME}} {{YOUR_DROID_DIRECTORY_NAME}}
 
 Assumes a file system structured in a predictive way:
 
