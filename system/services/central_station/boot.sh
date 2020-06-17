@@ -11,8 +11,8 @@
 # ------------------------------------------------------------------------------
 
 
-PATH_BIN_NPM="/usr/local/bin/npm"
-PATH_BIN_NODE="/usr/local/bin/node"
+PATH_BIN_NPM=$(which npm)
+PATH_BIN_NODE=$(which node)
 
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PATH_APP="$CURRENT_DIR/app"
@@ -58,11 +58,6 @@ fi
 # Run the service
 
 echo "[CENTRALSTATION] Starting service."
-
-# $PATH_BIN_NODE -v
-# $PATH_BIN_NPM -v
 pwd
-# cd /Users/andres/projects/turing/system/services/central_station
-sudo /usr/local/bin/node boot.js
-
+sudo $PATH_BIN_NODE boot.js
 echo "[CENTRALSTATION] Booted main application."
