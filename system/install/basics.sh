@@ -7,3 +7,10 @@ nvm install 8  # Installs Node v8, (nvm install stable) installs Latest version 
 nvm use 8  # Sets Node to use v8
 
 npm install npm@latest -g
+
+
+# Add turing environmental location
+export TURING_APP_DIR=~/etc/turing
+source ~/.bash_profile
+export TURING_APP_DIR=/private/etc/turing
+
