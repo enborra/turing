@@ -22,7 +22,7 @@ sudo apt-get dist-ugprade --force-yes -qq
 ## Install if nodejs doesn't exist
 ### Install NVM
 #curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
-curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash
+curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash
 sudo apt-get install -y nodejs
 
 ### Install NodeJS
