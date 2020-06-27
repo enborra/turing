@@ -44,3 +44,5 @@ sudo mkdir /etc/turing/services
 sudo git clone https://github.com/enborra/turing.git /etc/turing/framework
 
 # Run the install script for the main Turing repo (this repo)
+
+bash /etc/turing/framework/system/install/basics.sh
