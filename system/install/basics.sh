@@ -1,6 +1,10 @@
 # Install NVM
+# If NVM isn't installed,   
 if which nvm > /dev/null
   then
+    # NVM is installed, skip
+  else
+    # NVM isn't installed, so install it
     curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
 fi
 
