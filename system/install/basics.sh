@@ -3,6 +3,7 @@
 if which nvm > /dev/null
   then
     # NVM is installed, skip
+    echo "[NVM] Already installed, skipping."
   else
     # NVM isn't installed, so install it
     curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
