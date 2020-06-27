@@ -35,6 +35,7 @@ Droid code lives at `/etc/turing/droids`
 ### Manual Setup
 
 1. Clone the repo:
+  sudo mkdir /etc/turing
   sudo git clone https://github.com/enborra/turing.git /etc/turing/framework
 
 2. Run setup script:
