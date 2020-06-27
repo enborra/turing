@@ -9,7 +9,7 @@ if which nvm > /dev/null
     curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
 fi
 
-source ~/.bashrc  # Rerun profile after installing nvm
+. ~/.bashrc  # Rerun profile after installing nvm
 
 # Install Node
 nvm install 8  # Installs Node v8, (nvm install stable) installs Latest version of node
