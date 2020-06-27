@@ -10,28 +10,6 @@
 sudo apt-get update --force-yes -qq
 sudo apt-get dist-ugprade --force-yes -qq
 
-# Run this file remote to kick off install
-
-# Check for git on system
-## Install if git doesn't exist
-
-# Check for python on system
-## Install if python doesn't exist
-
-# Check for nodejs on system
-## Install if nodejs doesn't exist
-### Install NVM
-#curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
-curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash
-sudo apt-get install -y nodejs
-
-### Install NodeJS
-#nvm install 8.0
-#nvm use 8.0
-
-### Ensure that NPM is updated to latest
-sudo npm install npm@latest -g
-
 # Create file structuremeghancakes
 
 sudo mkdir /etc/turing
@@ -46,3 +24,4 @@ sudo git clone https://github.com/enborra/turing.git /etc/turing/framework
 # Run the install script for the main Turing repo (this repo)
 
 bash /etc/turing/framework/system/install/basics.sh
+bash /etc/turing/framework/system/install/install_env.sh
