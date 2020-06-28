@@ -574,6 +574,53 @@ class CommandService(object):
     # INSTALL METHODS
     # --------------------------------------------------------------------------
 
+    def install_service(self, service_name):
+        self._elevate_privileges()
+
+        path_requested_service = os.path.join(
+            self._storage_dir_path,
+            self._get_config_value('service-path'),
+            service_name
+        )
+
+        is_existing_path_in_storage = os.path.isdir(path_requested_service)
+        is_existing_path_in_current_dir = os.path.isdir(service_name)
+
+        if is_existing_path_in_current_dir:
+            self.display('{{RED}}This directory already as a \'%s\' sub-directory.' % service_name)
+        else:
+            if is_existing_path_in_storage:
+                self.display('{{RED}}This service is already registered locally with Turing, but is installed in a different location.')
+            else:
+                self.display('{{WHITE}}Downloading service..')
+                # subprocess.check_output('cd $TURING_APP_DIR', shell=True)
+                git_path = 'https://github.com/enborra/%s.git' % service_name
+
+                hrm = subprocess.check_output(
+                    'pwd',
+                    stderr=subprocess.STDOUT,
+                    shell=True
+                )
+
+                current_dir = hrm.decode('utf-8').rstrip()
+                new_repo_dir = os.path.join(
+                    current_dir,
+                    service_name
+                )
+
+                subprocess.check_output('git clone %s --quiet' % git_path, shell=True)
+
+                self.display('{{WHITE}}Registering repo with Turing locally...')
+
+                subprocess.check_output(
+                    'sudo ln -s %s %s' % (new_repo_dir, path_requested_service),
+                    stderr=subprocess.STDOUT,
+                    shell=True
+                )
+
+                self.display('{{WHITE}}Service registered successfully!')
+                self.display('')
+
     def install_all_services(self):
         self._elevate_privileges()
 

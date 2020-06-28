@@ -38,11 +38,17 @@ def update():
     mgr._services_update_source()
 
 @cli.command()
-def install():
+def install_all():
     """Update the codebase from origin/master"""
 
     mgr.install_all_services()
 
+@cli.command()
+@click.argument('service_name')
+def install(service_name):
+    """Install a service from Github"""
+
+    mgr.install_service(service_name)
 
 @cli.command()
 def status():
