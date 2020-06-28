@@ -35,7 +35,7 @@ Droid code lives at `/etc/turing/droids`
 ### Manual Setup
 
 1. Run the bootstrap script:
-  sudo curl -S -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/enborra/turing/master/docs/bootstrap.sh | bash -s
+`sudo curl -S -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/enborra/turing/master/docs/bootstrap.sh | bash -s`
 
 2. Add your droid
   + Clone a droid to a local folder: git clone https://github.com/enborra/turing-droid-telkes.git ~/projects/turing-droid-telkes
