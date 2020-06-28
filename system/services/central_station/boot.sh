@@ -14,6 +14,14 @@
 PATH_BIN_NPM=$(which npm)
 PATH_BIN_NODE=$(which node)
 
+if [ -z "$PATH_BIN_NODE" ]
+then
+  # Some desktop MacOS systems struggle to locate node in daemon. Make an
+  # educated guess
+  
+  PATH_BIN_NODE="/usr/local/bin/node"
+fi
+
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PATH_APP="$CURRENT_DIR/app"
 
