@@ -621,6 +621,34 @@ class CommandService(object):
                 self.display('{{WHITE}}Service registered successfully!')
                 self.display('')
 
+    def uninstall_service(self, service_name):
+        self._elevate_privileges()
+
+        path_requested_service = os.path.join(
+            self._storage_dir_path,
+            self._get_config_value('service-path'),
+            service_name
+        )
+
+        is_existing_path_in_storage = os.path.isdir(path_requested_service)
+
+        if is_existing_path_in_storage:
+            self.display('{{WHITE}}Unregistering %s from Turing locally' % service_name)
+
+            if path_requested_service.startswith('/etc/turing/'):
+                subprocess.check_output(
+                    'sudo rm -rf %s' % path_requested_service,
+                    stderr=subprocess.STDOUT,
+                    shell=True
+                )
+            else:
+                self.display('{{RED}}Something went wrong during service uninstall.')
+
+        else:
+            self.display('{{WHITE}}%s is not locally registered with Turing')
+
+
+
     def install_all_services(self):
         self._elevate_privileges()
 

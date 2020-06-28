@@ -51,6 +51,13 @@ def install(service_name):
     mgr.install_service(service_name)
 
 @cli.command()
+@click.argument('service_name')
+def uninstall(service_name):
+    """Uninstall a service locally from Turing"""
+
+    mgr.uninstall_service(service_name)
+
+@cli.command()
 def status():
     """Get status of all running local Turing services"""
 
