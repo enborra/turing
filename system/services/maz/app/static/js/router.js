@@ -98,7 +98,7 @@ core_app.service('grand_central_service', function($rootScope){
         console.log('Connected');
         client.subscribe('/system');
         client.subscribe('/system/face');
-        client.subscribe('/camera/rpi');
+        client.subscribe('/camera/frames');
         client.subscribe('/camera/faces');
 
         $('.blinker').addClass('connected');
@@ -121,7 +121,7 @@ core_app.service('grand_central_service', function($rootScope){
         if( topic == '/camera/face' ){
             $('.view-screen.face-feed img').attr('src', 'data:image/jpeg;base64,'+message);
 
-        } else if( topic == '/camera/rpi' ){
+        } else if( topic == '/camera/frames' ){
             $('.view-screen.camera-feed img').attr('src', 'data:image/jpeg;base64,'+message);
 
         } else if( topic == '/camera/faces' ){
