@@ -6,6 +6,8 @@
 ONLY INSTALL NODE FROM HERE:
 https://github.com/cncjs/cncjs/wiki/Setup-Guide:-Raspberry-Pi-%7C-Install-Node.js-via-Node-Version-Manager-(NVM)
 
+We have to symlink Node into the normal expected spot, for it to work properly in sudo
+ln -s {{whatever "which node" reports}} /usr/local/bin/node 
 
 ##1. Add environmental variables for turing app path
 
