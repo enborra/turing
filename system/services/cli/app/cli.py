@@ -38,8 +38,8 @@ def update():
     mgr._services_update_source()
 
 @cli.command()
-def install_all():
-    """Update the codebase from origin/master"""
+def register_services():
+    """Unregisters and re-registers all services with global systemctl"""
 
     mgr.install_all_services()
 
