@@ -8,7 +8,7 @@
 
 # Update system resources
 sudo apt-get update --force-yes -qq
-sudo apt-get dist-ugprade --force-yes -qq
+sudo apt-get dist-upgrade --force-yes -qq
 
 # Create file structuremeghancakes
 
