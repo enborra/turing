@@ -72,7 +72,7 @@ class CommandService(object):
         plat_name = platform.system().lower()
         plat_machine = platform.machine()
         plat_release = platform.release()
-        plat_full_description = platform._syscmd_uname('-a')
+        plat_full_description = os.uname().nodename
         os_name = os.name.lower()
 
         if plat_name == 'linux':
