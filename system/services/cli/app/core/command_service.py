@@ -346,7 +346,7 @@ class CommandService(object):
     def get_system_info(self):
         plat_name = platform.system().lower()
         plat_release = platform.release()
-        plat_full_description = platform._syscmd_uname('-a')
+        plat_full_description = os.uname().nodename
         plat_machine = platform.machine()
         os_name = os.name.lower()
 
