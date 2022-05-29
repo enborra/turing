@@ -20,6 +20,7 @@ npm install npm@latest -g
 
 # Add turing environmental location
 export TURING_APP_DIR=~/etc/turing
-source ~/.bash_profile
 export TURING_APP_DIR=/private/etc/turing
 
+# Reload bash
+source ~/.bash_profile
