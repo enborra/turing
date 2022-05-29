@@ -130,7 +130,7 @@ class OsxController(BaseController):
 
             cmd_resp = self.run_command('sudo launchctl load %s' % path_service_run_file)
 
-            if cmd_resp is not '':
+            if cmd_resp != '':
                 if 'service already loaded' in cmd_resp:
                     is_install_success = False
                     output_msg = '{{YELLOW}}System reported service already running: {{WHITE}}%s' % current_name
